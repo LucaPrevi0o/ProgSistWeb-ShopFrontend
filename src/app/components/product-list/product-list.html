@@ -3,7 +3,7 @@
     <h1>Lista dei Prodotti</h1>
     <div class="product-list">
         @if (state.status === 'loading') { <p>Caricamento in corso...</p> }
-        @else if (state.status === 'error') { <p>Si è verificato un errore: {{ state.message }}</p> }
+        @else if (state.status === 'error') { <p>Si è verificato un errore.</p> }
         @else if (state.status === 'empty') { <p>Nessun prodotto disponibile.</p> }
         @else {
 

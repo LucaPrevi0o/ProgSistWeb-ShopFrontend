@@ -16,28 +16,18 @@ export type HttpState<T> =
 | { status: 'loading' }
 | { status: 'success'; data: T }
 | { status: 'empty' }
-| { status: 'error'; message: string };
+| { status: 'error'; code: number };
 
-export function toHttpStateList<T>(source$: Observable<T[]>): Observable<HttpState<T[]>> {
-
-  return source$.pipe(
-    map(items => items.length === 0 ?
-      { status: 'empty' } as HttpState<T[]> :
-      { status: 'success', data: items } as HttpState<T[]>
-    ),
-    startWith({ status: 'loading' as const }),
-    catchError(() => of({ status: 'error' as const, message: 'Errore di caricamento.' }))
-  );
-}
-
-export function toHttpStateItem<T>(source$: Observable<T>): Observable<HttpState<T>> {
+export function toHttpState<T>(source$: Observable<T>): Observable<HttpState<T>> {
 
   return source$.pipe(
-    map(item => item ?
-      { status: 'success', data: item } as HttpState<T> :
-      { status: 'empty' } as HttpState<T>
+    map(items => Array.isArray(items) ? (
+      items.length === 0 ?
+        { status: 'empty' } as HttpState<T> :
+        { status: 'success', data: items } as HttpState<T>
+      ) : ({ status: 'success', data: items } as HttpState<T>)
     ),
     startWith({ status: 'loading' as const }),
-    catchError(() => of({ status: 'error' as const, message: 'Errore di caricamento.' }))
+    catchError((err: any) => of({ status: 'error' as const, code: err?.status ?? 0 }))
   );
 }

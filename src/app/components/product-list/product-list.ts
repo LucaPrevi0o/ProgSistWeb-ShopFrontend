@@ -1,6 +1,6 @@
 import { Component, OnInit } from "@angular/core";
 import { Observable } from "rxjs";
-import { HttpState, toHttpStateItem, toHttpStateList } from "../../app.config";
+import { HttpState, toHttpState} from "../../app.config";
 import { ProductService } from "../../services/product-service";
 import { Product } from "../../models/product";
 import { AsyncPipe } from "@angular/common";
@@ -24,7 +24,7 @@ export class ProductListComponent implements OnInit {
     list(): Observable<HttpState<Product[]>> {
 
         const data = this.productService.getAllProducts();
-        this.stateList$ = toHttpStateList(data);
+        this.stateList$ = toHttpState(data);
         return this.stateList$;
     }
 
