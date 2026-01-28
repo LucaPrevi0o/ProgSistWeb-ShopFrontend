@@ -1,14 +1,23 @@
-<nav>
-  <a routerLink="/">Home</a>
-  <a routerLink="/products">Prodotti</a>
-  <a routerLink="/cart">Carrello</a>
-  <a routerLink="/profile">Profilo</a>
-  <a>|</a>
-  <a routerLink="/login">Login</a>
-</nav>
+<html>
 
-<h1>Shop Online</h1>
-<h2><hr class="sep-hr">Benvenuto<hr class="sep-hr"></h2>
-<p>Il tuo negozio online di fiducia</p>
+<head></head>
 
-<p class="footer">© 2024 Shop Online. Tutti i diritti riservati.</p>
+<body>
+
+  <nav>
+    <a routerLink="/">Home</a>
+    <a routerLink="/products">Prodotti</a>
+    <a routerLink="/cart">Carrello</a>
+    <a routerLink="/profile">Profilo</a>
+    <a>|</a>
+    <a routerLink="/login">Login</a>
+  </nav>
+
+  <main><router-outlet></router-outlet></main>
+
+  <div class="footer">
+    <p>© 2024 Shop Online. Tutti i diritti riservati.</p>
+  </div>
+</body>
+
+</html>
