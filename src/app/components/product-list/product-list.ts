@@ -14,19 +14,19 @@ import { AsyncPipe } from "@angular/common";
 })
 export class ProductListComponent implements OnInit {
 
-    stateList$!: Observable<HttpState<Product[]>>;
+    state$!: Observable<HttpState<Product[]>>;
     productService: ProductService;
 
     constructor(productService: ProductService) { this.productService = productService; }
 
-    ngOnInit(): void { this.list(); }
+    ngOnInit() : void { this.list(); }
 
-    list(): Observable<HttpState<Product[]>> {
+    list() : Observable<HttpState<Product[]>> {
 
         const data = this.productService.getAllProducts();
-        this.stateList$ = toHttpState(data);
-        return this.stateList$;
+        this.state$ = toHttpState(data);
+        return this.state$;
     }
 
-    details(productId: number): void { this.productService.router.navigate(['/products', productId]); }
+    details(productId: number) : void { this.productService.router.navigate(['/products', productId]); }
 }

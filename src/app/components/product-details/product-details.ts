@@ -16,13 +16,13 @@ import { filter, map, switchMap, tap } from 'rxjs/operators';
 })
 export class ProductDetailsComponent implements OnInit {
 
-    stateItem$!: Observable<HttpState<Product>>;
+    state$!: Observable<HttpState<Product>>;
 
     constructor(private productService: ProductService, private route: ActivatedRoute) {}
 
-    ngOnInit(): void {
+    ngOnInit() : void {
 
-        this.stateItem$ = this.route.paramMap.pipe(
+        this.state$ = this.route.paramMap.pipe(
             map(params => params.get('id')),
             filter(id => !!id),
             map(id => Number(id)),
@@ -31,5 +31,5 @@ export class ProductDetailsComponent implements OnInit {
         );
     }
 
-    goBack(): void { this.productService.router.navigate(['/products']); }
+    goBack() : void { this.productService.router.navigate(['/products']); }
 }

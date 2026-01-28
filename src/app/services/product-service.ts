@@ -11,9 +11,9 @@ export class ProductService {
     http = inject(HttpClient);
     router = inject(Router);
 
-    getAllProducts(): Observable<Product[]> { return this.http.get<Product[]>(API_BASE_URL + '/products'); }
+    getAllProducts() : Observable<Product[]> { return this.http.get<Product[]>(API_BASE_URL + '/products'); }
 
-    getProduct(id: number): Observable<Product> {
+    getProduct(id: number) : Observable<Product> {
         return this.http.get<Product>(API_BASE_URL + '/products/' + id);
     }
 }

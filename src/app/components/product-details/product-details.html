@@ -1,4 +1,4 @@
-@if (stateItem$ | async; as state) {
+@if (state$ | async; as state) {
 
     @if (state.status === 'loading') { <p>Caricamento in corso...</p> }
     @else if (state.status === 'error') { <p>Si è verificato un errore: {{ state.code }}</p> }
