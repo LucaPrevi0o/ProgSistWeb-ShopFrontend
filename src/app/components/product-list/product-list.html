@@ -1,0 +1,20 @@
+@if (stateList$ | async; as state) {
+
+    <h1>Lista dei Prodotti</h1>
+    <div class="product-list">
+        @if (state.status === 'loading') { <p>Caricamento in corso...</p> }
+        @else if (state.status === 'error') { <p>Si è verificato un errore: {{ state.message }}</p> }
+        @else if (state.status === 'empty') { <p>Nessun prodotto disponibile.</p> }
+        @else {
+
+            @for (item of state.data; track item.id) {
+                <div class="product-item">
+                    <h4>{{ item.name }}</h4>
+                    <p>{{ item.description }}</p>
+                    <div>Prezzo: {{ item.price }} €</div>
+                    <button (click)="details(item.id)">Dettagli</button>
+                </div>
+            }
+        }
+    </div>
+}

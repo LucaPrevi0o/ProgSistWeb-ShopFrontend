@@ -1,0 +1,16 @@
+@if (stateItem$ | async; as state) {
+
+    @if (state.status === 'loading') { <p>Caricamento in corso...</p> }
+    @else if (state.status === 'error') { <p>Si è verificato un errore: {{ state.message }}</p> }
+    @else if (state.status === 'empty') { <p>Nessun prodotto disponibile.</p> }
+    @else {
+
+        <div class="product-item">
+            <h4>{{ state.data.name }}</h4>
+            <p>{{ state.data.description }}</p>
+            <div>Prezzo: {{ state.data.price }} €</div>
+        </div>
+    }
+
+    <button (click)="goBack()">Torna alla lista dei prodotti</button>
+}
