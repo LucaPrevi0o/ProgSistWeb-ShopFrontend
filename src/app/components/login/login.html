@@ -1,0 +1,27 @@
+@if (state$ | async; as state) {
+
+    @if (state.status === 'error') { 
+
+        <p>Si è verificato un errore.</p>
+        @if (state.code === 401) { 
+            
+            <h2>Accesso negato</h2>
+            <p>Credenziali non valide</p>
+            <button (click)="reset()">Riprova</button>
+        }
+    } @else if (state.status === 'loading') { <p>Caricamento in corso...</p> }
+    @else if (state.status === 'empty') {
+        
+        <form [formGroup]="loginForm" (ngSubmit)="submit()">
+            <div>
+                <label for="email">Email:</label>
+                <input id="email" formControlName="email" type="email" />
+            </div>
+            <div>
+                <label for="password">Password:</label>
+                <input id="password" formControlName="password" type="password" />
+            </div>
+            <button type="submit" [disabled]="loginForm.invalid">Accedi</button>
+        </form>
+    }
+}

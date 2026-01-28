@@ -10,14 +10,13 @@
     <a routerLink="/cart">Carrello</a>
     <a routerLink="/profile">Profilo</a>
     <a>|</a>
-    <a routerLink="/login">Login</a>
+    @if (isLoggedIn()) { <a routerLink="/logout">Logout</a> }
+    @else { <a routerLink="/login">Login</a> }
   </nav>
 
   <main><router-outlet></router-outlet></main>
 
-  <div class="footer">
-    <p>© 2024 Shop Online. Tutti i diritti riservati.</p>
-  </div>
+  <p>© 2024 Shop Online. Tutti i diritti riservati.</p>
 </body>
 
 </html>
