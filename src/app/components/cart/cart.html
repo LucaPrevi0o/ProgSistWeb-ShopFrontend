@@ -1,0 +1,27 @@
+@if (state$ | async; as state) {
+
+    <h2>Il tuo carrello</h2>
+    @if (state.status === 'loading') { <p>Caricamento in corso...</p> }
+    @else if (state.status === 'error') { 
+        
+        @if (state.code === 401) { 
+            
+            <h3>Accesso non autorizzato</h3>
+            <p>Effettua il login per visualizzare il carrello.</p>
+            <button (click)="goToLogin()">Login</button>
+        } @else { <p>Si è verificato un errore: {{ state.code }}</p> }
+    }
+    @else if (state.status === 'empty') { <p>Il carrello è vuoto.</p> }
+    @else {
+
+        @for (item of state.data; track item.id) {
+            <div class="cart-item">
+                <h4>{{ item.name }}</h4>
+                <div>Quantità: {{ item.stock }}</div>
+                <div>Prezzo unitario: {{ item.price }} €</div>
+                <div>Totale: {{ item.price * item.stock }} €</div>
+                <button (click)="removeFromCart(item.id)">Rimuovi dal carrello</button>
+            </div>
+        }
+    }
+}

@@ -13,7 +13,8 @@
         </div>
 
         @if (isLoggedIn()) {
-            
+            <button (click)="addToCart(state.data.id)" 
+            [disabled]="state.data.stock === 0">Aggiungi al carrello</button>
         } @else {
             <p>Effettua il login per aggiungere questo prodotto al carrello.</p>
             <button (click)="goToLogin()">Login</button>
