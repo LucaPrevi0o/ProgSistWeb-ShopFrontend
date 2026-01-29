@@ -9,6 +9,7 @@
             <h4>{{ state.data.name }}</h4>
             <p>{{ state.data.description }}</p>
             <div>Prezzo: {{ state.data.price }} €</div>
+            <div>Disponibilità: {{ state.data.stock > 0 ? state.data.stock + ' pezzi' : 'Esaurito' }}</div>
         </div>
     }
 
