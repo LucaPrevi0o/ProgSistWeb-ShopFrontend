@@ -9,7 +9,6 @@ import { Observable } from "rxjs";
 export class UserService {
     
     http = inject(HttpClient);
-    router = inject(Router);
 
     login(user: User) : Observable<User> {
         return this.http.post<User>(API_BASE_URL +'/login', { email: user.email, password: user.password });
@@ -17,9 +16,5 @@ export class UserService {
 
     isLoggedIn() : boolean { return !!localStorage.getItem('jwtToken'); }
 
-    logout() : void {
-        
-        localStorage.removeItem('jwtToken');
-        this.router.navigate(['/login']);
-    }
+    logout() : void { localStorage.removeItem('jwtToken'); }
 }

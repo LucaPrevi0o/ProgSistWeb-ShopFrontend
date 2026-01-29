@@ -11,7 +11,13 @@
             <div>Prezzo: {{ state.data.price }} €</div>
             <div>Disponibilità: {{ state.data.stock > 0 ? state.data.stock + ' pezzi' : 'Esaurito' }}</div>
         </div>
-    }
 
+        @if (isLoggedIn()) {
+            
+        } @else {
+            <p>Effettua il login per aggiungere questo prodotto al carrello.</p>
+            <button (click)="goToLogin()">Login</button>
+        }
+    }
     <button (click)="goBack()">Torna alla lista dei prodotti</button>
 }

@@ -1,9 +1,10 @@
-import { Component, OnInit } from "@angular/core";
+import { Component, inject, OnInit } from "@angular/core";
 import { Observable } from "rxjs";
 import { HttpState, toHttpState} from "../../app.config";
 import { ProductService } from "../../services/product-service";
 import { Product } from "../../models/product";
 import { AsyncPipe } from "@angular/common";
+import { Router } from "@angular/router";
 
 @Component({
     selector: 'app-product-list',
@@ -16,6 +17,7 @@ export class ProductListComponent implements OnInit {
 
     state$!: Observable<HttpState<Product[]>>;
     productService: ProductService;
+    router = inject(Router);
 
     constructor(productService: ProductService) { this.productService = productService; }
 
@@ -28,5 +30,5 @@ export class ProductListComponent implements OnInit {
         return this.state$;
     }
 
-    details(productId: number) : void { this.productService.router.navigate(['/products', productId]); }
+    details(productId: number) : void { this.router.navigate(['/product', productId]); }
 }

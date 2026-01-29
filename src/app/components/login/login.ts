@@ -1,10 +1,11 @@
-import { Component, OnInit } from "@angular/core";
+import { Component, inject, OnInit } from "@angular/core";
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from "@angular/forms";
 import { UserService } from "../../services/user-service";
 import { User } from "../../models/user";
 import { Observable, of } from "rxjs";
 import { HttpState, toHttpState } from "../../app.config";
 import { AsyncPipe } from "@angular/common";
+import { Router } from "@angular/router";
 
 @Component({
     selector: 'app-login',
@@ -16,6 +17,7 @@ export class LoginComponent implements OnInit {
 
     loginForm: FormGroup;
     state$! : Observable<HttpState<User>>;
+    router = inject(Router);
 
     constructor(private fb: FormBuilder, private userService: UserService) {
 
@@ -40,7 +42,7 @@ export class LoginComponent implements OnInit {
             if (state.status === 'success' && state.data) {
 
                 localStorage.setItem('jwtToken', state.data.token);
-                this.userService.router.navigate(['/']);
+                this.router.navigate(['/']);
             }
         });
     }

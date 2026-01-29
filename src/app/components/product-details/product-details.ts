@@ -1,11 +1,12 @@
-import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { Component, inject, OnInit } from '@angular/core';
+import { ActivatedRoute, Router } from '@angular/router';
 import { AsyncPipe } from '@angular/common';
 import { Observable } from 'rxjs';
 import { HttpState, toHttpState } from '../../app.config';
 import { ProductService } from '../../services/product-service';
 import { Product } from '../../models/product';
-import { filter, map, switchMap, tap } from 'rxjs/operators';
+import { filter, map, switchMap } from 'rxjs/operators';
+import { UserService } from '../../services/user-service';
 
 @Component({
     selector: 'app-product-details',
@@ -17,8 +18,9 @@ import { filter, map, switchMap, tap } from 'rxjs/operators';
 export class ProductDetailsComponent implements OnInit {
 
     state$!: Observable<HttpState<Product>>;
+    router = inject(Router);
 
-    constructor(private productService: ProductService, private route: ActivatedRoute) {}
+    constructor(private productService: ProductService, private userService: UserService, private route: ActivatedRoute) {}
 
     ngOnInit() : void {
 
@@ -31,5 +33,9 @@ export class ProductDetailsComponent implements OnInit {
         );
     }
 
-    goBack() : void { this.productService.router.navigate(['/products']); }
+    goBack() : void { this.router.navigate(['/products']); }
+
+    isLoggedIn() : boolean { return this.userService.isLoggedIn(); }
+
+    goToLogin() : void { this.router.navigate(['/login']); }
 }
