@@ -21,14 +21,7 @@ export class ProductListComponent implements OnInit {
 
     constructor(productService: ProductService) { this.productService = productService; }
 
-    ngOnInit() : void { this.list(); }
+    ngOnInit() : void { this.state$ = toHttpState(this.productService.getAllProducts()); }
 
-    list() : Observable<HttpState<Product[]>> {
-
-        const data = this.productService.getAllProducts();
-        this.state$ = toHttpState(data);
-        return this.state$;
-    }
-
-    details(productId: number) : void { this.router.navigate(['/product', productId]); }
+    details(product: Product) : void { this.router.navigate(['/product', product.id]); }
 }

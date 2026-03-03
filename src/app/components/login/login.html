@@ -8,6 +8,16 @@
             <h2>Accesso negato</h2>
             <p>Credenziali non valide</p>
             <button (click)="reset()">Riprova</button>
+        } @else if (state.code === 500) { 
+            
+            <h2>Errore del server</h2>
+            <p>Si è verificato un errore interno. Riprova più tardi.</p>
+            <button (click)="reset()">Riprova</button>
+        } @else { 
+            
+            <h2>Errore sconosciuto</h2>
+            <p>Codice errore: {{ state.code }}</p>
+            <button (click)="reset()">Riprova</button>
         }
     } @else if (state.status === 'loading') { <p>Caricamento in corso...</p> }
     @else if (state.status === 'empty') {

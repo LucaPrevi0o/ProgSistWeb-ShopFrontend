@@ -1,9 +1,9 @@
 import { Component, inject, OnInit } from '@angular/core';
 import { AsyncPipe } from '@angular/common';
-import { Observable } from 'rxjs';
+import { Observable, switchMap, tap } from 'rxjs';
 import { HttpState, toHttpState } from '../../app.config';
 import { Product } from '../../models/product';
-import { filter, map, switchMap, tap } from 'rxjs/operators';
+import { Cart, CartItem } from '../../models/cart';
 import { CartService } from '../../services/cart-service';
 import { Router } from '@angular/router';
 
@@ -16,19 +16,31 @@ import { Router } from '@angular/router';
 })
 export class CartComponent implements OnInit {
 
-    state$!: Observable<HttpState<Product[]>>;
+    state$!: Observable<HttpState<Cart>>;
     router = inject(Router);
 
     constructor(private cartService: CartService) {}
 
-    ngOnInit() : void { this.state$ = this.viewCart(); }
+    ngOnInit() : void { this.state$ = toHttpState(this.cartService.getCartItems()); }
 
-    viewCart() : Observable<HttpState<Product[]>> { return toHttpState(this.cartService.getCartItems()); }
+    createCart() : void { 
+        
+        this.state$ = toHttpState(this.cartService.createCart().pipe(
+            tap(() => console.log('Cart created')),
+            switchMap(() => this.cartService.getCartItems())
+        ));
+    }
 
-    removeFromCart(productId: number) : void {
+    removeFromCart(product: Product) : void {
 
-        this.cartService.removeCartItem(productId);
-        this.state$ = this.viewCart();
+        this.state$ = toHttpState(this.cartService.removeCartItem(product).pipe(
+            switchMap(() => this.cartService.getCartItems())
+        ));
+        //this.router.navigate(['/cart']);
+    }
+    
+    getSubtotal(cart: Cart) : number {
+        return cart.items.reduce((sum, item) => sum + item.product.price * item.quantity, 0);
     }
 
     goToLogin() : void { this.router.navigate(['/login']); }

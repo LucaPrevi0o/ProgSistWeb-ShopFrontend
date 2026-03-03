@@ -9,19 +9,28 @@
             <h3>Accesso non autorizzato</h3>
             <p>Effettua il login per visualizzare il carrello.</p>
             <button (click)="goToLogin()">Login</button>
-        } @else { <p>Si è verificato un errore: {{ state.code }}</p> }
+        } @else if (state.code === 404) { 
+            
+            <p>Il tuo carrello è vuoto. Crea un nuovo carrello per iniziare a fare acquisti.</p>
+            <button (click)="createCart()">Crea Carrello</button>
+        }
     }
     @else if (state.status === 'empty') { <p>Il carrello è vuoto.</p> }
     @else {
 
-        @for (item of state.data; track item.id) {
+        <h3>{{ state.data.items.length }} elementi</h3>
+        @for (item of state.data.items; track item.product.id) {
             <div class="cart-item">
-                <h4>{{ item.name }}</h4>
-                <div>Quantità: {{ item.stock }}</div>
-                <div>Prezzo unitario: {{ item.price }} €</div>
-                <div>Totale: {{ item.price * item.stock }} €</div>
-                <button (click)="removeFromCart(item.id)">Rimuovi dal carrello</button>
+                <h4>{{ item.product.name }}</h4>
+                <div>Quantità: {{ item.quantity }}</div>
+                @if (item.quantity > item.product.stock) {
+                    <div class="warning">Attenzione: la quantità nel carrello supera la disponibilità in magazzino!</div>
+                }
+                <div>Prezzo unitario: {{ item.product.price }} €</div>
+                <div>Totale: {{ item.product.price * item.quantity }} €</div>
+                <button (click)="removeFromCart(item.product)">Rimuovi dal carrello</button>
             </div>
         }
+        <h3>Totale parziale: {{ getSubtotal(state.data) }} €</h3>
     }
 }

@@ -1,8 +1,11 @@
 @if (state$ | async; as state) {
 
     @if (state.status === 'loading') { <p>Caricamento in corso...</p> }
-    @else if (state.status === 'error') { <p>Si è verificato un errore: {{ state.code }}</p> }
-    @else if (state.status === 'empty') { <p>Nessun prodotto disponibile.</p> }
+    @else if (state.status === 'error') { 
+        
+        @if (state.code === 422) { <p>Quantità richiesta non disponibile in magazzino.</p>}
+        @else { <p>Si è verificato un errore: {{ state.code }}</p> }
+    } @else if (state.status === 'empty') { <p>Nessun prodotto disponibile.</p> }
     @else {
 
         <div class="product-item">
@@ -13,9 +16,16 @@
         </div>
 
         @if (isLoggedIn()) {
-            <button (click)="addToCart(state.data.id)" 
+            <div>
+                <p>Quantità selezionata: 
+                <button (click)="decreaseQuantity()" [disabled]="quantity.value <= 1">-</button>
+                {{ quantity.value }}
+                <button (click)="increaseQuantity()" [disabled]="quantity.value >= state.data.stock">+</button></p>
+            </div>
+            <button (click)="addToCart(state.data, quantity.value)"
             [disabled]="state.data.stock === 0">Aggiungi al carrello</button>
         } @else {
+            
             <p>Effettua il login per aggiungere questo prodotto al carrello.</p>
             <button (click)="goToLogin()">Login</button>
         }
