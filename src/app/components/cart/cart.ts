@@ -36,12 +36,13 @@ export class CartComponent implements OnInit {
         this.state$ = toHttpState(this.cartService.removeCartItem(product).pipe(
             switchMap(() => this.cartService.getCartItems())
         ));
-        //this.router.navigate(['/cart']);
     }
     
     getSubtotal(cart: Cart) : number {
         return cart.items.reduce((sum, item) => sum + item.product.price * item.quantity, 0);
     }
+
+    checkout() : void { this.router.navigate(['/checkout']); }
 
     goToLogin() : void { this.router.navigate(['/login']); }
 }

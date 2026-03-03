@@ -14,8 +14,7 @@
             <p>Il tuo carrello è vuoto. Crea un nuovo carrello per iniziare a fare acquisti.</p>
             <button (click)="createCart()">Crea Carrello</button>
         }
-    }
-    @else if (state.status === 'empty') { <p>Il carrello è vuoto.</p> }
+    } @else if (state.status === 'empty') { <p>Il carrello è vuoto.</p> }
     @else {
 
         <h3>{{ state.data.items.length }} elementi</h3>
@@ -31,6 +30,7 @@
                 <button (click)="removeFromCart(item.product)">Rimuovi dal carrello</button>
             </div>
         }
-        <h3>Totale parziale: {{ getSubtotal(state.data) }} €</h3>
+        <h3>Totale carrello: {{ getSubtotal(state.data) }} €</h3>
+        <button (click)="checkout()" [disabled]="state.data.items.length === 0">Procedi al checkout</button>
     }
 }

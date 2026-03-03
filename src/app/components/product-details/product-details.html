@@ -3,7 +3,12 @@
     @if (state.status === 'loading') { <p>Caricamento in corso...</p> }
     @else if (state.status === 'error') { 
         
-        @if (state.code === 422) { <p>Quantità richiesta non disponibile in magazzino.</p>}
+        @if (state.code === 422) {
+            
+            <h2>Quantità richiesta non disponibile</h2>
+            <p>La quantità di prodotti nel carrello eccede il numero di prodotti disponibili nel magazzino.</p>
+            <p>Per favore, riduci la quantità e riprova ad aggiungere il prodotto al carrello.</p>
+        }
         @else { <p>Si è verificato un errore: {{ state.code }}</p> }
     } @else if (state.status === 'empty') { <p>Nessun prodotto disponibile.</p> }
     @else {
@@ -25,7 +30,7 @@
             <button (click)="addToCart(state.data, quantity.value)"
             [disabled]="state.data.stock === 0">Aggiungi al carrello</button>
         } @else {
-            
+
             <p>Effettua il login per aggiungere questo prodotto al carrello.</p>
             <button (click)="goToLogin()">Login</button>
         }
