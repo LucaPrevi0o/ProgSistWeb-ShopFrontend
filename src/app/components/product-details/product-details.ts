@@ -1,22 +1,24 @@
 import { Component, inject, OnInit } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { AsyncPipe } from '@angular/common';
-import { BehaviorSubject, Observable, switchMap, tap } from 'rxjs';
-import { HttpState, toHttpState } from '../../app.config';
+import { BehaviorSubject, Observable, switchMap } from 'rxjs';
+import { HttpState, toHttpState, PRODUCT_BASE_URL } from '../../app.config';
 import { ProductService } from '../../services/product-service';
 import { CartService } from '../../services/cart-service';
 import { Product } from '../../models/product';
 import { UserService } from '../../services/user-service';
+import { LoginRedirectorComponent } from '../login-redirector/login-redirector';
 
 @Component({
     selector: 'app-product-details',
     standalone: true,
-    imports: [AsyncPipe],
+    imports: [AsyncPipe, LoginRedirectorComponent],
     templateUrl: './product-details.html',
     styleUrls: ['./product-details.scss']
 })
 export class ProductDetailsComponent implements OnInit {
 
+    BASE_URL = PRODUCT_BASE_URL;
     state$!: Observable<HttpState<Product>>;
     quantity = new BehaviorSubject<number>(1);
     router = inject(Router);

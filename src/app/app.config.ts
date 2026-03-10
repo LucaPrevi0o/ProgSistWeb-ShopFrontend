@@ -16,6 +16,8 @@ export const appConfig: ApplicationConfig = {
 };
 
 export const API_BASE_URL = 'http://localhost:3000';
+export const THUMBNAIL_BASE_URL = 'https://placehold.co/260x140/bb2222/white?text=';
+export const PRODUCT_BASE_URL = 'https://placehold.co/350x190/bb2222/white?text=';
 
 export type HttpState<T> =
 | { status: 'loading' }

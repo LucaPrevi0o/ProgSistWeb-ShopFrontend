@@ -1,6 +1,6 @@
 import { Component, inject, OnInit } from "@angular/core";
 import { Observable } from "rxjs";
-import { HttpState, toHttpState} from "../../app.config";
+import { HttpState, toHttpState, THUMBNAIL_BASE_URL } from "../../app.config";
 import { ProductService } from "../../services/product-service";
 import { Product } from "../../models/product";
 import { AsyncPipe } from "@angular/common";
@@ -15,6 +15,7 @@ import { Router } from "@angular/router";
 })
 export class ProductListComponent implements OnInit {
 
+    BASE_URL = THUMBNAIL_BASE_URL;
     state$!: Observable<HttpState<Product[]>>;
     productService: ProductService;
     router = inject(Router);

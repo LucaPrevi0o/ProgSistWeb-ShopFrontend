@@ -1,39 +1,43 @@
 @if (state$ | async; as state) {
 
-    @if (state.status === 'loading') { <p>Caricamento in corso...</p> }
-    @else if (state.status === 'error') { 
-        
-        @if (state.code === 422) {
+    <div>
+        @if (state.status === 'loading') { <p>Caricamento in corso...</p> }
+        @else if (state.status === 'error') { 
             
-            <h2>Quantità richiesta non disponibile</h2>
-            <p>La quantità di prodotti nel carrello eccede il numero di prodotti disponibili nel magazzino.</p>
-            <p>Per favore, riduci la quantità e riprova ad aggiungere il prodotto al carrello.</p>
-        }
-        @else { <p>Si è verificato un errore: {{ state.code }}</p> }
-    } @else if (state.status === 'empty') { <p>Nessun prodotto disponibile.</p> }
-    @else {
+            @if (state.code === 422) {
+                
+                <h2>Quantità richiesta non disponibile</h2>
+                <p>La quantità di prodotti nel carrello eccede il numero di prodotti disponibili nel magazzino.</p>
+                <p>Per favore, riduci la quantità e riprova ad aggiungere il prodotto al carrello.</p>
+            }
+            @else { <p>Si è verificato un errore: {{ state.code }}</p> }
+        } @else if (state.status === 'empty') { <p>Nessun prodotto disponibile.</p> }
+        @else {
 
-        <div class="product-item">
-            <h4>{{ state.data.name }}</h4>
-            <p>{{ state.data.description }}</p>
-            <div>Prezzo: {{ state.data.price }} €</div>
-            <div>Disponibilità: {{ state.data.stock > 0 ? state.data.stock + ' pezzi' : 'Esaurito' }}</div>
-        </div>
+            <div class="product-item">
+                <img src="{{ BASE_URL }}{{ state.data.name }}" alt="{{ state.data.name }}" />
+                <div>
+                    <div class="product-info">
+                        <h2>{{ state.data.name }}</h2>
+                        <p>Categoria: <strong>{{ state.data.category }}</strong></p>
+                        <p>{{ state.data.description }}</p>
+                        <p>Prezzo: <strong>{{ state.data.price }} €</strong></p>
+                        <p>Disponibilità: <strong>{{ state.data.stock > 0 ? state.data.stock + ' pezzi' : 'Esaurito' }}</strong></p>
+                    </div>
 
-        @if (isLoggedIn()) {
-            <div>
-                <p>Quantità selezionata: 
-                <button (click)="decreaseQuantity()" [disabled]="quantity.value <= 1">-</button>
-                {{ quantity.value }}
-                <button (click)="increaseQuantity()" [disabled]="quantity.value >= state.data.stock">+</button></p>
+                    @if (isLoggedIn()) {
+                        <div class="quantity-selector">
+                            <p>Quantità selezionata: </p>
+                            <button (click)="decreaseQuantity()" [disabled]="quantity.value <= 1">-</button>
+                            <p>{{ quantity.value }}</p>
+                            <button (click)="increaseQuantity()" [disabled]="quantity.value >= state.data.stock">+</button>
+                        </div>
+                        <button (click)="addToCart(state.data, quantity.value)"
+                        [disabled]="state.data.stock === 0">Aggiungi al carrello</button>
+                    } @else { <app-login-redirector></app-login-redirector> }
+                </div>
             </div>
-            <button (click)="addToCart(state.data, quantity.value)"
-            [disabled]="state.data.stock === 0">Aggiungi al carrello</button>
-        } @else {
-
-            <p>Effettua il login per aggiungere questo prodotto al carrello.</p>
-            <button (click)="goToLogin()">Login</button>
         }
-    }
-    <button (click)="goBack()">Torna alla lista dei prodotti</button>
+        <button (click)="goBack()">Torna alla lista dei prodotti</button>
+    </div>
 }

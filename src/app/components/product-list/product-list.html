@@ -1,13 +1,13 @@
 @if (state$ | async; as state) {
 
     <h1>Lista dei Prodotti</h1>
-        @if (state.status === 'loading') { <p>Caricamento in corso...</p> }
-        @else if (state.status === 'error') { 
-            
-            <h2>Si è verificato un errore.</h2>
-            <p>Codice errore: <strong>{{ state.code }}</strong></p>
-        } @else if (state.status === 'empty') { <p>Nessun prodotto disponibile.</p> }
-        @else {
+    @if (state.status === 'loading') { <p>Caricamento in corso...</p> }
+    @else if (state.status === 'error') { 
+        
+        <h2>Si è verificato un errore.</h2>
+        <p>Codice errore: <strong>{{ state.code }}</strong></p>
+    } @else if (state.status === 'empty') { <p>Nessun prodotto disponibile.</p> }
+    @else {
 
         <div class="pagination">
             <button (click)="prevPage()" [disabled]="currentPage === 1">Precedente</button>
@@ -16,14 +16,15 @@
         </div>
 
         <div class="product-list">
-            @for (item of state.data; track item.id) {
-                <div class="product-item">
-                    <h4>{{ item.name }}</h4>
-                    <p>{{ item.description }}</p>
-                    <div>Prezzo: {{ item.price }} €</div>
-                    <button (click)="details(item)">Dettagli</button>
-                </div>
+        @for (item of state.data; track item.id) {
+            <div class="product-item">
+                <img src="{{ BASE_URL }}{{ item.name }}" alt="{{ item.name }}" />
+                <h3>{{ item.name }}</h3>
+                <p>{{ item.description }}</p>
+                <p>Prezzo: <strong>{{ item.price }} €</strong></p>
+                <button (click)="details(item)">Dettagli</button>
+            </div>
         }
-    </div>
+        </div>
     }
 }
