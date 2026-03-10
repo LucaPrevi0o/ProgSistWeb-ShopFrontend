@@ -18,10 +18,17 @@ export class ProductListComponent implements OnInit {
     state$!: Observable<HttpState<Product[]>>;
     productService: ProductService;
     router = inject(Router);
+    currentPage: number = 1;
 
     constructor(productService: ProductService) { this.productService = productService; }
 
-    ngOnInit() : void { this.state$ = toHttpState(this.productService.getAllProducts()); }
+    ngOnInit() : void { this.loadPage(); }
+
+    loadPage() : void { this.state$ = toHttpState(this.productService.getProducts(this.currentPage)); }
+
+    prevPage() : void { if (this.currentPage > 1) { this.currentPage--; this.loadPage(); } }
+
+    nextPage() : void { this.currentPage++; this.loadPage(); }
 
     details(product: Product) : void { this.router.navigate(['/product', product.id]); }
 }

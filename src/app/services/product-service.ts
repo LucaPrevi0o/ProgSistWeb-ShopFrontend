@@ -11,6 +11,11 @@ export class ProductService {
 
     getAllProducts() : Observable<Product[]> { return this.http.get<Product[]>(API_BASE_URL + '/products'); }
 
+    getProducts(page: number = 1) : Observable<Product[]> {
+        const params = { page: page.toString() };
+        return this.http.get<Product[]>(API_BASE_URL + '/products', { params });
+    }
+
     getProduct(id: number) : Observable<Product> {
         return this.http.get<Product>(API_BASE_URL + '/products/' + id);
     }
