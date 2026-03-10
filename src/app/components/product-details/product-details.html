@@ -15,15 +15,8 @@
         @else {
 
             <div class="product-item">
-                <img src="{{ BASE_URL }}{{ state.data.name }}" alt="{{ state.data.name }}" />
                 <div>
-                    <div class="product-info">
-                        <h2>{{ state.data.name }}</h2>
-                        <p>Categoria: <strong>{{ state.data.category }}</strong></p>
-                        <p>{{ state.data.description }}</p>
-                        <p>Prezzo: <strong>{{ state.data.price }} €</strong></p>
-                        <p>Disponibilità: <strong>{{ state.data.stock > 0 ? state.data.stock + ' pezzi' : 'Esaurito' }}</strong></p>
-                    </div>
+                    <img src="{{ BASE_URL }}{{ state.data.name }}" alt="{{ state.data.name }}" />
 
                     @if (isLoggedIn()) {
                         <div class="quantity-selector">
@@ -35,6 +28,18 @@
                         <button (click)="addToCart(state.data, quantity.value)"
                         [disabled]="state.data.stock === 0">Aggiungi al carrello</button>
                     } @else { <app-login-redirector></app-login-redirector> }
+                </div>
+                <div>
+                    <div class="product-info">
+                        <div>
+                            <h1>{{ state.data.name }}</h1>
+                            <p><strong>{{ state.data.category }}</strong></p>
+                        </div>
+                        <hr>
+                        <p>{{ state.data.description }}</p>
+                        <p>Prezzo: <strong>{{ state.data.price }} €</strong></p>
+                        <p>Disponibilità: <strong>{{ state.data.stock > 0 ? state.data.stock + ' pezzi' : 'Esaurito' }}</strong></p>
+                    </div>
                 </div>
             </div>
         }

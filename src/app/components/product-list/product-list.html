@@ -19,7 +19,10 @@
         @for (item of state.data; track item.id) {
             <div class="product-item">
                 <img src="{{ BASE_URL }}{{ item.name }}" alt="{{ item.name }}" />
-                <h3>{{ item.name }}</h3>
+                <div>
+                    <h3>{{ item.name }}</h3>
+                    <p><strong>{{ item.category }}</strong></p>
+                </div>
                 <p>{{ item.description }}</p>
                 <p>Prezzo: <strong>{{ item.price }} €</strong></p>
                 <button (click)="details(item)">Dettagli</button>
