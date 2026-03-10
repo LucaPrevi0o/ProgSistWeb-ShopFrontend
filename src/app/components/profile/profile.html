@@ -1,0 +1,23 @@
+@if (state$ | async; as state) {
+
+    <h1>Il tuo Profilo</h1>
+    @if (state.status === 'loading') { <p>Caricamento in corso...</p> }
+    @else if (state.status === 'error') { 
+        
+        @if (state.code === 401) { <app-login-redirector></app-login-redirector> } @else { 
+            
+            <h2>Si è verificato un errore.</h2>
+            <p>Codice errore: <strong>{{ state.code }}</strong></p>
+        }
+    } @else if (state.status === 'empty') { <p>Profilo non trovato.</p> }
+    @else {
+
+        <div>Email: {{ state.data.email }}</div>
+        @if (state.data.info) {
+            
+            <div>Nome: {{ state.data.info.firstName }} {{ state.data.info.lastName }}</div>
+            <div>Telefono: {{ state.data.info.phone }}</div>
+        }
+        <button (click)="goToLogin()">Logout</button>
+    }
+}
