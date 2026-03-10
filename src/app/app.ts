@@ -1,20 +1,15 @@
 import { Component, signal } from '@angular/core';
-import { RouterLink, RouterOutlet } from '@angular/router';
-import { UserService } from './services/user-service';
+import { RouterOutlet } from '@angular/router';
+import { HeaderComponent } from "./components/header/header";
+import { FooterComponent } from "./components/footer/footer";
 
 @Component({
   selector: 'app-root',
   templateUrl: './app.html',
-  imports: [RouterLink, RouterOutlet],
+  imports: [RouterOutlet, HeaderComponent, FooterComponent],
   styleUrls: ['./app.scss']
 })
 export class App {
 
-  constructor(private userService: UserService) {}
-
-  protected readonly title = signal('shop-frontend');
-
-  isLoggedIn() { return this.userService.isLoggedIn(); }
-
-  logout() { this.userService.logout(); }
+    protected readonly title = signal('shop-frontend');
 }

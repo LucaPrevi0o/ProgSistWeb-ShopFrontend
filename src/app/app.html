@@ -4,19 +4,9 @@
 
 <body>
 
-  <nav>
-    <a routerLink="/">Home</a>
-    <a routerLink="/products">Prodotti</a>
-    <a routerLink="/cart">Carrello</a>
-    <a routerLink="/profile">Profilo</a>
-    <a>|</a>
-    @if (isLoggedIn()) { <a routerLink="/logout">Logout</a> }
-    @else { <a routerLink="/login">Login</a> }
-  </nav>
-
-  <main><router-outlet></router-outlet></main>
-
-  <p>© 2024 Shop Online. Tutti i diritti riservati.</p>
+<app-header></app-header>
+<main><router-outlet></router-outlet></main>
+<app-footer></app-footer>
 </body>
 
 </html>
