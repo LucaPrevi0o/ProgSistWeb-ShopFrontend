@@ -1,0 +1,8 @@
+<nav>
+    <button (click)="this.router.navigate(['/'])">Home</button>
+    <button (click)="this.router.navigate(['/products'])">Prodotti</button>
+    <button (click)="this.router.navigate(['/cart'])">Carrello</button>
+    <span class="spacer"></span>
+    @if (isLoggedIn()) { <button class="profileButton" (click)="this.router.navigate(['/users', this.getUserId()])">Profilo</button> }
+    @else { <button class="loginButton" (click)="this.router.navigate(['/login'])">Login</button> }
+</nav>
