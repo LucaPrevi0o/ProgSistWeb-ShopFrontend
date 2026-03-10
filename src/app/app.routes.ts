@@ -4,6 +4,8 @@ import { ProductDetailsComponent } from './components/product-details/product-de
 import { CartComponent } from './components/cart/cart';
 import { LoginComponent } from './components/login/login';
 import { HomeComponent } from './components/home/home';
+import { ProfileComponent } from './components/profile/profile';
+import { LoginRedirectorComponent } from './components/login-redirector/login-redirector';
 
 export const routes: Routes = [
     
@@ -13,5 +15,6 @@ export const routes: Routes = [
     { path: 'login', component: LoginComponent },
     { path: 'logout', component: LoginComponent },
     { path: 'cart', component: CartComponent },
-    { path: 'cart', component: CartComponent }  // Added route for adding product to cart
+    { path: 'users/:id', component: ProfileComponent },
+    { path: 'login-redirect', component: LoginRedirectorComponent }
 ];
