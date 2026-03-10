@@ -4,12 +4,8 @@
     @if (state.status === 'loading') { <p>Caricamento in corso...</p> }
     @else if (state.status === 'error') { 
         
-        @if (state.code === 401) { 
-            
-            <h3>Accesso non autorizzato</h3>
-            <p>Effettua il login per visualizzare il carrello.</p>
-            <button (click)="goToLogin()">Login</button>
-        } @else if (state.code === 404) { 
+        @if (state.code === 401) { <app-login-redirector></app-login-redirector> }
+        @else if (state.code === 404) { 
             
             <p>Il tuo carrello è vuoto. Crea un nuovo carrello per iniziare a fare acquisti.</p>
             <button (click)="createCart()">Crea Carrello</button>

@@ -3,14 +3,15 @@ import { AsyncPipe } from '@angular/common';
 import { Observable, switchMap, tap } from 'rxjs';
 import { HttpState, toHttpState } from '../../app.config';
 import { Product } from '../../models/product';
-import { Cart, CartItem } from '../../models/cart';
+import { Cart } from '../../models/cart';
 import { CartService } from '../../services/cart-service';
 import { Router } from '@angular/router';
+import { LoginRedirectorComponent } from "../login-redirector/login-redirector";
 
 @Component({
     selector: 'app-cart',
     standalone: true,
-    imports: [AsyncPipe],
+    imports: [AsyncPipe, LoginRedirectorComponent],
     templateUrl: './cart.html',
     styleUrls: ['./cart.scss']
 })
