@@ -20,16 +20,37 @@ export class ProductListComponent implements OnInit {
     productService: ProductService;
     router = inject(Router);
     currentPage: number = 1;
+    // filter fields
+    filterName: string = '';
+    filterCategory: string = '';
+    filterMinPrice: string = '';
+    filterMaxPrice: string = '';
 
     constructor(productService: ProductService) { this.productService = productService; }
 
     ngOnInit() : void { this.loadPage(); }
 
-    loadPage() : void { this.state$ = toHttpState(this.productService.getProducts(this.currentPage)); }
+    loadPage(filters?: any) : void {
+        this.state$ = toHttpState(this.productService.getProducts(this.currentPage, filters));
+    }
 
-    prevPage() : void { if (this.currentPage > 1) { this.currentPage--; this.loadPage(); } }
+    prevPage() : void { if (this.currentPage > 1) { this.currentPage--; this.loadPage(this.currentFilters()); } }
 
-    nextPage() : void { this.currentPage++; this.loadPage(); }
+    nextPage() : void { this.currentPage++; this.loadPage(this.currentFilters()); }
+
+    // Build filters object from local fields
+    currentFilters() {
+        const f: any = {};
+        if (this.filterName && this.filterName.trim().length) f.name = this.filterName.trim();
+        if (this.filterCategory && this.filterCategory.trim()) f.category = this.filterCategory.trim();
+        if (this.filterMinPrice) f.min_price = this.filterMinPrice;
+        if (this.filterMaxPrice) f.max_price = this.filterMaxPrice;
+        return f;
+    }
+
+    applyFilters() : void { this.currentPage = 1; this.loadPage(this.currentFilters()); }
+
+    resetFilters() : void { this.filterName = ''; this.filterCategory = ''; this.filterMinPrice = ''; this.filterMaxPrice = ''; this.currentPage = 1; this.loadPage(); }
 
     details(product: Product) : void { this.router.navigate(['/product', product.id]); }
 }

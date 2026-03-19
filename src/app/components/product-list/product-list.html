@@ -1,33 +1,47 @@
 @if (state$ | async; as state) {
 
     <h1>Lista dei Prodotti</h1>
-    @if (state.status === 'loading') { <p>Caricamento in corso...</p> }
-    @else if (state.status === 'error') { 
-        
-        <h2>Si è verificato un errore.</h2>
-        <p>Codice errore: <strong>{{ state.code }}</strong></p>
-    } @else if (state.status === 'empty') { <p>Nessun prodotto disponibile.</p> }
-    @else {
+    <div class="product-list-container">
+        @if (state.status === 'loading') { <p>Caricamento in corso...</p> }
+        @else if (state.status === 'error') { 
+            
+            <h2>Si è verificato un errore.</h2>
+            <p>Codice errore: <strong>{{ state.code }}</strong></p>
+        } @else if (state.status === 'empty') { <p>Nessun prodotto disponibile.</p> }
+        @else {
 
-        <div class="pagination">
-            <button (click)="prevPage()" [disabled]="currentPage === 1">Precedente</button>
-            <p>Pagina <strong>{{ currentPage }}</strong></p>
-            <button (click)="nextPage()" [disabled]="!(state.data && state.data.length === 8)">Successivo</button>
-        </div>
+            <div class="pagination">
+                <button (click)="prevPage()" [disabled]="currentPage === 1">Precedente</button>
+                <p>Pagina <strong>{{ currentPage }}</strong></p>
+                <button (click)="nextPage()" [disabled]="!(state.data && state.data.length === 8)">Successivo</button>
+            </div>
 
-        <div class="product-list">
-        @for (item of state.data; track item.id) {
-            <div class="product-item">
-                <img src="{{ BASE_URL }}{{ item.name }}" alt="{{ item.name }}" />
-                <div>
-                    <h3>{{ item.name }}</h3>
-                    <p><strong>{{ item.category }}</strong></p>
+            <div class="items">
+                <div class="filters">
+                    <label>Nome: <input type="text" (input)="filterName = $any($event.target).value" (keydown.enter)="applyFilters()" value="{{filterName}}" /></label>
+                    <label>Categoria: <input type="text" (input)="filterCategory = $any($event.target).value" (keydown.enter)="applyFilters()" value="{{filterCategory}}" /></label>
+                    <label>Prezzo min: <input type="number" (input)="filterMinPrice = $any($event.target).value" (keydown.enter)="applyFilters()" value="{{filterMinPrice}}" /></label>
+                    <label>Prezzo max: <input type="number" (input)="filterMaxPrice = $any($event.target).value" (keydown.enter)="applyFilters()" value="{{filterMaxPrice}}" /></label>
+                    <button (click)="applyFilters()">Applica filtri</button>
+                    <button (click)="resetFilters()">Reset</button>
                 </div>
-                <p>{{ item.description }}</p>
-                <p>Prezzo: <strong>{{ item.price }} €</strong></p>
-                <button (click)="details(item)">Dettagli</button>
+
+                <div class="product-list">
+                    @for (item of state.data; track item.id) {
+
+                        <div class="product-item">
+                            <img src="{{ BASE_URL }}{{ item.name }}" alt="{{ item.name }}" />
+                            <div>
+                                <h3>{{ item.name }}</h3>
+                                <p><strong>{{ item.category }}</strong></p>
+                            </div>
+                            <p>{{ item.description }}</p>
+                            <p>Prezzo: <strong>{{ item.price }} €</strong></p>
+                            <button (click)="details(item)">Dettagli</button>
+                        </div>
+                    }
+                </div>
             </div>
         }
-        </div>
-    }
+    </div>
 }
