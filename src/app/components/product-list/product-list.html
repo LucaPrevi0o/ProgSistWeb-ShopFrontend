@@ -31,12 +31,12 @@
 
                         <div class="product-item">
                             <img src="{{ BASE_URL }}{{ item.name }}" alt="{{ item.name }}" />
-                            <div>
+                            <div class="product-header">
                                 <h3>{{ item.name }}</h3>
-                                <p><strong>{{ item.category }}</strong></p>
+                                <span class="category-badge">{{ item.category }}</span>
                             </div>
-                            <p>{{ item.description }}</p>
-                            <p>Prezzo: <strong>{{ item.price }} €</strong></p>
+                            <p class="description">{{ item.description }}</p>
+                            <p class="price">Prezzo: <strong>{{ item.price }} €</strong></p>
                             <button (click)="details(item)">Dettagli</button>
                         </div>
                     }

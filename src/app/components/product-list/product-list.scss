@@ -1,111 +1,170 @@
-.pagination {
-
-    display: flex;
-    flex-direction: row;
-    margin-top: 20px;
-    margin-left: auto;
-    margin-right: auto;
-    gap: 16px;
-    p { margin-top: 12px; }
-}
-
-.items { 
-    
-    display: flex;
-    flex-direction: row;
-    gap: 16px;
-    margin-left: auto;
-    margin-right: auto;
-
-    .product-list{
-        
-        background: #e4e4e4;
-        display: flex;
-        width: 85%;
-        min-width: 85%;
-        justify-content: center;
-        border-radius: 4px;
-        flex-wrap: wrap;
-
-        .product-item {
-
-            width: 19.5%;
-            background: #cccccc;
-            border-radius: 4px;
-            padding: 20px;
-            margin: 20px;
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-
-            div { 
-                
-                display: flex;
-                gap: 25px;
-                flex-direction: row;
-                
-                p {
-                    
-                    height: fit-content;
-                    margin-top: auto;
-                    margin-bottom: auto;
-                    margin-left: auto;
-                    margin-right: 0;
-                    border: 2px solid #1794a5;
-                    background: #ecffff;
-                    padding: 3px;
-                    border-radius: 4px;
-                }
-            } 
-
-            img { border-radius: 4px; }
-
-            h3 {
-                
-                color: #003066;
-                width: fit-content;
-                font-size: 21px;
-            }
-
-            button { 
-            
-                margin-top: auto;
-                margin-bottom: 0;
-                background-color: #4CAF50;
-
-                &:hover { background-color: #71c275; }
-                &:active { background-color: #dadd2b; }
-            }
-
-            p {
-
-                color: #333333;
-                font-size: 16px;
-                margin-top: auto;
-                margin-bottom: auto;
-            }
-        }
-    }
-}
-
-.filters { 
-
-    display: flex;
-    flex-direction: column;
-    height: fit-content;
-    gap: 16px;
-    width: 12%;
-    background: #cccccc;
-    border-radius: 4px;
-    padding: 20px;
-    position: sticky;
-    top: 100px;
-}
-
+/* product-list.scss */
 .product-list-container {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
+  width: min(95%, 1400px);
+  margin: 0 auto;
+  padding: var(--spacing-md);
+}
 
+h1 { text-align: center; }
+
+.pagination {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-md);
+
+  p {
+    margin: 0;
+    color: var(--color-text-light);
+    font-size: 14px;
+  }
+}
+
+.items {
+  display: grid;
+  grid-template-columns: 220px 1fr; /* fixed sidebar, flexible content */
+  gap: var(--spacing-lg);
+  align-items: start;
+
+  @media (max-width: 900px) {
+    grid-template-columns: 1fr; /* stack on mobile */
+  }
+}
+
+.filters {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+  background: var(--color-card);
+  border-radius: var(--radius);
+  padding: var(--spacing-md);
+  box-shadow: var(--shadow-sm);
+  border: 1px solid var(--color-border);
+
+  position: sticky;
+  top: 80px; /* below the header */
+
+  label {
     display: flex;
     flex-direction: column;
-    gap: 16px;
+    gap: 4px;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--color-text-light);
+  }
+
+  input {
+    padding: 8px 10px;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius);
+    font-size: 14px;
+    transition: border-color var(--transition);
+
+    &:focus {
+      outline: none;
+      border-color: var(--color-accent);
+    }
+  }
+
+  button {
     width: 100%;
+    margin: 2px 0;
+  }
+
+  @media (max-width: 900px) {
+    /* Collapsible filters on mobile would need TS logic,
+       but at minimum make them horizontal */
+    flex-direction: row;
+    flex-wrap: wrap;
+    position: static;
+
+    label { min-width: 140px; }
+  }
+}
+
+.product-list {
+  display: grid;
+  /* Responsive grid: fills space, minimum 220px cards */
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: var(--spacing-md);
+}
+
+.product-item {
+  background: var(--color-card);
+  border-radius: var(--radius);
+  padding: var(--spacing-md);
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+  box-shadow: var(--shadow-sm);
+  border: 1px solid var(--color-border);
+  transition: box-shadow var(--transition), transform var(--transition);
+
+  &:hover {
+    box-shadow: var(--shadow-md);
+    transform: translateY(-3px); /* lift effect on hover */
+  }
+
+  img {
+    width: 100%;
+    height: 140px;
+    object-fit: cover; /* ensures image fills without stretching */
+    border-radius: calc(var(--radius) - 2px);
+  }
+
+  .product-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: var(--spacing-sm);
+  }
+
+  h3 {
+    color: var(--color-heading-secondary);
+    font-size: 16px;
+    margin: 0;
+    flex: 1;
+  }
+
+  .category-badge {
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--color-accent);
+    background: rgba(23, 148, 165, 0.1);
+    border: 1px solid var(--color-accent);
+    padding: 3px 7px;
+    border-radius: 20px; /* pill shape */
+    white-space: nowrap;
+    align-self: flex-start;
+  }
+
+  .description {
+    color: var(--color-text-light);
+    font-size: 13px;
+    line-height: 1.4;
+    /* Clamp to 3 lines to keep cards uniform height */
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    flex: 1; /* push price/button to bottom */
+  }
+
+  .price {
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--color-danger);
+  }
+
+  button {
+    margin-top: auto;
+    width: 100%;
+    background-color: var(--color-success);
+
+    &:hover:not(:disabled) { background-color: var(--color-success-hover); }
+  }
 }
