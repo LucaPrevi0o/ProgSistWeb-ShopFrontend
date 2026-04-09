@@ -25,10 +25,15 @@ export class ProductListComponent implements OnInit {
     filterCategory: string = '';
     filterMinPrice: string = '';
     filterMaxPrice: string = '';
+    categories: string[] = [];
 
     constructor(productService: ProductService) { this.productService = productService; }
 
-    ngOnInit() : void { this.loadPage(); }
+    ngOnInit() : void { this.loadPage(); this.loadCategories(); }
+
+    private loadCategories() : void {
+        this.productService.getCategories().subscribe({ next: (cats) => this.categories = cats, error: (e) => console.error('Failed to load categories', e) });
+    }
 
     loadPage(filters?: any) : void {
         this.state$ = toHttpState(this.productService.getProducts(this.currentPage, filters));

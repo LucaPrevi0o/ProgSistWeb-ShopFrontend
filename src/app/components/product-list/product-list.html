@@ -19,7 +19,12 @@
             <div class="items">
                 <div class="filters">
                     <label>Nome: <input type="text" (input)="filterName = $any($event.target).value" (keydown.enter)="applyFilters()" value="{{filterName}}" /></label>
-                    <label>Categoria: <input type="text" (input)="filterCategory = $any($event.target).value" (keydown.enter)="applyFilters()" value="{{filterCategory}}" /></label>
+                    <label>Categoria:
+                        <select (change)="filterCategory = $any($event.target).value" [value]="filterCategory">
+                            <option value="">Tutte le categorie</option>
+                            @for (cat of categories; track cat) { <option value="{{cat}}">{{cat}}</option> }
+                        </select>
+                    </label>
                     <label>Prezzo min: <input type="number" (input)="filterMinPrice = $any($event.target).value" (keydown.enter)="applyFilters()" value="{{filterMinPrice}}" /></label>
                     <label>Prezzo max: <input type="number" (input)="filterMaxPrice = $any($event.target).value" (keydown.enter)="applyFilters()" value="{{filterMaxPrice}}" /></label>
                     <button (click)="applyFilters()">Applica filtri</button>

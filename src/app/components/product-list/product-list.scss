@@ -57,7 +57,7 @@ h1 { text-align: center; }
     color: var(--color-text-light);
   }
 
-  input {
+  input, select {
     padding: 8px 10px;
     border: 1px solid var(--color-border);
     border-radius: var(--radius);
