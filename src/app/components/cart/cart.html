@@ -17,16 +17,16 @@
         @for (item of state.data.items; track item.product.id) {
             <div class="cart-item">
                 <h4>{{ item.product.name }}</h4>
-                <div>Quantità: {{ item.quantity }}</div>
+                <div>Quantità: <strong>{{ item.quantity }}</strong></div>
                 @if (item.quantity > item.product.stock) {
                     <div class="warning">Attenzione: la quantità nel carrello supera la disponibilità in magazzino!</div>
                 }
-                <div>Prezzo unitario: {{ item.product.price }} €</div>
-                <div>Totale: {{ item.product.price * item.quantity }} €</div>
+                <div>Prezzo unitario: <strong>{{ item.product.price }} €</strong></div>
+                <div>Totale: <strong>{{ item.product.price * item.quantity }} €</strong></div>
                 <button (click)="removeFromCart(item.product)">Rimuovi dal carrello</button>
             </div>
         }
         <h3>Totale carrello: {{ getSubtotal(state.data) }} €</h3>
-        <button (click)="checkout()" [disabled]="state.data.items.length === 0">Procedi al checkout</button>
+        <button class="checkout-button" (click)="checkout()" [disabled]="state.data.items.length === 0">Procedi al checkout</button>
     }
 }
