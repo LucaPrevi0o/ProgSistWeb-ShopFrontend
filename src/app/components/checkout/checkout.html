@@ -1,0 +1,55 @@
+@if (state$ | async; as state) {
+
+    <h2>Checkout</h2>
+
+    @if (state.status === 'loading') { <p>Caricamento carrello...</p> }
+    @else if (state.status === 'error') { <p>Errore: {{ state.code }}</p> }
+    @else if (state.status === 'empty') { <p>Il carrello è vuoto.</p> }
+    @else {
+
+        <div class="checkout-container">
+            <div class="items">
+                <h3>Riepilogo ordine</h3>
+
+                @for (it of state.data.items; track it.product.id) {
+                    <div class="checkout-item">
+                        <div class="name">{{ it.product.name }}</div>
+                        <div class="qty">x {{ it.quantity }}</div>
+                        <div class="price">€ {{ it.product.price * it.quantity }}</div>
+                    </div>
+                }
+
+                <div class="total">Totale: € {{ getSubtotal(state.data) }}</div>
+            </div>
+
+            <div class="form">
+                <h3>Dati di spedizione</h3>
+                <form [formGroup]="checkoutForm" (ngSubmit)="submit(state.data)">
+                    <label for="name">Nome</label>
+                    <input id="name" formControlName="name" />
+
+                    <label for="surname">Cognome</label>
+                    <input id="surname" formControlName="surname" />
+
+                    <label for="address">Indirizzo</label>
+                    <input id="address" formControlName="address" />
+
+                    <label for="city">Città</label>
+                    <input id="city" formControlName="city" />
+
+                    <label for="postal_code">CAP</label>
+                    <input id="postal_code" formControlName="postal_code" />
+
+                    <label for="country">Paese</label>
+                    <input id="country" formControlName="country" />
+
+                    <label for="phone">Telefono</label>
+                    <input id="phone" formControlName="phone" />
+
+                    <button type="submit" [disabled]="checkoutForm.invalid">Conferma ordine</button>
+                </form>
+            </div>
+        </div>
+    }
+
+}

@@ -2,6 +2,7 @@ import { Routes } from '@angular/router';
 import { ProductListComponent } from './components/product-list/product-list';
 import { ProductDetailsComponent } from './components/product-details/product-details';
 import { CartComponent } from './components/cart/cart';
+import { CheckoutComponent } from './components/checkout/checkout';
 import { LoginComponent } from './components/login/login';
 import { HomeComponent } from './components/home/home';
 import { ProfileComponent } from './components/profile/profile';
@@ -15,6 +16,7 @@ export const routes: Routes = [
     { path: 'login', component: LoginComponent },
     { path: 'logout', component: LoginComponent },
     { path: 'cart', component: CartComponent },
+    { path: 'checkout', component: CheckoutComponent },
     { path: 'users/:id', component: ProfileComponent },
     { path: 'login-redirect', component: LoginRedirectorComponent }
 ];

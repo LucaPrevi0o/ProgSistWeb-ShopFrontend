@@ -1,0 +1,21 @@
+.checkout-container {
+  display: flex;
+  gap: 24px;
+  .items {
+    flex: 1 1 40%;
+    background: #fff;
+    padding: 16px;
+    border-radius: 6px;
+  }
+  .form {
+    flex: 1 1 50%;
+    background: #fff;
+    padding: 16px;
+    border-radius: 6px;
+  }
+  ul { list-style: none; padding: 0; }
+  li { display:flex; justify-content: space-between; padding: 6px 0; }
+  .total { font-weight: bold; margin-top: 8px; }
+  label { display:block; margin-bottom:8px; }
+  input { width:100%; padding:6px; box-sizing:border-box; }
+}
