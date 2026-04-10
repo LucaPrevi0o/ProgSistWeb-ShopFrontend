@@ -1,8 +1,8 @@
 <div class="price-range">
   <div class="track">
+    <div class="fill" [style.left.%]="( (low - min) / (max - min) ) * 100" [style.right.%]="( (max - high) / (max - min) ) * 100"></div>
     <input type="range" [min]="min" [max]="max" [step]="step" [value]="low" (input)="onLowInput($any($event.target).value)" />
     <input type="range" [min]="min" [max]="max" [step]="step" [value]="high" (input)="onHighInput($any($event.target).value)" />
-    <div class="fill" [style.left.%]="( (low - min) / (max - min) ) * 100" [style.right.%]="( (max - high) / (max - min) ) * 100"></div>
   </div>
   <div class="labels">
     <div>€{{ low }}</div>
