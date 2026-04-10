@@ -4,12 +4,13 @@ import { HttpState, toHttpState, THUMBNAIL_BASE_URL } from "../../app.config";
 import { ProductService } from "../../services/product-service";
 import { Product } from "../../models/product";
 import { AsyncPipe } from "@angular/common";
+import { PriceRangeComponent } from '../price-range/price-range';
 import { Router } from "@angular/router";
 
 @Component({
     selector: 'app-product-list',
     standalone: true,
-    imports: [AsyncPipe],
+    imports: [AsyncPipe, PriceRangeComponent],
     templateUrl: './product-list.html',
     styleUrls: ['./product-list.scss']
 })
@@ -37,6 +38,11 @@ export class ProductListComponent implements OnInit {
 
     loadPage(filters?: any) : void {
         this.state$ = toHttpState(this.productService.getProducts(this.currentPage, filters));
+    }
+
+    onPriceRangeChange(range: { min: number; max: number }) : void {
+        this.filterMinPrice = range.min.toString();
+        this.filterMaxPrice = range.max.toString();
     }
 
     prevPage() : void { if (this.currentPage > 1) { this.currentPage--; this.loadPage(this.currentFilters()); } }
