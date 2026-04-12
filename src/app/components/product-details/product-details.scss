@@ -98,3 +98,17 @@
 }
 
 .back-button { margin-top: var(--spacing-md); }
+
+/* Error container used by product-details template */
+.error-container {
+  text-align: center;
+  padding: var(--spacing-md);
+  background: var(--color-card);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  color: var(--color-danger);
+  box-shadow: var(--shadow-sm);
+  margin-top: var(--spacing-md);
+  margin-left: var(--spacing-xl);
+  margin-right: var(--spacing-xl);
+}
