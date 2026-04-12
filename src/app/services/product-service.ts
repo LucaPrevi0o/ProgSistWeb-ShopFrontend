@@ -27,4 +27,8 @@ export class ProductService {
     getProduct(id: number) : Observable<Product> {
         return this.http.get<Product>(API_BASE_URL + '/products/' + id);
     }
+
+    getCategories() : Observable<string[]> {
+        return this.http.get<string[]>(API_BASE_URL + '/categories');
+    }
 }

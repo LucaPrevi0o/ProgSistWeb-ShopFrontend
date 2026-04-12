@@ -1,0 +1,12 @@
+.price-range {
+  width: 100%;
+  .track { position: relative; height: 36px; }
+  input[type="range"] { 
+    -webkit-appearance: none; appearance: none; 
+    position: absolute; left: 0; top: 8px; width: 100%; background: transparent; pointer-events: none;
+  }
+  input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; pointer-events: auto; width:16px; height:16px; border-radius:50%; background:#333; }
+  input[type="range"]::-moz-range-thumb { pointer-events: auto; width:16px; height:16px; border-radius:50%; background:#333; }
+  .fill { position: absolute; top: 14px; height: 6px; background: #cbd5e1; border-radius: 3px; }
+  .labels { display:flex; justify-content:space-between; margin-top:8px; font-size:0.9rem; }
+}

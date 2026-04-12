@@ -4,12 +4,13 @@ import { HttpState, toHttpState, THUMBNAIL_BASE_URL } from "../../app.config";
 import { ProductService } from "../../services/product-service";
 import { Product } from "../../models/product";
 import { AsyncPipe } from "@angular/common";
+import { PriceRangeComponent } from '../price-range/price-range';
 import { Router } from "@angular/router";
 
 @Component({
     selector: 'app-product-list',
     standalone: true,
-    imports: [AsyncPipe],
+    imports: [AsyncPipe, PriceRangeComponent],
     templateUrl: './product-list.html',
     styleUrls: ['./product-list.scss']
 })
@@ -25,13 +26,23 @@ export class ProductListComponent implements OnInit {
     filterCategory: string = '';
     filterMinPrice: string = '';
     filterMaxPrice: string = '';
+    categories: string[] = [];
 
     constructor(productService: ProductService) { this.productService = productService; }
 
-    ngOnInit() : void { this.loadPage(); }
+    ngOnInit() : void { this.loadPage(); this.loadCategories(); }
+
+    private loadCategories() : void {
+        this.productService.getCategories().subscribe({ next: (cats) => this.categories = cats, error: (e) => console.error('Failed to load categories', e) });
+    }
 
     loadPage(filters?: any) : void {
         this.state$ = toHttpState(this.productService.getProducts(this.currentPage, filters));
+    }
+
+    onPriceRangeChange(range: { min: number; max: number }) : void {
+        this.filterMinPrice = range.min.toString();
+        this.filterMaxPrice = range.max.toString();
     }
 
     prevPage() : void { if (this.currentPage > 1) { this.currentPage--; this.loadPage(this.currentFilters()); } }
