@@ -2,35 +2,35 @@
 
     <h1>Lista dei Prodotti</h1>
     <div class="product-list-container">
-        @if (state.status === 'loading') { <p>Caricamento in corso...</p> }
-        @else if (state.status === 'error') { 
-            
-            <h2>Si è verificato un errore.</h2>
-            <p>Codice errore: <strong>{{ state.code }}</strong></p>
-        } @else if (state.status === 'empty') { <p>Nessun prodotto disponibile.</p> }
-        @else {
 
-            <div class="pagination">
-                <button (click)="prevPage()" [disabled]="currentPage === 1">Precedente</button>
-                <p>Pagina <strong>{{ currentPage }}</strong></p>
-                <button (click)="nextPage()" [disabled]="!(state.data && state.data.length === 8)">Successivo</button>
+        <div class="pagination">
+            <button (click)="prevPage()" [disabled]="currentPage === 1">Precedente</button>
+            <p>Pagina <strong>{{ currentPage }}</strong></p>
+            <button (click)="nextPage()" [disabled]="!(currentPage === 1)">Successivo</button>
+        </div>
+
+        <div class="items">
+            <div class="filters">
+                <label>Nome: <input type="text" (input)="filterName = $any($event.target).value" (keydown.enter)="applyFilters()" value="{{filterName}}" /></label>
+                <label>Categoria:
+                    <select (change)="filterCategory = $any($event.target).value" [value]="filterCategory">
+                        <option value="" disabled [selected]="!filterCategory">Seleziona categoria...</option>
+                        @for (cat of categories; track cat) { <option value="{{cat}}">{{cat}}</option> }
+                    </select>
+                </label>
+                <label>Prezzo:
+                    <app-price-range [min]="0" [max]="500" [step]="1" (rangeChange)="onPriceRangeChange($event)"></app-price-range>
+                </label>
+                <button (click)="applyFilters()">Applica filtri</button>
+                <button (click)="resetFilters()">Reset</button>
             </div>
-
-            <div class="items">
-                <div class="filters">
-                    <label>Nome: <input type="text" (input)="filterName = $any($event.target).value" (keydown.enter)="applyFilters()" value="{{filterName}}" /></label>
-                    <label>Categoria:
-                        <select (change)="filterCategory = $any($event.target).value" [value]="filterCategory">
-                            <option value="" disabled [selected]="!filterCategory">Seleziona categoria...</option>
-                            @for (cat of categories; track cat) { <option value="{{cat}}">{{cat}}</option> }
-                        </select>
-                    </label>
-                    <label>Prezzo:
-                        <app-price-range [min]="0" [max]="500" [step]="1" (rangeChange)="onPriceRangeChange($event)"></app-price-range>
-                    </label>
-                    <button (click)="applyFilters()">Applica filtri</button>
-                    <button (click)="resetFilters()">Reset</button>
-                </div>
+            @if (state.status === 'loading') { <p>Caricamento in corso...</p> }
+            @else if (state.status === 'error') { 
+                
+                <h2>Si è verificato un errore.</h2>
+                <p>Codice errore: <strong>{{ state.code }}</strong></p>
+            } @else if (state.status === 'empty') { <p>Nessun prodotto disponibile.</p> }
+            @else {
 
                 <div class="product-list">
                     @for (item of state.data; track item.id) {
@@ -47,7 +47,7 @@
                         </div>
                     }
                 </div>
-            </div>
-        }
+            }
+        </div>
     </div>
 }
