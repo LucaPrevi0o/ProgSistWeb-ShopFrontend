@@ -12,4 +12,13 @@ export interface UserInfo {
     firstName: string;
     lastName: string;
     phone: string;
+    address: Address;
+}
+
+export interface Address {
+
+    street: string;
+    city: string;
+    postalCode: string;
+    country: string;
 }
