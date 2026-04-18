@@ -23,6 +23,14 @@
                     <h3>Informazioni Profilo</h3>
                     <p>Nome: {{ state.data.info.firstName }} {{ state.data.info.lastName }}</p>
                     <p>Telefono: {{ state.data.info.phone }}</p>
+                    @if (state.data.info.address) {
+                        <div class="address-block">
+                            <h4>Indirizzo di spedizione</h4>
+                            <p>{{ state.data.info.address.street }}</p>
+                            <p>{{ state.data.info.address.city }} - {{ state.data.info.address.postalCode }}</p>
+                            <p>{{ state.data.info.address.country }}</p>
+                        </div>
+                    }
                     <div class="actions">
                         <button (click)="startEdit(state.data)">Modifica</button>
                         <button (click)="logout()">Logout</button>
@@ -40,6 +48,20 @@
 
                         <label for="phone">Telefono:</label>
                         <input id="phone" formControlName="phone" />
+
+                        <h4>Indirizzo di spedizione</h4>
+
+                        <label for="street">Via / Piazza:</label>
+                        <input id="street" formControlName="street" />
+
+                        <label for="city">Città:</label>
+                        <input id="city" formControlName="city" />
+
+                        <label for="postalCode">CAP:</label>
+                        <input id="postalCode" formControlName="postalCode" />
+
+                        <label for="country">Nazione:</label>
+                        <input id="country" formControlName="country" />
 
                         <div class="form-actions">
                             <button type="submit" [disabled]="profileForm.invalid">{{ editMode ? 'Aggiorna' : 'Salva informazioni' }}</button>
