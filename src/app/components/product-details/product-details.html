@@ -2,16 +2,18 @@
 
     <div>
         @if (state.status === 'loading') { <p>Caricamento in corso...</p> }
-        @else if (state.status === 'error') { 
-            
+        @else if (state.status === 'error') {
+
             @if (state.code === 422) {
-                
-                <div class="error-container">
+
+                <div class="error-message">
                     <h2>Quantità richiesta non disponibile</h2>
                     <p>La quantità di prodotti nel carrello eccede il numero di prodotti disponibili nel magazzino.</p>
                     <p>Per favore, riduci la quantità e riprova ad aggiungere il prodotto al carrello.</p>
 
-                    <button (click)="goBack()">Torna alla lista dei prodotti</button>
+                    <div class="form-actions">
+                        <button (click)="goBack()" class="primary">Torna alla lista dei prodotti</button>
+                    </div>
                 </div>
             }
             @else { <p>Si è verificato un errore: {{ state.code }}</p> }

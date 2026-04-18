@@ -25,10 +25,16 @@
                 <button (click)="resetFilters()">Reset</button>
             </div>
             @if (state.status === 'loading') { <p>Caricamento in corso...</p> }
-            @else if (state.status === 'error') { 
-                
-                <h2>Si è verificato un errore.</h2>
-                <p>Codice errore: <strong>{{ state.code }}</strong></p>
+            @else if (state.status === 'error') {
+
+                <div class="error-message">
+                    <h2>Errore nel caricamento dei prodotti</h2>
+                    <p>Codice errore: <strong>{{ state.code }}</strong></p>
+                    <div class="form-actions">
+                        <button (click)="loadPage(currentFilters())" class="primary">Riprova</button>
+                        <button (click)="resetFilters()">Reset filtri</button>
+                    </div>
+                </div>
             } @else if (state.status === 'empty') { <p>Nessun prodotto disponibile.</p> }
             @else {
 

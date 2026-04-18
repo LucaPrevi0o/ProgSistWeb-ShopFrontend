@@ -1,32 +1,46 @@
 @if (state$ | async; as state) {
 
-    <h2>Il tuo carrello</h2>
-    @if (state.status === 'loading') { <p>Caricamento in corso...</p> }
-    @else if (state.status === 'error') { 
-        
-        @if (state.code === 401) { <app-login-redirector></app-login-redirector> }
-        @else if (state.code === 404) { 
-            
-            <p>Il tuo carrello è vuoto. Crea un nuovo carrello per iniziare a fare acquisti.</p>
-            <button (click)="createCart()">Crea Carrello</button>
-        }
-    } @else if (state.status === 'empty') { <p>Il carrello è vuoto.</p> }
-    @else {
+    <div class="cart-container">
+        <h2>Il tuo carrello</h2>
 
-        <h3>{{ state.data.items.length }} elementi</h3>
-        @for (item of state.data.items; track item.product.id) {
-            <div class="cart-item">
-                <h4>{{ item.product.name }}</h4>
-                <div>Quantità: <strong>{{ item.quantity }}</strong></div>
-                @if (item.quantity > item.product.stock) {
-                    <div class="warning">Attenzione: la quantità nel carrello supera la disponibilità in magazzino!</div>
-                }
-                <div>Prezzo unitario: <strong>{{ item.product.price }} €</strong></div>
-                <div>Totale: <strong>{{ item.product.price * item.quantity }} €</strong></div>
-                <button (click)="removeFromCart(item.product)">Rimuovi dal carrello</button>
-            </div>
+        @if (state.status === 'loading') { <p>Caricamento in corso...</p> }
+
+        @else if (state.status === 'error') {
+
+            @if (state.code === 401) {
+                <div class="error-message">
+                    <app-login-redirector></app-login-redirector>
+                </div>
+            } @else if (state.code === 404) {
+                <div class="error-message">
+                    <p>Il tuo carrello è vuoto. Crea un nuovo carrello per iniziare a fare acquisti.</p>
+                    <div class="form-actions">
+                        <button (click)="createCart()" class="primary">Crea Carrello</button>
+                    </div>
+                </div>
+            }
+
+        } @else if (state.status === 'empty') {
+            <div class="empty-cart"><p>Il carrello è vuoto.</p></div>
+
+        } @else {
+
+            <h3>{{ state.data.items.length }} elementi</h3>
+            @for (item of state.data.items; track item.product.id) {
+                <div class="cart-item">
+                    <h4>{{ item.product.name }}</h4>
+                    <div>Quantità: <strong>{{ item.quantity }}</strong></div>
+                    @if (item.quantity > item.product.stock) {
+                        <div class="warning">Attenzione: la quantità nel carrello supera la disponibilità in magazzino!</div>
+                    }
+                    <div>Prezzo unitario: <strong>{{ item.product.price }} €</strong></div>
+                    <div>Totale: <strong>{{ item.product.price * item.quantity }} €</strong></div>
+                    <button (click)="removeFromCart(item.product)">Rimuovi dal carrello</button>
+                </div>
+            }
+
+            <h3>Totale carrello: {{ getSubtotal(state.data) }} €</h3>
+            <button class="checkout-button" (click)="checkout()" [disabled]="state.data.items.length === 0">Procedi al checkout</button>
         }
-        <h3>Totale carrello: {{ getSubtotal(state.data) }} €</h3>
-        <button class="checkout-button" (click)="checkout()" [disabled]="state.data.items.length === 0">Procedi al checkout</button>
-    }
+    </div>
 }

@@ -73,4 +73,19 @@ h2, h3, .checkout-button { margin-left: var(--spacing-lg); }
   background: var(--color-card);
   border-radius: var(--radius);
   box-shadow: var(--shadow-sm);
+  border: 1px solid var(--color-border);
+}
+
+.error-message {
+  border-left: 4px solid var(--color-danger);
+}
+
+.form-actions { margin-top: var(--spacing-md); display:flex; justify-content:center; gap:var(--spacing-sm); }
+
+.primary {
+  background: var(--color-primary);
+  color: white;
+  border: none;
+  padding: 8px 12px;
+  border-radius: 6px;
 }
