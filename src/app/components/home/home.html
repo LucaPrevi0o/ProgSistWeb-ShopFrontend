@@ -6,7 +6,8 @@
 
 		<div class="actions">
 			<button (click)="goRegister()" class="btn register">Registrati</button>
-			<button (click)="goLogin()" class="btn login">Accedi</button>
+			@if (isLoggedIn()) { <button (click)="goProfile()" class="btn login">Profilo</button> }
+			@else { <button (click)="goLogin()" class="btn login">Accedi</button> }
 			<button (click)="goProducts()" class="btn products">Vedi Prodotti</button>
 		</div>
 	</div>
