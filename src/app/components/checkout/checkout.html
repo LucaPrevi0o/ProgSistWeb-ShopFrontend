@@ -32,43 +32,43 @@
                     <form [formGroup]="checkoutForm" (ngSubmit)="submit(state.data)" novalidate>
 
                         <div class="form-row">
-                            <div class="form-group">
+                            <div class="form-group" [class.autofilled]="autofilled['name']">
                                 <label for="name">Nome</label>
-                                <input id="name" type="text" formControlName="name" required />
+                                <input id="name" type="text" formControlName="name" required (input)="clearAutofill('name')" />
                             </div>
 
-                            <div class="form-group">
+                            <div class="form-group" [class.autofilled]="autofilled['surname']">
                                 <label for="surname">Cognome</label>
-                                <input id="surname" type="text" formControlName="surname" required />
+                                <input id="surname" type="text" formControlName="surname" required (input)="clearAutofill('surname')" />
                             </div>
                         </div>
 
-                        <div class="form-group">
+                        <div class="form-group" [class.autofilled]="autofilled['address']">
                             <label for="address">Indirizzo</label>
-                            <input id="address" type="text" formControlName="address" required />
+                            <input id="address" type="text" formControlName="address" required (input)="clearAutofill('address')" />
                         </div>
 
                         <div class="form-row">
-                            <div class="form-group">
+                            <div class="form-group" [class.autofilled]="autofilled['city']">
                                 <label for="city">Città</label>
-                                <input id="city" type="text" formControlName="city" required />
+                                <input id="city" type="text" formControlName="city" required (input)="clearAutofill('city')" />
                             </div>
 
-                            <div class="form-group">
+                            <div class="form-group" [class.autofilled]="autofilled['postal_code']">
                                 <label for="postal_code">CAP</label>
-                                <input id="postal_code" type="text" formControlName="postal_code" required />
+                                <input id="postal_code" type="text" formControlName="postal_code" required (input)="clearAutofill('postal_code')" />
                             </div>
                         </div>
 
                         <div class="form-row">
-                            <div class="form-group">
+                            <div class="form-group" [class.autofilled]="autofilled['country']">
                                 <label for="country">Paese</label>
-                                <input id="country" type="text" formControlName="country" required />
+                                <input id="country" type="text" formControlName="country" required (input)="clearAutofill('country')" />
                             </div>
 
-                            <div class="form-group">
+                            <div class="form-group" [class.autofilled]="autofilled['phone']">
                                 <label for="phone">Telefono</label>
-                                <input id="phone" type="tel" formControlName="phone" />
+                                <input id="phone" type="tel" formControlName="phone" (input)="clearAutofill('phone')" />
                             </div>
                         </div>
 

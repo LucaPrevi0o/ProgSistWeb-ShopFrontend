@@ -52,3 +52,16 @@
   .form-row { flex-direction: column; }
   .items, .form { width: 100%; }
 }
+
+/* Autofill highlight for fields populated from saved user data */
+.form-group.autofilled {
+  /* subtle emphasis */
+}
+
+.form-group.autofilled input {
+  box-shadow: inset 4px 0 0 var(--color-accent);
+  background: var(--color-bg);
+  transition: background var(--transition), box-shadow var(--transition);
+}
+
+.form-group.autofilled label { color: var(--color-accent); font-weight: 600; }

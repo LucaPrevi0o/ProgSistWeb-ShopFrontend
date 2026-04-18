@@ -20,6 +20,7 @@ export class CheckoutComponent implements OnInit {
 
     state$!: Observable<HttpState<Cart>>;
     checkoutForm: FormGroup;
+    autofilled: Record<string, boolean> = {};
     router = inject(Router);
 
     constructor(private fb: FormBuilder, private cartService: CartService, private checkoutService: CheckoutService, private userService: UserService) {
@@ -51,6 +52,20 @@ export class CheckoutComponent implements OnInit {
                                 city: info.address?.city ?? '',
                                 postal_code: info.address?.postalCode ?? '',
                                 country: info.address?.country ?? ''
+                            });
+                            // mark autofilled fields when we actually populated them
+                            const payload: any = {
+                                name: info.firstName ?? '',
+                                surname: info.lastName ?? '',
+                                phone: info.phone ?? '',
+                                address: info.address?.street ?? '',
+                                city: info.address?.city ?? '',
+                                postal_code: info.address?.postalCode ?? '',
+                                country: info.address?.country ?? ''
+                            };
+                            Object.keys(payload).forEach(k => {
+                                const v = payload[k];
+                                if (v && v.toString().trim().length) this.autofilled[k] = true;
                             });
                         }
                     },
@@ -86,5 +101,12 @@ export class CheckoutComponent implements OnInit {
                 this.cartService.clearCart().subscribe(() => this.router.navigate(['/products']));
             })
         ).subscribe({ next: () => {}, error: (e) => console.error('Order failed', e) });
+    }
+
+    clearAutofill(field: string): void {
+        if (this.autofilled[field]) {
+            this.checkoutForm.get(field)?.setValue('');
+            this.autofilled[field] = false;
+        }
     }
 }
