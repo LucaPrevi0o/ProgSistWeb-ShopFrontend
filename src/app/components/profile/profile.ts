@@ -11,7 +11,7 @@ import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
 @Component({
     selector: 'app-profile',
     standalone: true,
-    imports: [AsyncPipe, JsonPipe, LoginRedirectorComponent, ReactiveFormsModule],
+    imports: [AsyncPipe, LoginRedirectorComponent, ReactiveFormsModule],
     templateUrl: './profile.html',
     styleUrls: ['./profile.scss']
 })
@@ -21,6 +21,7 @@ export class ProfileComponent implements OnInit {
     router = inject(Router);
 
     profileForm!: FormGroup;
+    editMode: boolean = false;
 
     constructor(private userService: UserService, private fb: FormBuilder) {
 
@@ -41,24 +42,40 @@ export class ProfileComponent implements OnInit {
         this.router.navigate(['/login']);
     }
 
-    saveInfo() : void {
+    startEdit(user: User) : void {
+        this.editMode = true;
+        const info = user?.info;
+        this.profileForm.setValue({
+            firstName: info?.firstName ?? '',
+            lastName: info?.lastName ?? '',
+            phone: info?.phone ?? ''
+        });
+    }
 
+    cancelEdit() : void {
+        this.editMode = false;
+        this.profileForm.reset({ firstName: '', lastName: '', phone: '' });
+    }
+
+    saveInfo() : void {
         if (this.profileForm.invalid) return;
 
         const v = this.profileForm.value;
-
-        // Decide create vs update by fetching current user once, then call the appropriate endpoint
-        const op$ = this.userService.getUser().pipe(
-            take(1),
-            switchMap(user => {
-                if (user?.info) {
-                    return this.userService.updateUserInfo({ firstName: v.firstName, lastName: v.lastName, phone: v.phone });
-                }
-                return this.userService.createUserInfo({ firstName: v.firstName, lastName: v.lastName, phone: v.phone });
-            }),
+        const op$ = (this.editMode ?
+            this.userService.updateUserInfo({ firstName: v.firstName, lastName: v.lastName, phone: v.phone }) :
+            this.userService.createUserInfo({ firstName: v.firstName, lastName: v.lastName, phone: v.phone })
+        ).pipe(
             switchMap(() => this.userService.getUser())
         );
 
-        this.state$ = toHttpState(op$);
+        const saveState$ = toHttpState(op$);
+        this.state$ = saveState$;
+
+        // when save completes successfully, exit edit mode
+        saveState$.subscribe(s => {
+            if ((s as any).status === 'success') {
+                this.editMode = false;
+            }
+        });
     }
 }
