@@ -4,6 +4,7 @@ import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angula
 import { Router } from '@angular/router';
 import { CartService } from '../../services/cart-service';
 import { CheckoutService } from '../../services/checkout-service';
+import { UserService } from '../../services/user-service';
 import { HttpState, toHttpState } from '../../app.config';
 import { Observable, tap } from 'rxjs';
 import { Cart } from '../../models/cart';
@@ -21,7 +22,7 @@ export class CheckoutComponent implements OnInit {
     checkoutForm: FormGroup;
     router = inject(Router);
 
-    constructor(private fb: FormBuilder, private cartService: CartService, private checkoutService: CheckoutService) {
+    constructor(private fb: FormBuilder, private cartService: CartService, private checkoutService: CheckoutService, private userService: UserService) {
         this.checkoutForm = this.fb.group({
             name: ['', Validators.required],
             surname: ['', Validators.required],
@@ -35,6 +36,31 @@ export class CheckoutComponent implements OnInit {
 
     ngOnInit(): void {
         this.state$ = toHttpState(this.cartService.getCartItems());
+
+        try {
+            if (this.userService.isLoggedIn()) {
+                this.userService.getUser().subscribe({
+                    next: (user) => {
+                        const info = (user as any)?.info;
+                        if (info) {
+                            this.checkoutForm.patchValue({
+                                name: info.firstName ?? '',
+                                surname: info.lastName ?? '',
+                                phone: info.phone ?? '',
+                                address: info.address?.street ?? '',
+                                city: info.address?.city ?? '',
+                                postal_code: info.address?.postalCode ?? '',
+                                country: info.address?.country ?? ''
+                            });
+                        }
+                    },
+                    error: (e) => console.warn('Failed to load user info', e)
+                });
+            }
+        } catch (e) {
+            // getUser may throw if no user id in storage; ignore in that case
+            console.warn('Could not attempt to load saved user info', e);
+        }
     }
 
     getSubtotal(cart: Cart) : number { return cart.items.reduce((s,i) => s + i.product.price * i.quantity, 0); }
