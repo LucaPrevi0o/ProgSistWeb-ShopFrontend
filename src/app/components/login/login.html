@@ -1,37 +1,56 @@
 @if (state$ | async; as state) {
 
-    @if (state.status === 'error') { 
+    <div class="auth-root">
 
-        <p>Si è verificato un errore.</p>
-        @if (state.code === 401) { 
-            
-            <h2>Accesso negato</h2>
-            <p>Credenziali non valide</p>
-            <button (click)="reset()">Riprova</button>
-        } @else if (state.code === 500) { 
-            
-            <h2>Errore del server</h2>
-            <p>Si è verificato un errore interno. Riprova più tardi.</p>
-            <button (click)="reset()">Riprova</button>
-        } @else { 
-            
-            <h2>Errore sconosciuto</h2>
-            <p>Codice errore: {{ state.code }}</p>
-            <button (click)="reset()">Riprova</button>
+        @if (state.status === 'error') {
+            <div class="auth-card error-card">
+                <h2>Errore di accesso</h2>
+                @if (state.code === 401) {
+                    <p>Credenziali non valide. Controlla email e password.</p>
+                } @else if (state.code === 500) {
+                    <p>Errore interno del server. Riprova più tardi.</p>
+                } @else {
+                    <p>Codice errore: {{ state.code }}</p>
+                }
+                <div class="form-actions">
+                    <button (click)="reset()">Riprova</button>
+                </div>
+            </div>
+
+        } @else if (state.status === 'loading') {
+            <div class="auth-card">
+                <p class="loading-text">Caricamento in corso...</p>
+            </div>
+
+        } @else if (state.status === 'empty') {
+            <div class="auth-card">
+                <h1>Accedi al tuo account</h1>
+                <p class="sub">Benvenuto di nuovo! Inserisci le credenziali per continuare.</p>
+
+                <form [formGroup]="loginForm" (ngSubmit)="submit()" class="form" novalidate>
+                    <div class="form-group">
+                        <label for="email">Email</label>
+                        <input id="email" type="email" formControlName="email" />
+                        
+                    </div>
+
+                    <div class="form-group">
+                        <label for="password">Password</label>
+                        <input id="password" type="password" formControlName="password" />
+                        
+                    </div>
+
+                    <div class="form-actions">
+                        <button type="submit" [disabled]="loginForm.invalid" class="primary">Accedi</button>
+                        <button type="button" (click)="reset()">Cancella</button>
+                    </div>
+                </form>
+
+                <div class="aux">
+                    <button (click)="this.router.navigate(['/register'])">Crea account</button>
+                    <button (click)="this.router.navigate(['/forgot-password'])">Password dimenticata?</button>
+                </div>
+            </div>
         }
-    } @else if (state.status === 'loading') { <p>Caricamento in corso...</p> }
-    @else if (state.status === 'empty') {
-        
-        <form [formGroup]="loginForm" (ngSubmit)="submit()">
-            <div>
-                <label for="email">Email:</label>
-                <input id="email" formControlName="email" type="email" />
-            </div>
-            <div>
-                <label for="password">Password:</label>
-                <input id="password" formControlName="password" type="password" />
-            </div>
-            <button type="submit" [disabled]="loginForm.invalid">Accedi</button>
-        </form>
-    }
+    </div>
 }
