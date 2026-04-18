@@ -1,0 +1,58 @@
+@if (state$ | async; as state) {
+
+    <div class="auth-root">
+
+        @if (state.status === 'error') {
+            <div class="auth-card error-card">
+                <h2>Errore nella registrazione</h2>
+                @if (state.code === 409) {
+                    <p>Email già in uso. Usa un'altra email o effettua il login.</p>
+                } @else if (state.code === 400) {
+                    <p>Le password non corrispondono o dati non validi.</p>
+                } @else {
+                    <p>Codice errore: {{ state.code }}</p>
+                }
+                <div class="form-actions">
+                    <button (click)="reset()">Riprova</button>
+                </div>
+            </div>
+
+        } @else if (state.status === 'loading') {
+            <div class="auth-card">
+                <p class="loading-text">Invio in corso...</p>
+            </div>
+
+        } @else if (state.status === 'empty') {
+            <div class="auth-card">
+                <h1>Crea un nuovo account</h1>
+                <p class="sub">Inserisci email e password per registrarti.</p>
+
+                <form [formGroup]="registerForm" (ngSubmit)="submit()" class="form" novalidate>
+                    <div class="form-group">
+                        <label for="email">Email</label>
+                        <input id="email" type="email" formControlName="email" />
+                    </div>
+
+                    <div class="form-group">
+                        <label for="password">Password</label>
+                        <input id="password" type="password" formControlName="password" />
+                    </div>
+
+                    <div class="form-group">
+                        <label for="confirmPassword">Conferma Password</label>
+                        <input id="confirmPassword" type="password" formControlName="confirmPassword" />
+                    </div>
+
+                    <div class="form-actions">
+                        <button type="submit" [disabled]="registerForm.invalid" class="primary">Registrati</button>
+                        <button type="button" (click)="reset()">Cancella</button>
+                    </div>
+                </form>
+
+                <div class="aux">
+                    <button (click)="this.router.navigate(['/login'])">Ho già un account</button>
+                </div>
+            </div>
+        }
+    </div>
+}

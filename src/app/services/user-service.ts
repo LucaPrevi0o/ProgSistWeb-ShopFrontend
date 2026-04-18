@@ -22,6 +22,17 @@ export class UserService {
             );
     }
 
+    register(user: User) : Observable<User> {
+
+        return this.http.post<User>(API_BASE_URL + '/users', { email: user.email, password: user.password })
+            .pipe(
+                tap(res => {
+                    if (res?.token) localStorage.setItem('jwtToken', res.token);
+                    if (res?.id) localStorage.setItem('userId', String(res.id));
+                })
+            );
+    }
+
     getToken() : string | null { return localStorage.getItem('jwtToken'); }
     getUserId() : string | null { return localStorage.getItem('userId'); }    
 
