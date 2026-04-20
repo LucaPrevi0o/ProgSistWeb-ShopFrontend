@@ -2,7 +2,7 @@ import { Component, inject, OnInit } from "@angular/core";
 import { Observable, switchMap, tap } from "rxjs";
 import { HttpState, toHttpState} from "../../app.config";
 import { Router } from "@angular/router";
-import { AsyncPipe, JsonPipe } from "@angular/common";
+import { AsyncPipe } from "@angular/common";
 import { User } from "../../models/user";
 import { UserService } from "../../services/user-service";
 import { LoginRedirectorComponent } from "../login-redirector/login-redirector";
@@ -100,5 +100,28 @@ export class ProfileComponent implements OnInit {
     cancelEdit() : void {
         this.editMode = false;
         this.profileForm.reset();
+    }
+
+    getPaymentMethodType(method: any): string {
+        const details = method.details;
+        if ('email' in details && 'password' in details) {
+            return 'PayPal';
+        } else if ('creditLimit' in details) {
+            return 'Carta di Credito';
+        } else if ('cardNumber' in details) {
+            return 'Carta di Debito';
+        }
+        return 'Metodo di Pagamento';
+    }
+
+    getPaymentMethodDisplay(method: any): string {
+        const details = method.details;
+        if ('email' in details) {
+            return `Email: ${details.email}`;
+        } else if ('cardNumber' in details) {
+            const masked = details.cardNumber.slice(-4).padStart(details.cardNumber.length, '*');
+            return `Carta: ${masked} - Scad: ${details.expiryDate}`;
+        }
+        return '';
     }
 }

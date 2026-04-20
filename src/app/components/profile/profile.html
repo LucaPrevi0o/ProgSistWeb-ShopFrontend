@@ -31,6 +31,19 @@
                             <p>{{ state.data.info.address.country }}</p>
                         </div>
                     }
+                    @if (state.data.info.paymentMethods && state.data.info.paymentMethods.length > 0) {
+                        <div class="payment-methods-block">
+                            <h4>Metodi di Pagamento</h4>
+                            <ul>
+                                @for (method of state.data.info.paymentMethods; track method.id) {
+                                    <li>
+                                        <strong>{{ getPaymentMethodType(method) }}</strong>
+                                        <span class="details">{{ getPaymentMethodDisplay(method) }}</span>
+                                    </li>
+                                }
+                            </ul>
+                        </div>
+                    }
                     <div class="actions">
                         <button (click)="startEdit(state.data)">Modifica</button>
                         <button (click)="logout()">Logout</button>
