@@ -1,6 +1,6 @@
 @if (state$ | async; as state) {
 
-    <h2>Checkout</h2>
+    <h1>Checkout</h1>
 
     @if (state.status === 'loading') { <p>Caricamento carrello...</p> }
     @else if (state.status === 'error') { <p>Errore: {{ state.code }}</p> }

@@ -53,10 +53,7 @@
   .items, .form { width: 100%; }
 }
 
-/* Autofill highlight for fields populated from saved user data */
-.form-group.autofilled {
-  /* subtle emphasis */
-}
+h1 { text-align: center; }
 
 .form-group.autofilled input {
   box-shadow: inset 4px 0 0 var(--color-accent);
