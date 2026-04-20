@@ -15,7 +15,11 @@
                 <label>Categoria:
                     <select (change)="filterCategory = $any($event.target).value" [value]="filterCategory">
                         <option value="" disabled [selected]="!filterCategory">Seleziona categoria...</option>
-                        @for (cat of categories; track cat) { <option value="{{cat}}">{{cat}}</option> }
+                        @if (categoriesState$ | async; as catsState) {
+                            @if (catsState.status === 'success') {
+                                @for (cat of catsState.data; track cat) { <option value="{{cat}}">{{cat}}</option> }
+                            } @else { <option disabled>Caricamento categorie...</option> }
+                        }
                     </select>
                 </label>
                 <label>Prezzo:

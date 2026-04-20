@@ -61,19 +61,166 @@
                         </div>
 
                         <div class="form-row">
-                            <div class="form-group" [class.autofilled]="autofilled['country']">
-                                <label for="country">Paese</label>
-                                <input id="country" type="text" formControlName="country" required (input)="clearAutofill('country')" />
-                            </div>
-
                             <div class="form-group" [class.autofilled]="autofilled['phone']">
                                 <label for="phone">Telefono</label>
                                 <input id="phone" type="tel" formControlName="phone" (input)="clearAutofill('phone')" />
                             </div>
                         </div>
 
+                        <hr />
+
+                        <h4>Metodo di Pagamento</h4>
+
+                        @if (availablePaymentMethods.length > 0) {
+                            <div class="form-group">
+                                <fieldset>
+                                    <legend>Modalità</legend>
+                                    <div style="display: flex; gap: 1rem; margin: 0.5rem 0;">
+                                        <label>
+                                            <input type="radio" name="paymentMode" [checked]="paymentMode === 'saved'" (change)="setPaymentMode('saved')" />
+                                            Usa metodo salvato
+                                        </label>
+                                        <label>
+                                            <input type="radio" name="paymentMode" [checked]="paymentMode === 'manual'" (change)="setPaymentMode('manual')" />
+                                            Inserisci manualmente
+                                        </label>
+                                    </div>
+                                </fieldset>
+                            </div>
+
+                            @if (paymentMode === 'saved') {
+                                <div class="form-group">
+                                    <label for="paymentMethod">Seleziona metodo di pagamento</label>
+                                    <select id="paymentMethod" formControlName="paymentMethodId" (change)="onPaymentMethodChange()" >
+                                        <option value="" disabled>Scegli un metodo...</option>
+                                        @for (method of availablePaymentMethods; track method.id) {
+                                            <option [value]="method.id">{{ getPaymentMethodLabel(method) }}</option>
+                                        }
+                                    </select>
+                                </div>
+                            } @else {
+                                <div class="form-group">
+                                    <label for="manualPaymentType">Tipo di pagamento</label>
+                                    <select id="manualPaymentType" formControlName="manualPaymentType" (change)="onManualPaymentTypeChange()" >
+                                        <option value="" disabled>Scegli il tipo...</option>
+                                        <option value="paypal">PayPal</option>
+                                        <option value="debit_card">Carta di Debito</option>
+                                        <option value="credit_card">Carta di Credito</option>
+                                    </select>
+                                </div>
+                            }
+                        } @else {
+                            <div class="form-group">
+                                <label for="manualPaymentType">Tipo di pagamento</label>
+                                <select id="manualPaymentType" formControlName="manualPaymentType" (change)="onManualPaymentTypeChange()" >
+                                    <option value="" disabled>Scegli il tipo...</option>
+                                    <option value="paypal">PayPal</option>
+                                    <option value="debit_card">Carta di Debito</option>
+                                    <option value="credit_card">Carta di Credito</option>
+                                </select>
+                            </div>
+                        }
+
+                        @if (selectedPaymentMethod || manualPaymentType) {
+                            <fieldset class="payment-details">
+                                <legend>Dettagli Pagamento</legend>
+                                @if (selectedPaymentMethod && isPayPal(selectedPaymentMethod)) {
+                                    <div class="form-group">
+                                        <label for="paypalEmail">Email PayPal</label>
+                                        <input id="paypalEmail" type="email" formControlName="paypalEmail" required />
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="paypalPassword">Password PayPal</label>
+                                        <input id="paypalPassword" type="password" formControlName="paypalPassword" required />
+                                    </div>
+                                }
+                                @if (selectedPaymentMethod && isDebitCard(selectedPaymentMethod)) {
+                                    <div class="form-group">
+                                        <label for="cardNumber">Numero Carta</label>
+                                        <input id="cardNumber" type="text" formControlName="cardNumber" placeholder="1234 5678 9012 3456" required />
+                                    </div>
+                                    <div class="form-row">
+                                        <div class="form-group">
+                                            <label for="expiryDate">Data Scadenza</label>
+                                            <input id="expiryDate" type="text" formControlName="expiryDate" placeholder="MM/YY" required />
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="cvv">CVV</label>
+                                            <input id="cvv" type="text" formControlName="cvv" placeholder="123" required />
+                                        </div>
+                                    </div>
+                                }
+                                @if (selectedPaymentMethod && isCreditCard(selectedPaymentMethod)) {
+                                    <div class="form-group">
+                                        <label for="cardNumber">Numero Carta</label>
+                                        <input id="cardNumber" type="text" formControlName="cardNumber" placeholder="1234 5678 9012 3456" required />
+                                    </div>
+                                    <div class="form-row">
+                                        <div class="form-group">
+                                            <label for="expiryDate">Data Scadenza</label>
+                                            <input id="expiryDate" type="text" formControlName="expiryDate" placeholder="MM/YY" required />
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="cvv">CVV</label>
+                                            <input id="cvv" type="text" formControlName="cvv" placeholder="123" required />
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="creditLimit">Limite di Credito</label>
+                                        <input id="creditLimit" type="number" formControlName="creditLimit" required />
+                                    </div>
+                                }
+                                @if (manualPaymentType === 'paypal') {
+                                    <div class="form-group">
+                                        <label for="paypalEmail">Email PayPal</label>
+                                        <input id="paypalEmail" type="email" formControlName="paypalEmail" required />
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="paypalPassword">Password PayPal</label>
+                                        <input id="paypalPassword" type="password" formControlName="paypalPassword" required />
+                                    </div>
+                                }
+                                @if (manualPaymentType === 'debit_card') {
+                                    <div class="form-group">
+                                        <label for="cardNumber">Numero Carta</label>
+                                        <input id="cardNumber" type="text" formControlName="cardNumber" placeholder="1234 5678 9012 3456" required />
+                                    </div>
+                                    <div class="form-row">
+                                        <div class="form-group">
+                                            <label for="expiryDate">Data Scadenza</label>
+                                            <input id="expiryDate" type="text" formControlName="expiryDate" placeholder="MM/YY" required />
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="cvv">CVV</label>
+                                            <input id="cvv" type="text" formControlName="cvv" placeholder="123" required />
+                                        </div>
+                                    </div>
+                                }
+                                @if (manualPaymentType === 'credit_card') {
+                                    <div class="form-group">
+                                        <label for="cardNumber">Numero Carta</label>
+                                        <input id="cardNumber" type="text" formControlName="cardNumber" placeholder="1234 5678 9012 3456" required />
+                                    </div>
+                                    <div class="form-row">
+                                        <div class="form-group">
+                                            <label for="expiryDate">Data Scadenza</label>
+                                            <input id="expiryDate" type="text" formControlName="expiryDate" placeholder="MM/YY" required />
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="cvv">CVV</label>
+                                            <input id="cvv" type="text" formControlName="cvv" placeholder="123" required />
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="creditLimit">Limite di Credito</label>
+                                        <input id="creditLimit" type="number" formControlName="creditLimit" required />
+                                    </div>
+                                }
+                            </fieldset>
+                        }
+
                         <div class="form-actions">
-                            <button class="checkout-button" type="submit" [disabled]="checkoutForm.invalid">Conferma ordine</button>
+                            <button class="checkout-button" type="submit" [disabled]="checkoutForm.invalid || (!selectedPaymentMethod && !manualPaymentType)">Conferma ordine</button>
                         </div>
 
                     </form>

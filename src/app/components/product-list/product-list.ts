@@ -19,6 +19,7 @@ export class ProductListComponent implements OnInit {
     BASE_URL = THUMBNAIL_BASE_URL;
     state$!: Observable<HttpState<Product[]>>;
     productService: ProductService;
+    categoriesState$!: Observable<HttpState<string[]>>;
     router = inject(Router);
     currentPage: number = 1;
     // filter fields
@@ -33,7 +34,7 @@ export class ProductListComponent implements OnInit {
     ngOnInit() : void { this.loadPage(); this.loadCategories(); }
 
     private loadCategories() : void {
-        this.productService.getCategories().subscribe({ next: (cats) => this.categories = cats, error: (e) => console.error('Failed to load categories', e) });
+        this.categoriesState$ = toHttpState(this.productService.getCategories());
     }
 
     loadPage(filters?: any) : void {
