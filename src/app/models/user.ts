@@ -1,3 +1,5 @@
+import { PaymentMethod } from "./payment";
+
 export interface User {
 
     id: number;
@@ -13,6 +15,7 @@ export interface UserInfo {
     lastName: string;
     phone: string;
     address: Address;
+    paymentMethods?: PaymentMethod[];
 }
 
 export interface Address {
