@@ -21,14 +21,14 @@
             @if (state.data.info && !editMode) {
                 <div class="profile-info">
                     <h3>Informazioni Profilo</h3>
-                    <p>Nome: {{ state.data.info.firstName }} {{ state.data.info.lastName }}</p>
-                    <p>Telefono: {{ state.data.info.phone }}</p>
-                    @if (state.data.info.address) {
+                    <p>Nome: {{ state.data.info.data.firstName }} {{ state.data.info.data.lastName }}</p>
+                    <p>Telefono: {{ state.data.info.data.phone }}</p>
+                    @if (state.data.info.data.address) {
                         <div class="address-block">
                             <h4>Indirizzo di spedizione</h4>
-                            <p>{{ state.data.info.address.street }}</p>
-                            <p>{{ state.data.info.address.city }} - {{ state.data.info.address.postalCode }}</p>
-                            <p>{{ state.data.info.address.country }}</p>
+                            <p>{{ state.data.info.data.address.street }}</p>
+                            <p>{{ state.data.info.data.address.city }} - {{ state.data.info.data.address.postalCode }}</p>
+                            <p>{{ state.data.info.data.address.country }}</p>
                         </div>
                     }
                     <div class="actions">

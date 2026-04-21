@@ -6,16 +6,21 @@ export interface User {
     email: string;
     password: string;
     token: string;
-    info?: UserInfo;
+    info?: UserInfo
 }
 
 export interface UserInfo {
+        
+    data: PersonalData;
+    paymentMethods: PaymentMethod[];
+}
+
+export interface PersonalData {
     
     firstName: string;
     lastName: string;
     phone: string;
     address: Address;
-    paymentMethods?: PaymentMethod[];
 }
 
 export interface Address {

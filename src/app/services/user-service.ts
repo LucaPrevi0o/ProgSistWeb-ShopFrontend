@@ -1,10 +1,9 @@
 import { HttpClient } from "@angular/common/http";
 import { inject, Injectable } from "@angular/core";
 import { API_BASE_URL } from "../app.config";
-import { User } from "../models/user";
+import { User, UserInfo } from "../models/user";
 import { Observable } from "rxjs";
 import { tap } from 'rxjs/operators';
-import { map } from 'rxjs/operators';
 
 @Injectable({ providedIn: 'root' })
 export class UserService {
@@ -51,10 +50,7 @@ export class UserService {
         return this.http.get<User>(API_BASE_URL + `/users/${userId}`);
     }
 
-    updateUserInfo(userId: number, info: Partial<User['info']>) : Observable<User> {
-        // Backend expects attributes either as top-level snake_case or nested under `info`.
-        // Wrap the provided `info` object under `info` so the Rails controller can
-        // read camelCase or snake_case fields from `params[:info]`.
+    updateUserInfo(userId: number, info: Partial<UserInfo>) : Observable<User> {
         return this.http.patch<User>(API_BASE_URL + `/users/${userId}/info`, { info });
     }
 }

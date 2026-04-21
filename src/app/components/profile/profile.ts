@@ -2,8 +2,8 @@ import { Component, inject, OnInit } from "@angular/core";
 import { Observable, switchMap, tap } from "rxjs";
 import { HttpState, toHttpState} from "../../app.config";
 import { Router } from "@angular/router";
-import { AsyncPipe, JsonPipe } from "@angular/common";
-import { User } from "../../models/user";
+import { AsyncPipe } from "@angular/common";
+import { User, UserInfo } from "../../models/user";
 import { UserService } from "../../services/user-service";
 import { LoginRedirectorComponent } from "../login-redirector/login-redirector";
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
@@ -50,13 +50,13 @@ export class ProfileComponent implements OnInit {
 
         this.editMode = true;
 
-        const info = user?.info;
-        const addr = info?.address;
+        const personalData = user?.info?.data;
+        const addr = personalData?.address;
 
         this.profileForm.patchValue({
-            firstName: info?.firstName ?? '',
-            lastName: info?.lastName ?? '',
-            phone: info?.phone ?? '',
+            firstName: personalData?.firstName ?? '',
+            lastName: personalData?.lastName ?? '',
+            phone: personalData?.phone ?? '',
             street: addr?.street ?? '',
             city: addr?.city ?? '',
             postalCode: addr?.postalCode ?? '',
@@ -73,22 +73,25 @@ export class ProfileComponent implements OnInit {
         const userId = Number(userIdStr);
 
         const v = this.profileForm.value;
-        const info: Partial<User['info']> = {
-            firstName: v.firstName,
-            lastName: v.lastName,
-            phone: v.phone,
-            address: {
-                street: v.street,
-                city: v.city,
-                postalCode: v.postalCode,
-                country: v.country
+        const userInfo: Partial<UserInfo> = {
+            data: {
+                firstName: v.firstName,
+                lastName: v.lastName,
+                phone: v.phone,
+                address: {
+                    street: v.street,
+                    city: v.city,
+                    postalCode: v.postalCode,
+                    country: v.country
+                }
             }
         };
 
         this.state$ = toHttpState(
-            this.userService.updateUserInfo(userId, info).pipe(
+            this.userService.updateUserInfo(userId, userInfo).pipe(
                 switchMap(() => this.userService.getUser()),
                 tap(() => {
+                    
                     this.editMode = false;
                     this.profileForm.markAsPristine();
                     this.profileForm.markAsUntouched();
@@ -98,6 +101,7 @@ export class ProfileComponent implements OnInit {
     }
 
     cancelEdit() : void {
+
         this.editMode = false;
         this.profileForm.reset();
     }
