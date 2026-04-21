@@ -1,6 +1,12 @@
 @if (state$ | async; as state) {
 
     <h1>Checkout</h1>
+    @if (userState$ | async; as userState) {
+
+        @if (userState.status === 'loading') { <p>Caricamento dati utente...</p> }
+        @else if (userState.status === 'error') { <p>Errore nel caricamento dati utente: {{ userState.code }}</p> }
+        @else if (userState.status === 'empty') { <p>Nessun dato utente disponibile.</p> }
+    }
 
     @if (state.status === 'loading') { <p>Caricamento carrello...</p> }
     @else if (state.status === 'error') { <p>Errore: {{ state.code }}</p> }
@@ -75,13 +81,9 @@
                         <div class="form-actions">
                             <button class="checkout-button" type="submit" [disabled]="checkoutForm.invalid">Conferma ordine</button>
                         </div>
-
                     </form>
                 </aside>
-
             </div>
         </div>
-
     }
-
 }
