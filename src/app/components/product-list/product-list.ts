@@ -21,36 +21,53 @@ export class ProductListComponent implements OnInit {
     productService: ProductService;
     router = inject(Router);
     currentPage: number = 1;
+
     // filter fields
     filterName: string = '';
     filterCategory: string = '';
     filterMinPrice: string = '';
     filterMaxPrice: string = '';
-    categories: string[] = [];
+    categoriesState$!: Observable<HttpState<string[]>>;
 
     constructor(productService: ProductService) { this.productService = productService; }
 
-    ngOnInit() : void { this.loadPage(); this.loadCategories(); }
-
-    private loadCategories() : void {
-        this.productService.getCategories().subscribe({ next: (cats) => this.categories = cats, error: (e) => console.error('Failed to load categories', e) });
+    ngOnInit(): void {
+        
+        this.loadPage();
+        this.loadCategories();
     }
 
-    loadPage(filters?: any) : void {
+    private loadCategories(): void {
+        this.categoriesState$ = toHttpState(this.productService.getCategories());
+    }
+
+    loadPage(filters?: any): void {
         this.state$ = toHttpState(this.productService.getProducts(this.currentPage, filters));
     }
 
-    onPriceRangeChange(range: { min: number; max: number }) : void {
+    onPriceRangeChange(range: { min: number; max: number }): void {
+
         this.filterMinPrice = range.min.toString();
         this.filterMaxPrice = range.max.toString();
     }
 
-    prevPage() : void { if (this.currentPage > 1) { this.currentPage--; this.loadPage(this.currentFilters()); } }
+    prevPage(): void {
+        
+        if (this.currentPage > 1) {
+            
+            this.currentPage--;
+            this.loadPage(this.currentFilters());
+        }
+    }
 
-    nextPage() : void { this.currentPage++; this.loadPage(this.currentFilters()); }
+    nextPage(): void {
+        
+        this.currentPage++;
+        this.loadPage(this.currentFilters());
+    }
 
-    // Build filters object from local fields
     currentFilters() {
+
         const f: any = {};
         if (this.filterName && this.filterName.trim().length) f.name = this.filterName.trim();
         if (this.filterCategory && this.filterCategory.trim()) f.category = this.filterCategory.trim();
@@ -59,9 +76,21 @@ export class ProductListComponent implements OnInit {
         return f;
     }
 
-    applyFilters() : void { this.currentPage = 1; this.loadPage(this.currentFilters()); }
+    applyFilters(): void {
+        
+        this.currentPage = 1;
+        this.loadPage(this.currentFilters());
+    }
 
-    resetFilters() : void { this.filterName = ''; this.filterCategory = ''; this.filterMinPrice = ''; this.filterMaxPrice = ''; this.currentPage = 1; this.loadPage(); }
+    resetFilters(): void {
+        
+        this.filterName = '';
+        this.filterCategory = '';
+        this.filterMinPrice = '';
+        this.filterMaxPrice = '';
+        this.currentPage = 1;
+        this.loadPage();
+    }
 
-    details(product: Product) : void { this.router.navigate(['/product', product.id]); }
+    details(product: Product): void { this.router.navigate(['/product', product.id]); }
 }

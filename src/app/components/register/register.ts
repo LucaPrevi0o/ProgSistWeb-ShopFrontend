@@ -42,6 +42,7 @@ export class RegisterComponent {
 
         this.state$ = toHttpState(call$).pipe(
             tap(state => { if (state.status === 'success') {
+
                 localStorage.setItem('jwtToken', (state.data as any).token);
                 const id = (state.data as any).id;
                 if (id) this.router.navigate(['/users', id]);
