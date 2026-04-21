@@ -52,6 +52,10 @@
                             <div class="price-tag">{{ state.data.price }} €</div>
                             <div class="stock-info {{ state.data.stock > 0 ? 'in-stock' : 'out-of-stock' }}">
                                 {{ state.data.stock > 0 ? state.data.stock + ' pezzi disponibili' : 'Esaurito' }}
+
+                                @if (existingQuantity$ | async; as quantity) {
+                                    @if (isLoggedIn() && quantity > 0) { - Già nel carrello: <strong>{{ quantity }} pezzi</strong> }
+                                }
                             </div>
                         </div>
 
