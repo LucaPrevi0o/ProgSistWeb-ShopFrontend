@@ -9,6 +9,7 @@ import { HttpState, toHttpState } from '../../app.config';
 import { Observable, tap, switchMap } from 'rxjs';
 import { User, UserInfo } from '../../models/user';
 import { Cart } from '../../models/cart';
+import { Order } from '../../models/order';
 
 @Component({
     selector: 'app-checkout',
@@ -28,13 +29,14 @@ export class CheckoutComponent implements OnInit {
     constructor(private fb: FormBuilder, private cartService: CartService, private checkoutService: CheckoutService, private userService: UserService) {
 
         this.checkoutForm = this.fb.group({
-            
-            name: ['', Validators.required],
-            surname: ['', Validators.required],
-            address: ['', Validators.required],
-            city: ['', Validators.required],
-            postal_code: ['', Validators.required],
-            country: ['', Validators.required],
+            firstName: ['', Validators.required],
+            lastName: ['', Validators.required],
+            address: this.fb.group({
+                street: ['', Validators.required],
+                city: ['', Validators.required],
+                postalCode: ['', Validators.required],
+                country: ['', Validators.required]
+            }),
             phone: ['']
         });
     }
@@ -48,7 +50,7 @@ export class CheckoutComponent implements OnInit {
 
                 if (state.status === 'success') {
 
-                    const info = (state.data as any)?.info;
+                    const info = (state.data as User)?.info;
                     if (info) this.applyUserInfo(info);
                 }
             })
@@ -62,22 +64,30 @@ export class CheckoutComponent implements OnInit {
     submit(cart: Cart) : void {
 
         if (this.checkoutForm.invalid) return;
-        const orderPayload = {
+        const fv = this.checkoutForm.value;
 
-            order: {
+        const info: UserInfo = {
 
-                name: this.checkoutForm.value.name,
-                surname: this.checkoutForm.value.surname,
-                address: this.checkoutForm.value.address,
-                city: this.checkoutForm.value.city,
-                postal_code: this.checkoutForm.value.postal_code,
-                country: this.checkoutForm.value.country,
-                phone: this.checkoutForm.value.phone,
-                items: cart.items.map(i => ({ product_id: i.product.id, quantity: i.quantity }))
+            firstName: fv.name,
+            lastName: fv.surname,
+            phone: fv.phone ?? '',
+            address: {
+                street: fv.address.street ?? '',
+                city: fv.address.city ?? '',
+                postalCode: fv.address.postalCode ?? '',
+                country: fv.address.country ?? ''
             }
         };
 
-        this.state$ = toHttpState(this.checkoutService.placeOrder(orderPayload).pipe(
+        const order: Order = {
+            info,
+            items: cart.items
+        };
+
+        const uid = this.userService.getUserId();
+        if (uid) order.userId = Number(uid);
+
+        this.state$ = toHttpState(this.checkoutService.placeOrder(order).pipe(
             switchMap(() => this.cartService.clearCart()),
             tap(() => this.router.navigate(['/products']))
         ));
@@ -85,21 +95,27 @@ export class CheckoutComponent implements OnInit {
 
     private applyUserInfo(info: UserInfo): void {
 
-        const values: Record<string, string> = {
+        const values: UserInfo = {
 
-            name: info.firstName ?? '',
-            surname: info.lastName ?? '',
+            firstName: info.firstName ?? '',
+            lastName: info.lastName ?? '',
             phone: info.phone ?? '',
-            address: info.address?.street ?? '',
-            city: info.address?.city ?? '',
-            postal_code: info.address?.postalCode ?? '',
-            country: info.address?.country ?? ''
+            address: {
+                street: info.address?.street ?? '',
+                city: info.address?.city ?? '',
+                postalCode: info.address?.postalCode ?? '',
+                country: info.address?.country ?? ''
+            }
         };
 
         this.checkoutForm.patchValue(values);
 
-        Object.entries(values).forEach(([k, v]) => {
-            if (v && v.toString().trim().length) this.autofilled[k] = true;
+        if (values.firstName && values.firstName.toString().trim().length) this.autofilled['firstName'] = true;
+        if (values.lastName && values.lastName.toString().trim().length) this.autofilled['lastName'] = true;
+        if (values.phone && values.phone.toString().trim().length) this.autofilled['phone'] = true;
+
+        Object.entries(values.address).forEach(([k, v]) => {
+            if (v && v.toString().trim().length) this.autofilled[`address.${k}`] = true;
         });
     }
 
