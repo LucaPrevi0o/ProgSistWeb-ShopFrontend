@@ -82,8 +82,64 @@
                             </div>
                         </div>
 
+                        <hr>
+
+                        <h3>Metodo di pagamento</h3>
+
+                        <label for="payment_method" class="sr-only">Seleziona:   </label>
+                        <select id="payment_method" formControlName="selectedPaymentMethod" aria-label="Metodo di pagamento">
+                            <option value="" disabled selected>Seleziona...</option>
+                            <option value="creditCard">Carta di credito</option>
+                            <option value="payPal">PayPal</option>
+                        </select>
+
+                        <div formGroupName="payment" class="payment-details">
+
+                            @if (checkoutForm.get('selectedPaymentMethod')?.value === 'creditCard') {
+
+                                <div formGroupName="creditCard">
+                                    <div class="form-group">
+                                        <label for="cardNumber">Numero carta</label>
+                                        <input id="cardNumber" type="text" formControlName="cardNumber" required />
+                                    </div>
+
+                                    <div class="form-row">
+                                        <div class="form-group">
+                                            <label for="expiryMonth">Mese</label>
+                                            <input id="expiryMonth" type="number" formControlName="expiryMonth" min="1" max="12" required />
+                                        </div>
+
+                                        <div class="form-group">
+                                            <label for="expiryYear">Anno</label>
+                                            <input id="expiryYear" type="number" formControlName="expiryYear" min="2024" required />
+                                        </div>
+
+                                        <div class="form-group">
+                                            <label for="cvv">CVV</label>
+                                            <input id="cvv" type="text" formControlName="cvv" required />
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label for="cardholderName">Intestatario</label>
+                                        <input id="cardholderName" type="text" formControlName="cardholderName" required />
+                                    </div>
+                                </div>
+                            }
+
+                            @if (checkoutForm.get('selectedPaymentMethod')?.value === 'payPal') {
+
+                                <div formGroupName="payPal">
+                                    <div class="form-group">
+                                        <label for="paypalEmail">Email PayPal</label>
+                                        <input id="paypalEmail" type="email" formControlName="email" required />
+                                    </div>
+                                </div>
+                            }
+                        </div>
+
                         <div class="form-actions">
-                            <button class="checkout-button" type="submit" [disabled]="checkoutForm.invalid">Conferma ordine</button>
+                            <button class="checkout-button" type="submit" [disabled]="checkoutForm.invalid || checkoutForm.get('selectedPaymentMethod')?.value === ''">Conferma ordine</button>
                         </div>
                     </form>
                 </aside>

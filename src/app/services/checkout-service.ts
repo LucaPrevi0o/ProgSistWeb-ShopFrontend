@@ -10,6 +10,6 @@ export class CheckoutService {
     http = inject(HttpClient);
 
     placeOrder(payload: Order) : Observable<Order> {
-        return this.http.post<Order>(API_BASE_URL + '/checkout', payload);
+        return this.http.post<Order>(API_BASE_URL + '/checkout', { order: payload });
     }
 }

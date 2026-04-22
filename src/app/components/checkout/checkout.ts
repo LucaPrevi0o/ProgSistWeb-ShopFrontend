@@ -7,9 +7,10 @@ import { CheckoutService } from '../../services/checkout-service';
 import { UserService } from '../../services/user-service';
 import { HttpState, toHttpState } from '../../app.config';
 import { Observable, tap, switchMap } from 'rxjs';
-import { User, UserInfo } from '../../models/user';
+import { PersonalData, User } from '../../models/user';
 import { Cart } from '../../models/cart';
 import { Order } from '../../models/order';
+import { PaymentMethod, CreditCard, PayPal } from '../../models/payment';
 
 @Component({
     selector: 'app-checkout',
@@ -23,6 +24,7 @@ export class CheckoutComponent implements OnInit {
     state$!: Observable<HttpState<Cart>>;
     userState$!: Observable<HttpState<User>>;
     checkoutForm: FormGroup;
+    paymentMethodForm: FormGroup;
     autofilled: Record<string, boolean> = {};
     router = inject(Router);
 
@@ -37,7 +39,21 @@ export class CheckoutComponent implements OnInit {
                 postalCode: ['', Validators.required],
                 country: ['', Validators.required]
             }),
-            phone: ['']
+            phone: [''],
+            selectedPaymentMethod: ['']
+        });
+
+        this.paymentMethodForm = this.fb.group({
+            creditCard: this.fb.group({
+                cardNumber: ['', Validators.required],
+                expiryMonth: ['', Validators.required],
+                expiryYear: ['', Validators.required],
+                cvv: ['', Validators.required],
+                cardholderName: ['', Validators.required]
+            }),
+            payPal: this.fb.group({
+                email: ['', Validators.required]
+            })
         });
     }
 
@@ -50,11 +66,22 @@ export class CheckoutComponent implements OnInit {
 
                 if (state.status === 'success') {
 
-                    const info = (state.data as User)?.info;
-                    if (info) this.applyUserInfo(info);
+                    const personalData = (state.data as User)?.info?.data;
+                    if (personalData) this.applyPersonalData(personalData);
                 }
             })
         );
+
+        // Include the payment sub-form into the main checkout form so overall validity
+        // reflects the selected payment details.
+        this.checkoutForm.addControl('payment', this.paymentMethodForm);
+
+        // Initialize validators according to current selection (may be empty)
+        const selected = this.checkoutForm.get('selectedPaymentMethod')?.value;
+        this.setPaymentValidators(selected);
+
+        // Validator updates are triggered from the template change handler
+        // to avoid manual subscriptions in the component class.
     }
 
     getSubtotal(cart: Cart) : number {
@@ -66,10 +93,9 @@ export class CheckoutComponent implements OnInit {
         if (this.checkoutForm.invalid) return;
         const fv = this.checkoutForm.value;
 
-        const info: UserInfo = {
-
-            firstName: fv.name,
-            lastName: fv.surname,
+        const personalData: PersonalData = {
+            firstName: fv.firstName,
+            lastName: fv.lastName,
             phone: fv.phone ?? '',
             address: {
                 street: fv.address.street ?? '',
@@ -79,9 +105,42 @@ export class CheckoutComponent implements OnInit {
             }
         };
 
+        let selectedPaymentMethod: PaymentMethod;
+
+        const method = fv.selectedPaymentMethod;
+        const paymentValues = fv.payment ?? {};
+
+        if (method === 'creditCard') {
+            const cc = paymentValues.creditCard ?? this.paymentMethodForm.get('creditCard')!.value;
+            selectedPaymentMethod = {
+                type: 'creditCard',
+                details: {
+                    cardNumber: cc.cardNumber,
+                    expiryMonth: Number(cc.expiryMonth),
+                    expiryYear: Number(cc.expiryYear),
+                    cvv: cc.cvv,
+                    cardholderName: cc.cardholderName
+                } as CreditCard
+            };
+        } else if (method === 'payPal') {
+            const pp = paymentValues.payPal ?? this.paymentMethodForm.get('payPal')!.value;
+            selectedPaymentMethod = {
+                type: 'payPal',
+                details: {
+                    email: pp.email
+                } as PayPal
+            };
+        } else {
+            selectedPaymentMethod = {
+                type: method ?? '',
+                details: {} as any
+            };
+        }
+
         const order: Order = {
-            info,
-            items: cart.items
+            personalData: personalData,
+            items: cart.items,
+            paymentMethod: selectedPaymentMethod
         };
 
         const uid = this.userService.getUserId();
@@ -93,18 +152,18 @@ export class CheckoutComponent implements OnInit {
         ));
     }
 
-    private applyUserInfo(info: UserInfo): void {
+    private applyPersonalData(personalData: PersonalData): void {
 
-        const values: UserInfo = {
+        const values: PersonalData = {
 
-            firstName: info.firstName ?? '',
-            lastName: info.lastName ?? '',
-            phone: info.phone ?? '',
+            firstName: personalData.firstName ?? '',
+            lastName: personalData.lastName ?? '',
+            phone: personalData.phone ?? '',
             address: {
-                street: info.address?.street ?? '',
-                city: info.address?.city ?? '',
-                postalCode: info.address?.postalCode ?? '',
-                country: info.address?.country ?? ''
+                street: personalData.address?.street ?? '',
+                city: personalData.address?.city ?? '',
+                postalCode: personalData.address?.postalCode ?? '',
+                country: personalData.address?.country ?? ''
             }
         };
 
@@ -126,5 +185,39 @@ export class CheckoutComponent implements OnInit {
             this.checkoutForm.get(field)?.setValue('');
             this.autofilled[field] = false;
         }
+    }
+
+    // Called from the template when the user changes the payment method
+    onPaymentMethodChange(method: string): void {
+        this.setPaymentValidators(method);
+    }
+
+    private setPaymentValidators(method?: string | null): void {
+
+        const ccGroup = this.paymentMethodForm.get('creditCard') as FormGroup;
+        const ppGroup = this.paymentMethodForm.get('payPal') as FormGroup;
+
+        if (method === 'creditCard') {
+            this.setGroupRequired(ccGroup, true);
+            this.setGroupRequired(ppGroup, false);
+        } else if (method === 'payPal') {
+            this.setGroupRequired(ccGroup, false);
+            this.setGroupRequired(ppGroup, true);
+        } else {
+            this.setGroupRequired(ccGroup, false);
+            this.setGroupRequired(ppGroup, false);
+        }
+
+        this.checkoutForm.updateValueAndValidity({ onlySelf: true, emitEvent: false });
+    }
+
+    private setGroupRequired(group: FormGroup, required: boolean) {
+        Object.keys(group.controls).forEach(key => {
+            const control = group.get(key);
+            if (!control) return;
+            if (required) control.setValidators([Validators.required]);
+            else control.clearValidators();
+            control.updateValueAndValidity();
+        });
     }
 }

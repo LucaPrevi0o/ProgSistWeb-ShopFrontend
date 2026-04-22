@@ -4,7 +4,7 @@ import { PaymentMethod } from './payment';
 
 export interface Order {
 
-    info: PersonalData;
+    personalData: PersonalData;
     items: CartItem[];
     paymentMethod: PaymentMethod;
     userId?: number | string;

@@ -6,6 +6,26 @@
   align-items: flex-start;
 }
 
+select {
+  padding: 8px 10px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  font-size: 14px;
+  transition: border-color var(--transition);
+
+  &:focus {
+    outline: none;
+    border-color: var(--color-accent);
+  }
+}
+
+hr {
+  border: none;
+  border-top: 2px solid var(--color-accent);
+  margin-top: var(--spacing-md);
+  margin-bottom: var(--spacing-md);
+}
+
 .items {
   flex: 1 1 40%;
   background: var(--color-card);
@@ -62,3 +82,5 @@ h1 { text-align: center; }
 }
 
 .form-group.autofilled label { color: var(--color-accent); font-weight: 600; }
+
+.payment-details { margin-top: var(--spacing-md); }
