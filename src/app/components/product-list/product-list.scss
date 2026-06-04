@@ -191,3 +191,25 @@ h1 { text-align: center; }
   padding: 8px 12px;
   border-radius: 6px;
 }
+
+/* Hide native number input spinners for the page-jump input */
+.page-jump {
+  -moz-appearance: textfield;
+  appearance: textfield;
+  width: 50px;
+  padding: 6px 8px;
+  border-radius: 6px;
+  border: 1px solid var(--color-border);
+  text-align: center;
+}
+
+.page-jump::-webkit-outer-spin-button,
+.page-jump::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.page-jump::-ms-clear,
+.page-jump::-ms-expand {
+  display: none;
+}

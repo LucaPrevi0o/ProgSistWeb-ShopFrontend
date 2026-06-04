@@ -1,5 +1,5 @@
 import { Component, inject, OnInit } from "@angular/core";
-import { Observable } from "rxjs";
+import { Observable, tap } from "rxjs";
 import { HttpState, toHttpState, THUMBNAIL_BASE_URL } from "../../app.config";
 import { ProductService } from "../../services/product-service";
 import { Product } from "../../models/product";
@@ -17,10 +17,11 @@ import { Router } from "@angular/router";
 export class ProductListComponent implements OnInit {
 
     BASE_URL = THUMBNAIL_BASE_URL;
-    state$!: Observable<HttpState<Product[]>>;
+    state$!: Observable<HttpState<{ items: Product[]; totalPages: number }>>;
     productService: ProductService;
     router = inject(Router);
     currentPage: number = 1;
+    totalPages: number = 1;
 
     // filter fields
     filterName: string = '';
@@ -42,7 +43,18 @@ export class ProductListComponent implements OnInit {
     }
 
     loadPage(filters?: any): void {
-        this.state$ = toHttpState(this.productService.getProducts(this.currentPage, filters));
+        
+        const products$ = this.productService.getProducts(this.currentPage, filters);
+        this.state$ = toHttpState(products$).pipe(
+            tap(state => {
+                if (state.status === 'success') {
+
+                    const data: { items: Product[]; totalPages: number } = state.data;
+                    this.totalPages = data.totalPages;
+                    console.log('Total pages:', this.totalPages);
+                } else if (state.status === 'empty') this.totalPages = 1;
+            })
+        );
     }
 
     onPriceRangeChange(range: { min: number; max: number }): void {
@@ -61,8 +73,26 @@ export class ProductListComponent implements OnInit {
     }
 
     nextPage(): void {
-        
-        this.currentPage++;
+
+        if (this.currentPage < this.totalPages) {
+
+            this.currentPage++;
+            this.loadPage(this.currentFilters());
+        }
+    }
+
+    onPageInputChange(value: string | number): void {
+        const num = typeof value === 'string' ? parseInt(value, 10) : value;
+        if (Number.isNaN(num)) return;
+        this.goToPage(num as number);
+    }
+
+    goToPage(page: number): void {
+        let p = Math.floor(Number(page) || 1);
+        if (p < 1) p = 1;
+        if (p > this.totalPages) p = this.totalPages;
+        if (p === this.currentPage) return;
+        this.currentPage = p;
         this.loadPage(this.currentFilters());
     }
 

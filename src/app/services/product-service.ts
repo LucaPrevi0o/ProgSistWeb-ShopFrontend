@@ -1,6 +1,6 @@
 import { inject, Injectable } from "@angular/core";
 import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { Observable, map } from 'rxjs';
 import { Product } from '../models/product';
 import { API_BASE_URL } from "../app.config";
 
@@ -11,7 +11,7 @@ export class ProductService {
 
     getAllProducts() : Observable<Product[]> { return this.http.get<Product[]>(API_BASE_URL + '/products'); }
 
-    getProducts(page: number = 1, filters?: { name?: string; category?: string; min_price?: string | number; max_price?: string | number }) : Observable<Product[]> {
+    getProducts(page: number = 1, filters?: { name?: string; category?: string; min_price?: string | number; max_price?: string | number }) : Observable<{ items: Product[]; totalPages: number }> {
 
         const params: any = { page: page.toString() };
         if (filters) {
@@ -21,7 +21,20 @@ export class ProductService {
             if (filters.min_price !== undefined && filters.min_price !== null) params.min_price = filters.min_price.toString();
             if (filters.max_price !== undefined && filters.max_price !== null) params.max_price = filters.max_price.toString();
         }
-        return this.http.get<Product[]>(API_BASE_URL + '/products', { params });
+
+        return this.http.get<Product[]>(API_BASE_URL + '/products', { params, observe: 'response' }).pipe(
+            map(resp => {
+                const items = resp.body ?? [];
+                const totalPagesHeader = resp.headers.get('X-Total-Pages');
+                if (totalPagesHeader) {
+                    console.log('Received total pages from header:', totalPagesHeader);
+                } else {
+                    console.warn('X-Total-Pages header is missing in the response');
+                }
+                const totalPages = totalPagesHeader ? parseInt(totalPagesHeader, 10) : 1;
+                return { items, totalPages } as { items: Product[]; totalPages: number };
+            })
+        );
     }
 
     getProduct(id: number) : Observable<Product> {

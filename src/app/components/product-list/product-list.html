@@ -5,8 +5,8 @@
 
         <div class="pagination">
             <button (click)="prevPage()" [disabled]="currentPage === 1">Precedente</button>
-            <p>Pagina <strong>{{ currentPage }}</strong></p>
-            <button (click)="nextPage()" [disabled]="!(currentPage === 1)">Successivo</button>
+            <p>Pagina <input class="page-jump" type="number" min="1" [max]="totalPages" [value]="currentPage" (change)="onPageInputChange($any($event.target).value)" /> di <strong>{{ totalPages }}</strong></p>
+            <button (click)="nextPage()" [disabled]="currentPage === totalPages">Successivo</button>
         </div>
 
         <div class="items">
@@ -44,7 +44,7 @@
             @else {
 
                 <div class="product-list">
-                    @for (item of state.data; track item.id) {
+                    @for (item of state.data.items; track item.id) {
 
                         <div class="product-item">
                             <img src="{{ BASE_URL }}{{ item.name }}" alt="{{ item.name }}" />

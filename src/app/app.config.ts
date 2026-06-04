@@ -28,12 +28,18 @@ export type HttpState<T> =
 export function toHttpState<T>(source$: Observable<T>): Observable<HttpState<T>> {
 
   return source$.pipe(
-    map(items => Array.isArray(items) ? (
-      items.length === 0 ?
-        { status: 'empty' } as HttpState<T> :
-        { status: 'success', data: items } as HttpState<T>
-      ) : ({ status: 'success', data: items } as HttpState<T>)
-    ),
+    map(items => {
+      // support both plain arrays and paginated objects like { items: [...], totalPages: n }
+      const maybeArray = Array.isArray(items)
+        ? (items as any[])
+        : (items && (items as any).items && Array.isArray((items as any).items) ? (items as any).items : null);
+
+      if (maybeArray !== null) {
+        return maybeArray.length === 0 ? { status: 'empty' } as HttpState<T> : { status: 'success', data: items } as HttpState<T>;
+      }
+
+      return { status: 'success', data: items } as HttpState<T>;
+    }),
     startWith({ status: 'loading' as const }),
     catchError((err: any) => of({ status: 'error' as const, code: err?.status ?? 0 }))
   );
