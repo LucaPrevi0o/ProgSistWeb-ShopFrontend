@@ -7,6 +7,7 @@ import { User, UserInfo } from "../../models/user";
 import { UserService } from "../../services/user-service";
 import { LoginRedirectorComponent } from "../login-redirector/login-redirector";
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { PaymentMethod, CreditCard, PayPal } from '../../models/payment';
 
 @Component({
     selector: 'app-profile',
@@ -22,6 +23,7 @@ export class ProfileComponent implements OnInit {
 
     profileForm!: FormGroup;
     editMode: boolean = false;
+    savedPaymentMethods: PaymentMethod[] = [];
 
     constructor(private userService: UserService, private fb: FormBuilder) {
 
@@ -32,7 +34,20 @@ export class ProfileComponent implements OnInit {
             street: ['', Validators.required],
             city: ['', Validators.required],
             postalCode: ['', Validators.required],
-            country: ['', Validators.required]
+            country: ['', Validators.required],
+            selectedPaymentMethod: [''],
+            payment: this.fb.group({
+                creditCard: this.fb.group({
+                    cardNumber: [''],
+                    expiryMonth: [''],
+                    expiryYear: [''],
+                    cvv: [''],
+                    cardholderName: ['']
+                }),
+                payPal: this.fb.group({
+                    email: ['']
+                })
+            })
         });
     }
 
@@ -62,6 +77,28 @@ export class ProfileComponent implements OnInit {
             postalCode: addr?.postalCode ?? '',
             country: addr?.country ?? ''
         });
+
+        // Load saved payment methods for editing (keep a local copy)
+        this.savedPaymentMethods = user?.info?.paymentMethods ? (user!.info!.paymentMethods as PaymentMethod[]).slice() : [];
+
+        // If the user has at least one saved payment method, prefill the add-new form with the first one
+        const pm = this.savedPaymentMethods?.[0];
+        if (pm) {
+            this.profileForm.patchValue({ selectedPaymentMethod: pm.type });
+            if (pm.type === 'creditCard') {
+                const cc = pm.details as CreditCard;
+                this.profileForm.get('payment.creditCard')?.patchValue({
+                    cardNumber: cc.cardNumber ?? '',
+                    expiryMonth: cc.expiryMonth ?? '',
+                    expiryYear: cc.expiryYear ?? '',
+                    cvv: cc.cvv ?? '',
+                    cardholderName: cc.cardholderName ?? ''
+                });
+            } else if (pm.type === 'payPal') {
+                const pp = pm.details as PayPal;
+                this.profileForm.get('payment.payPal')?.patchValue({ email: pp.email ?? '' });
+            }
+        }
     }
 
     saveInfo() : void {
@@ -87,14 +124,55 @@ export class ProfileComponent implements OnInit {
             }
         };
 
+        // If user selected a payment method in the add-new form, validate and include it
+        const selected = this.profileForm.get('selectedPaymentMethod')?.value;
+        const paymentValues = this.profileForm.get('payment')?.value ?? {};
+
+        const finalPaymentMethods: PaymentMethod[] = this.savedPaymentMethods ? this.savedPaymentMethods.slice() : [];
+
+        if (selected === 'creditCard') {
+            const cc = paymentValues.creditCard ?? this.profileForm.get('payment.creditCard')?.value;
+            // basic validation
+            if (!cc || !cc.cardNumber || !cc.cvv) {
+                this.profileForm.get('payment.creditCard')?.markAllAsTouched();
+                return;
+            }
+
+            const pm: PaymentMethod = {
+                type: 'creditCard',
+                details: {
+                    cardNumber: cc.cardNumber,
+                    expiryMonth: Number(cc.expiryMonth),
+                    expiryYear: Number(cc.expiryYear),
+                    cvv: cc.cvv,
+                    cardholderName: cc.cardholderName
+                } as CreditCard
+            };
+
+            finalPaymentMethods.push(pm);
+
+        } else if (selected === 'payPal') {
+            const pp = paymentValues.payPal ?? this.profileForm.get('payment.payPal')?.value;
+            if (!pp || !pp.email) {
+                this.profileForm.get('payment.payPal')?.markAllAsTouched();
+                return;
+            }
+
+            const pm: PaymentMethod = { type: 'payPal', details: { email: pp.email } as PayPal };
+            finalPaymentMethods.push(pm);
+        }
+
+        if (finalPaymentMethods.length) userInfo.paymentMethods = finalPaymentMethods;
+
         this.state$ = toHttpState(
             this.userService.updateUserInfo(userId, userInfo).pipe(
                 switchMap(() => this.userService.getUser()),
-                tap(() => {
-                    
+                tap((user: User) => {
                     this.editMode = false;
                     this.profileForm.markAsPristine();
                     this.profileForm.markAsUntouched();
+                    // update local cache of saved payment methods
+                    this.savedPaymentMethods = (user.info?.paymentMethods as PaymentMethod[]) || [];
                 })
             )
         );
@@ -104,5 +182,63 @@ export class ProfileComponent implements OnInit {
 
         this.editMode = false;
         this.profileForm.reset();
+    }
+
+    removeSavedMethod(id?: number): void {
+
+        const userIdStr = this.userService.getUserId();
+        if (!userIdStr) { this.goToLogin(); return; }
+        const userId = Number(userIdStr);
+
+        const remaining = (this.savedPaymentMethods || []).filter(pm => pm.id !== id);
+
+        this.state$ = toHttpState(
+            this.userService.updateUserInfo(userId, { paymentMethods: remaining }).pipe(
+                switchMap(() => this.userService.getUser()),
+                tap((user: User) => {
+                    this.savedPaymentMethods = (user.info?.paymentMethods as PaymentMethod[]) || [];
+                })
+            )
+        );
+    }
+
+    // Called from the template when the user changes the payment method selection
+    onPaymentMethodChange(method: string): void {
+        const ccGroup = this.profileForm.get('payment.creditCard') as FormGroup;
+        const ppGroup = this.profileForm.get('payment.payPal') as FormGroup;
+
+        if (method === 'creditCard') {
+            this.setGroupRequired(ccGroup, true);
+            this.setGroupRequired(ppGroup, false);
+        } else if (method === 'payPal') {
+            this.setGroupRequired(ccGroup, false);
+            this.setGroupRequired(ppGroup, true);
+        } else {
+            this.setGroupRequired(ccGroup, false);
+            this.setGroupRequired(ppGroup, false);
+        }
+    }
+
+    private setGroupRequired(group: FormGroup, required: boolean) {
+        if (!group) return;
+        Object.keys(group.controls).forEach(key => {
+            const control = group.get(key);
+            if (!control) return;
+            if (required) control.setValidators([Validators.required]);
+            else control.clearValidators();
+            control.updateValueAndValidity();
+        });
+    }
+
+    asPayPal(paymentMethod: PaymentMethod): PayPal | null {
+        return (paymentMethod.type === 'payPal' || String(paymentMethod.type).toLowerCase() === 'paypal') ? paymentMethod.details as PayPal : null;
+    }
+
+    asCreditCard(paymentMethod: PaymentMethod): CreditCard | null {
+        return (paymentMethod.type === 'creditCard' || String(paymentMethod.type).toLowerCase().includes('credit')) ? paymentMethod.details as CreditCard : null;
+    }
+
+    last4Digits(cardNumber: string): string {
+        return cardNumber.slice(-4);
     }
 }

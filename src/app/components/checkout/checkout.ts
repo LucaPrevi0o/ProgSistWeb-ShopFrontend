@@ -26,6 +26,7 @@ export class CheckoutComponent implements OnInit {
     checkoutForm: FormGroup;
     paymentMethodForm: FormGroup;
     autofilled: Record<string, boolean> = {};
+    savedPaymentMethods: PaymentMethod[] = [];
     router = inject(Router);
 
     constructor(private fb: FormBuilder, private cartService: CartService, private checkoutService: CheckoutService, private userService: UserService) {
@@ -40,7 +41,9 @@ export class CheckoutComponent implements OnInit {
                 country: ['', Validators.required]
             }),
             phone: [''],
-            selectedPaymentMethod: ['']
+            selectedPaymentMethod: [''],
+            paymentSource: ['new'],
+            selectedSavedPaymentId: ['']
         });
 
         this.paymentMethodForm = this.fb.group({
@@ -68,6 +71,9 @@ export class CheckoutComponent implements OnInit {
 
                     const personalData = (state.data as User)?.info?.data;
                     if (personalData) this.applyPersonalData(personalData);
+                    // store saved payment methods for the checkout UI
+                    const paymentMethods = (state.data as User)?.info?.paymentMethods;
+                    this.savedPaymentMethods = paymentMethods ? (paymentMethods as PaymentMethod[]).slice() : [];
                 }
             })
         );
@@ -107,10 +113,21 @@ export class CheckoutComponent implements OnInit {
 
         let selectedPaymentMethod: PaymentMethod;
 
+        const paymentSource = fv.paymentSource ?? 'new';
         const method = fv.selectedPaymentMethod;
         const paymentValues = fv.payment ?? {};
 
-        if (method === 'creditCard') {
+        // If user chose a saved payment method, use it
+        if (paymentSource === 'saved') {
+            const selectedId = fv.selectedSavedPaymentId;
+            const pm = this.savedPaymentMethods.find(p => String(p.id) === String(selectedId));
+            if (pm) {
+                selectedPaymentMethod = pm;
+            } else {
+                // no saved method selected; abort
+                return;
+            }
+        } else if (method === 'creditCard') {
             const cc = paymentValues.creditCard ?? this.paymentMethodForm.get('creditCard')!.value;
             selectedPaymentMethod = {
                 type: 'creditCard',
@@ -189,7 +206,20 @@ export class CheckoutComponent implements OnInit {
 
     // Called from the template when the user changes the payment method
     onPaymentMethodChange(method: string): void {
-        this.setPaymentValidators(method);
+        // Only apply validators for the "new" payment source
+        const source = this.checkoutForm.get('paymentSource')?.value;
+        if (source === 'new') this.setPaymentValidators(method);
+    }
+
+    // Called when the user toggles between entering a new payment method or using a saved one
+    onPaymentSourceChange(source: string): void {
+        if (source === 'new') {
+            const selected = this.checkoutForm.get('selectedPaymentMethod')?.value;
+            this.setPaymentValidators(selected);
+        } else {
+            // clear validators for new payment details
+            this.setPaymentValidators(null);
+        }
     }
 
     private setPaymentValidators(method?: string | null): void {
@@ -219,5 +249,46 @@ export class CheckoutComponent implements OnInit {
             else control.clearValidators();
             control.updateValueAndValidity();
         });
+    }
+
+    private applySavedPaymentMethod(pm: PaymentMethod): void {
+
+        if (!pm) return;
+
+        const method = pm.type;
+        this.checkoutForm.patchValue({ selectedPaymentMethod: method });
+
+        if (method === 'creditCard') {
+            const cc = pm.details as CreditCard;
+            this.paymentMethodForm.get('creditCard')?.patchValue({
+                cardNumber: cc.cardNumber ?? '',
+                expiryMonth: cc.expiryMonth ?? '',
+                expiryYear: cc.expiryYear ?? '',
+                cvv: cc.cvv ?? '',
+                cardholderName: cc.cardholderName ?? ''
+            });
+
+            if (cc.cardNumber && cc.cardNumber.toString().trim().length) this.autofilled['payment.creditCard.cardNumber'] = true;
+            if (cc.cardholderName && cc.cardholderName.toString().trim().length) this.autofilled['payment.creditCard.cardholderName'] = true;
+
+        } else if (method === 'payPal') {
+            const pp = pm.details as PayPal;
+            this.paymentMethodForm.get('payPal')?.patchValue({ email: pp.email ?? '' });
+            if (pp.email && pp.email.toString().trim().length) this.autofilled['payment.payPal.email'] = true;
+        }
+
+        this.setPaymentValidators(method);
+    }
+
+    asPayPal(paymentMethod: PaymentMethod): PayPal | null {
+        return (paymentMethod.type === 'payPal' || String(paymentMethod.type).toLowerCase() === 'paypal') ? paymentMethod.details as PayPal : null;
+    }
+
+    asCreditCard(paymentMethod: PaymentMethod): CreditCard | null {
+        return (paymentMethod.type === 'creditCard' || String(paymentMethod.type).toLowerCase().includes('credit')) ? paymentMethod.details as CreditCard : null;
+    }
+
+    last4Digits(cardNumber: string): string {
+        return (cardNumber || '').toString().slice(-4);
     }
 }

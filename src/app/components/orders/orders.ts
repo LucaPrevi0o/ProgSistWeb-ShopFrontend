@@ -42,13 +42,4 @@ export class OrdersComponent implements OnInit {
     itemTotal(item: any): number {
         return (item.product?.price || 0) * (item.quantity || 0);
     }
-
-    statusClass(status: string | undefined): string {
-        if (!status) return 'status-unknown';
-        const s = String(status).toLowerCase();
-        if (s.includes('pending')) return 'status-pending';
-        if (s.includes('paid') || s.includes('complete') || s.includes('completed')) return 'status-success';
-        if (s.includes('cancel') || s.includes('failed') || s.includes('error')) return 'status-error';
-        return 'status-unknown';
-    }
 }

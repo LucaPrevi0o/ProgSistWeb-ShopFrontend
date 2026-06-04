@@ -31,6 +31,18 @@
                             <p>{{ state.data.info.data.address.country }}</p>
                         </div>
                     }
+                    @if (state.data.info.paymentMethods && state.data.info.paymentMethods.length) {
+                        <div class="payment-block">
+                            <h4>Metodi di pagamento salvati</h4>
+                            @for (pm of state.data.info.paymentMethods; track pm.id) {
+                                @if (asCreditCard(pm)) {
+                                    <p>Carta: **** **** **** {{ last4Digits(asCreditCard(pm)!.cardNumber) }} - {{ asCreditCard(pm)!.cardholderName }}</p>
+                                } @else if (asPayPal(pm)) {
+                                    <p>PayPal: {{ asPayPal(pm)!.email }}</p>
+                                }
+                            }
+                        </div>
+                    }
                     <div class="actions">
                         <button (click)="startEdit(state.data)">Modifica</button>
                         <button (click)="logout()">Logout</button>
@@ -62,6 +74,59 @@
 
                         <label for="country">Nazione:</label>
                         <input id="country" formControlName="country" />
+
+                        <h4>Metodo di pagamento</h4>
+
+                        @if (savedPaymentMethods && savedPaymentMethods.length) {
+                            <div class="saved-methods">
+                                <h4>Metodi salvati</h4>
+                                @for (pm of savedPaymentMethods; track pm.id) {
+                                    @if (asCreditCard(pm)) {
+                                        <div class="saved-item">Carta: **** **** **** {{ last4Digits(asCreditCard(pm)!.cardNumber) }} - {{ asCreditCard(pm)!.cardholderName }} <button type="button" (click)="removeSavedMethod(pm.id)">Rimuovi</button></div>
+                                    } @else if (asPayPal(pm)) {
+                                        <div class="saved-item">PayPal: {{ asPayPal(pm)!.email }} <button type="button" (click)="removeSavedMethod(pm.id)">Rimuovi</button></div>
+                                    }
+                                }
+                            </div>
+                        }
+
+                        <label for="payment_method">Seleziona:</label>
+                        <select id="payment_method" formControlName="selectedPaymentMethod" (change)="onPaymentMethodChange($any($event.target).value)">
+                            <option value="">Nessuno</option>
+                            <option value="creditCard">Carta di credito</option>
+                            <option value="payPal">PayPal</option>
+                        </select>
+
+                        <div formGroupName="payment" class="payment-section">
+
+                            @if (profileForm.get('selectedPaymentMethod')?.value === 'creditCard') {
+
+                                <div formGroupName="creditCard">
+                                    <label for="cardNumber">Numero carta</label>
+                                    <input id="cardNumber" formControlName="cardNumber" />
+
+                                    <label for="expiryMonth">Mese</label>
+                                    <input id="expiryMonth" type="number" formControlName="expiryMonth" />
+
+                                    <label for="expiryYear">Anno</label>
+                                    <input id="expiryYear" type="number" formControlName="expiryYear" />
+
+                                    <label for="cvv">CVV</label>
+                                    <input id="cvv" formControlName="cvv" />
+
+                                    <label for="cardholderName">Intestatario</label>
+                                    <input id="cardholderName" formControlName="cardholderName" />
+                                </div>
+                            }
+
+                            @if (profileForm.get('selectedPaymentMethod')?.value === 'payPal') {
+
+                                <div formGroupName="payPal">
+                                    <label for="paypalEmail">Email PayPal</label>
+                                    <input id="paypalEmail" formControlName="email" />
+                                </div>
+                            }
+                        </div>
 
                         <div class="form-actions">
                             <button type="submit" [disabled]="profileForm.invalid">{{ editMode ? 'Aggiorna' : 'Salva informazioni' }}</button>

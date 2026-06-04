@@ -86,12 +86,37 @@
 
                         <h3>Metodo di pagamento</h3>
 
-                        <label for="payment_method" class="sr-only">Seleziona:   </label>
-                        <select id="payment_method" formControlName="selectedPaymentMethod" aria-label="Metodo di pagamento">
-                            <option value="" disabled selected>Seleziona...</option>
-                            <option value="creditCard">Carta di credito</option>
-                            <option value="payPal">PayPal</option>
+                        <label for="payment_source">Usa metodo</label>
+                        <select id="payment_source" formControlName="paymentSource" (change)="onPaymentSourceChange($any($event.target).value)">
+                            <option value="new">Inserisci nuovo metodo</option>
+                            <option value="saved">Usa metodo salvato</option>
                         </select>
+
+                        @if (checkoutForm.get('paymentSource')?.value === 'saved') {
+                            <label for="saved_methods">Metodi salvati</label>
+                            <select id="saved_methods" formControlName="selectedSavedPaymentId">
+                                <option value="" disabled selected>Seleziona...</option>
+                                @for (pm of savedPaymentMethods; track pm.id) {
+                                    @if (pm && pm.type === 'creditCard') {
+                                        <option value="{{ pm.id }}">Carta ****{{ last4Digits(asCreditCard(pm)!.cardNumber
+                                        ) }} - {{ asCreditCard(pm)!.cardholderName }}</option>
+                                    } @else if (pm && pm.type === 'payPal') {
+                                        <option value="{{ pm.id }}">PayPal - {{ asPayPal(pm)!.email }}</option>
+                                    } @else {
+                                        <option value="{{ pm.id }}">{{ pm.type }}</option>
+                                    }
+                                }
+                            </select>
+                        }
+
+                        @if (checkoutForm.get('paymentSource')?.value === 'new') {
+                            <label for="payment_method" class="sr-only">Seleziona:   </label>
+                            <select id="payment_method" formControlName="selectedPaymentMethod" (change)="onPaymentMethodChange($any($event.target).value)" aria-label="Metodo di pagamento">
+                                <option value="" disabled selected>Seleziona...</option>
+                                <option value="creditCard">Carta di credito</option>
+                                <option value="payPal">PayPal</option>
+                            </select>
+                        }
 
                         <div formGroupName="payment" class="payment-details">
 
@@ -139,7 +164,7 @@
                         </div>
 
                         <div class="form-actions">
-                            <button class="checkout-button" type="submit" [disabled]="checkoutForm.invalid || checkoutForm.get('selectedPaymentMethod')?.value === ''">Conferma ordine</button>
+                            <button class="checkout-button" type="submit" [disabled]="checkoutForm.invalid || (checkoutForm.get('paymentSource')?.value === 'new' && !checkoutForm.get('selectedPaymentMethod')?.value) || (checkoutForm.get('paymentSource')?.value === 'saved' && !checkoutForm.get('selectedSavedPaymentId')?.value)">Conferma ordine</button>
                         </div>
                     </form>
                 </aside>

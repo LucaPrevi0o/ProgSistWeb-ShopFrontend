@@ -1,5 +1,6 @@
 export interface PaymentMethod<T = CreditCard | PayPal> {
 
+    id?: number;
     type: string;
     details: T;
 }
