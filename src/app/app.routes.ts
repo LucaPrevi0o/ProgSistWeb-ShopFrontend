@@ -8,6 +8,7 @@ import { RegisterComponent } from './components/register/register';
 import { HomeComponent } from './components/home/home';
 import { ProfileComponent } from './components/profile/profile';
 import { LoginRedirectorComponent } from './components/login-redirector/login-redirector';
+import { OrdersComponent } from './components/orders/orders';
 
 export const routes: Routes = [
     
@@ -19,6 +20,7 @@ export const routes: Routes = [
     { path: 'logout', component: LoginComponent },
     { path: 'cart', component: CartComponent },
     { path: 'checkout', component: CheckoutComponent },
+    { path: 'orders', component: OrdersComponent },
     { path: 'users/:id', component: ProfileComponent },
     { path: 'login-redirect', component: LoginRedirectorComponent }
 ];
