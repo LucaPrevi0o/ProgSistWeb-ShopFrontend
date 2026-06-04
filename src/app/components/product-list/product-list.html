@@ -1,7 +1,7 @@
 @if (state$ | async; as state) {
 
     <div class="product-list-container page page--wide">
-    <h1 class="page__title">Lista dei Prodotti</h1>
+        <h1 class="page__title">Lista dei Prodotti</h1>
 
         <div class="pagination">
             <button (click)="prevPage()" [disabled]="currentPage === 1">Precedente</button>
@@ -10,7 +10,7 @@
         </div>
 
         <div class="items">
-            <div class="filters">
+            <div class="filters surface-card">
                 <label>Nome: <input type="text" (input)="filterName = $any($event.target).value" (keydown.enter)="applyFilters()" value="{{filterName}}" /></label>
                 <label>Categoria:
                     <select (change)="filterCategory = $any($event.target).value" [value]="filterCategory">
@@ -29,24 +29,24 @@
                 <button (click)="applyFilters()">Applica filtri</button>
                 <button (click)="resetFilters()">Reset</button>
             </div>
-            @if (state.status === 'loading') { <p class="state-message">Caricamento in corso...</p> }
-            @else if (state.status === 'error') {
 
+            @if (state.status === 'loading') {
+                <p class="state-message">Caricamento in corso...</p>
+            } @else if (state.status === 'error') {
                 <div class="error-message">
                     <h2>Errore nel caricamento dei prodotti</h2>
                     <p>Codice errore: <strong>{{ state.code }}</strong></p>
-                    <div class="form-actions">
+                    <div class="form-actions product-list-actions">
                         <button (click)="loadPage(currentFilters())" class="primary">Riprova</button>
                         <button (click)="resetFilters()">Reset filtri</button>
                     </div>
                 </div>
-            } @else if (state.status === 'empty') { <p class="state-message state-message--empty">Nessun prodotto disponibile.</p> }
-            @else {
-
+            } @else if (state.status === 'empty') {
+                <p class="state-message state-message--empty">Nessun prodotto disponibile.</p>
+            } @else {
                 <div class="product-list">
                     @for (item of state.data.items; track item.id) {
-
-                        <div class="product-item">
+                        <div class="product-item surface-card">
                             <img src="{{ BASE_URL }}{{ item.name }}" alt="{{ item.name }}" />
                             <div class="product-header">
                                 <h3>{{ item.name }}</h3>
