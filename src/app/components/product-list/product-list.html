@@ -24,7 +24,14 @@
                     </select>
                 </label>
                 <label>Prezzo:
-                    <app-price-range [min]="0" [max]="500" [step]="1" (rangeChange)="onPriceRangeChange($event)"></app-price-range>
+                    <app-price-range
+                        [min]="0"
+                        [max]="500"
+                        [step]="1"
+                        [lowValue]="filterMinPrice || 0"
+                        [highValue]="filterMaxPrice || 500"
+                        (rangeChange)="onPriceRangeChange($event)">
+                    </app-price-range>
                 </label>
                 <button (click)="applyFilters()">Applica filtri</button>
                 <button (click)="resetFilters()">Reset</button>
