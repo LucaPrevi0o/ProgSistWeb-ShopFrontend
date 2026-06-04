@@ -84,3 +84,14 @@ h1 { text-align: center; }
 .form-group.autofilled label { color: var(--color-accent); font-weight: 600; }
 
 .payment-details { margin-top: var(--spacing-md); }
+
+/* Payment source controls */
+#payment_source, #saved_methods {
+  width: 100%;
+  margin-top: var(--spacing-sm);
+  margin-bottom: var(--spacing-sm);
+}
+
+.payment-controls { display:flex; gap: var(--spacing-md); align-items:center; margin-bottom: var(--spacing-md); }
+
+.form-actions { display:flex; gap:var(--spacing-sm); justify-content:flex-end; }
