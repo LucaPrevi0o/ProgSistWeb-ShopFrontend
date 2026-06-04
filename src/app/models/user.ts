@@ -1,11 +1,14 @@
 import { PaymentMethod } from './payment';
 
+export type UserRole = 'USER' | 'ADMIN';
+
 export interface User {
 
     id: number;
     email: string;
     password: string;
     token: string;
+    role?: UserRole;
     info?: UserInfo
 }
 
