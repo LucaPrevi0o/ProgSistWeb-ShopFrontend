@@ -1,32 +1,29 @@
 @if (state$ | async; as state) {
 
-    <div>
-        @if (state.status === 'loading') { <p>Caricamento in corso...</p> }
-        @else if (state.status === 'error') {
-
+    <div class="product-detail-page page page--medium">
+        @if (state.status === 'loading') {
+            <p class="state-message">Caricamento in corso...</p>
+        } @else if (state.status === 'error') {
             @if (state.code === 422) {
-
                 <div class="error-message">
                     <h2>Quantità richiesta non disponibile</h2>
                     <p>La quantità di prodotti nel carrello eccede il numero di prodotti disponibili nel magazzino.</p>
                     <p>Per favore, riduci la quantità e riprova ad aggiungere il prodotto al carrello.</p>
 
-                    <div class="form-actions">
+                    <div class="form-actions product-detail-actions">
                         <button (click)="goBack()" class="primary">Torna alla lista dei prodotti</button>
                     </div>
                 </div>
-            }
-            @else {
+            } @else {
                 <div class="error-message">
                     <p>Si è verificato un errore: <strong>{{ state.code }}</strong></p>
                 </div>
             }
-        } @else if (state.status === 'empty') { <p>Nessun prodotto disponibile.</p> }
-        @else {
-
+        } @else if (state.status === 'empty') {
+            <p class="state-message state-message--empty">Nessun prodotto disponibile.</p>
+        } @else {
             <div class="detail-wrapper">
-                <div class="product-card">
-
+                <div class="product-card surface-card">
                     <div class="product-image-col">
                         <img src="{{ BASE_URL }}{{ state.data.name }}" alt="{{ state.data.name }}" />
 
@@ -38,8 +35,10 @@
                                 <button (click)="increaseQuantity()" [disabled]="quantity.value >= state.data.stock">+</button>
                             </div>
 
-                            <button class="checkout-button" (click)="addToCart(state.data, quantity.value)" [disabled]="state.data.stock === 0">Aggiungi al carrello</button>
-                        } @else { <app-login-redirector></app-login-redirector> }
+                            <button class="checkout-button primary" (click)="addToCart(state.data, quantity.value)" [disabled]="state.data.stock === 0">Aggiungi al carrello</button>
+                        } @else {
+                            <app-login-redirector></app-login-redirector>
+                        }
                     </div>
 
                     <div class="product-info-col">

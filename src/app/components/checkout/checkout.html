@@ -1,30 +1,33 @@
 @if (state$ | async; as state) {
 
-    <h1>Checkout</h1>
-    @if (userState$ | async; as userState) {
+    <div class="checkout-page page page--medium">
+        <h1 class="page__title">Checkout</h1>
 
-        @if (userState.status === 'loading') { <p>Caricamento dati utente...</p> }
-        @else if (userState.status === 'error') {
+        @if (userState$ | async; as userState) {
+            @if (userState.status === 'loading') {
+                <p class="state-message">Caricamento dati utente...</p>
+            } @else if (userState.status === 'error') {
+                <div class="error-message">
+                    <h2>Errore nel caricamento dati utente</h2>
+                    <p>Codice errore: <strong>{{ userState.code }}</strong></p>
+                </div>
+            } @else if (userState.status === 'empty') {
+                <p class="state-message state-message--empty">Nessun dato utente disponibile.</p>
+            }
+        }
+
+        @if (state.status === 'loading') {
+            <p class="state-message">Caricamento carrello...</p>
+        } @else if (state.status === 'error') {
             <div class="error-message">
-                <h2>Errore nel caricamento dati utente</h2>
-                <p>Codice errore: <strong>{{ userState.code }}</strong></p>
+                <h2>Errore nel caricamento del carrello</h2>
+                <p>Codice errore: <strong>{{ state.code }}</strong></p>
             </div>
-        } @else if (userState.status === 'empty') { <p>Nessun dato utente disponibile.</p> }
-    }
-
-    @if (state.status === 'loading') { <p>Caricamento carrello...</p> }
-    @else if (state.status === 'error') {
-        <div class="error-message">
-            <h2>Errore nel caricamento del carrello</h2>
-            <p>Codice errore: <strong>{{ state.code }}</strong></p>
-        </div>
-    } @else if (state.status === 'empty') { <p>Il carrello è vuoto.</p> }
-    @else {
-
-        <div class="checkout-root">
-            <div class="checkout-container">
-
-                <section class="items" aria-labelledby="order-summary-title">
+        } @else if (state.status === 'empty') {
+            <p class="state-message state-message--empty">Il carrello è vuoto.</p>
+        } @else {
+            <div class="checkout-container layout-split layout-split--equal">
+                <section class="items surface-card" aria-labelledby="order-summary-title">
                     <h3 id="order-summary-title">Riepilogo ordine</h3>
 
                     @for (it of state.data.items; track it.product.id) {
@@ -40,11 +43,10 @@
                     <div class="total">Totale: € {{ getSubtotal(state.data) }}</div>
                 </section>
 
-                <aside class="form" aria-labelledby="shipping-title">
+                <aside class="form-shell" aria-labelledby="shipping-title">
                     <h3 id="shipping-title">Dati di spedizione</h3>
 
-                    <form [formGroup]="checkoutForm" (ngSubmit)="submit(state.data)" novalidate>
-
+                    <form [formGroup]="checkoutForm" (ngSubmit)="submit(state.data)" class="form" novalidate>
                         <div class="form-row">
                             <div class="form-group" [class.autofilled]="autofilled['firstName']">
                                 <label for="name">Nome</label>
@@ -94,41 +96,44 @@
 
                         <h3>Metodo di pagamento</h3>
 
-                        <label for="payment_source">Usa metodo</label>
-                        <select id="payment_source" formControlName="paymentSource" (change)="onPaymentSourceChange($any($event.target).value)">
-                            <option value="new">Inserisci nuovo metodo</option>
-                            <option value="saved">Usa metodo salvato</option>
-                        </select>
+                        <div class="form-group">
+                            <label for="payment_source">Usa metodo</label>
+                            <select id="payment_source" formControlName="paymentSource" (change)="onPaymentSourceChange($any($event.target).value)">
+                                <option value="new">Inserisci nuovo metodo</option>
+                                <option value="saved">Usa metodo salvato</option>
+                            </select>
+                        </div>
 
                         @if (checkoutForm.get('paymentSource')?.value === 'saved') {
-                            <label for="saved_methods">Metodi salvati</label>
-                            <select id="saved_methods" formControlName="selectedSavedPaymentId">
-                                <option value="" disabled selected>Seleziona...</option>
-                                @for (pm of savedPaymentMethods; track pm.id) {
-                                    @if (pm && pm.type === 'creditCard') {
-                                        <option value="{{ pm.id }}">Carta ****{{ last4Digits(asCreditCard(pm)!.cardNumber
-                                        ) }} - {{ asCreditCard(pm)!.cardholderName }}</option>
-                                    } @else if (pm && pm.type === 'payPal') {
-                                        <option value="{{ pm.id }}">PayPal - {{ asPayPal(pm)!.email }}</option>
-                                    } @else {
-                                        <option value="{{ pm.id }}">{{ pm.type }}</option>
+                            <div class="form-group">
+                                <label for="saved_methods">Metodi salvati</label>
+                                <select id="saved_methods" formControlName="selectedSavedPaymentId">
+                                    <option value="" disabled selected>Seleziona...</option>
+                                    @for (pm of savedPaymentMethods; track pm.id) {
+                                        @if (pm && pm.type === 'creditCard') {
+                                            <option value="{{ pm.id }}">Carta ****{{ last4Digits(asCreditCard(pm)!.cardNumber) }} - {{ asCreditCard(pm)!.cardholderName }}</option>
+                                        } @else if (pm && pm.type === 'payPal') {
+                                            <option value="{{ pm.id }}">PayPal - {{ asPayPal(pm)!.email }}</option>
+                                        } @else {
+                                            <option value="{{ pm.id }}">{{ pm.type }}</option>
+                                        }
                                     }
-                                }
-                            </select>
+                                </select>
+                            </div>
                         }
 
                         @if (checkoutForm.get('paymentSource')?.value === 'new') {
-                            <label for="payment_method" class="sr-only">Seleziona:   </label>
-                            <select id="payment_method" formControlName="selectedPaymentMethod" (change)="onPaymentMethodChange($any($event.target).value)" aria-label="Metodo di pagamento">
-                                <option value="" disabled selected>Seleziona...</option>
-                                <option value="creditCard">Carta di credito</option>
-                                <option value="payPal">PayPal</option>
-                            </select>
+                            <div class="form-group">
+                                <label for="payment_method" class="sr-only">Seleziona:</label>
+                                <select id="payment_method" formControlName="selectedPaymentMethod" (change)="onPaymentMethodChange($any($event.target).value)" aria-label="Metodo di pagamento">
+                                    <option value="" disabled selected>Seleziona...</option>
+                                    <option value="creditCard">Carta di credito</option>
+                                    <option value="payPal">PayPal</option>
+                                </select>
+                            </div>
 
                             <div formGroupName="payment" class="payment-details">
-
                                 @if (checkoutForm.get('selectedPaymentMethod')?.value === 'creditCard') {
-
                                     <div formGroupName="creditCard">
                                         <div class="form-group">
                                             <label for="cardNumber">Numero carta</label>
@@ -160,7 +165,6 @@
                                 }
 
                                 @if (checkoutForm.get('selectedPaymentMethod')?.value === 'payPal') {
-
                                     <div formGroupName="payPal">
                                         <div class="form-group">
                                             <label for="paypalEmail">Email PayPal</label>
@@ -171,12 +175,12 @@
                             </div>
                         }
 
-                        <div class="form-actions">
-                            <button class="checkout-button" type="submit" [disabled]="checkoutForm.invalid || (checkoutForm.get('paymentSource')?.value === 'new' && !checkoutForm.get('selectedPaymentMethod')?.value) || (checkoutForm.get('paymentSource')?.value === 'saved' && !checkoutForm.get('selectedSavedPaymentId')?.value)">Conferma ordine</button>
+                        <div class="form-actions checkout-actions">
+                            <button class="checkout-button primary" type="submit" [disabled]="checkoutForm.invalid || (checkoutForm.get('paymentSource')?.value === 'new' && !checkoutForm.get('selectedPaymentMethod')?.value) || (checkoutForm.get('paymentSource')?.value === 'saved' && !checkoutForm.get('selectedSavedPaymentId')?.value)">Conferma ordine</button>
                         </div>
                     </form>
                 </aside>
             </div>
-        </div>
-    }
+        }
+    </div>
 }

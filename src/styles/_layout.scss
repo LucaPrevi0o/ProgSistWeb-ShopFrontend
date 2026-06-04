@@ -1,0 +1,51 @@
+.page {
+  --page-max: 1100px;
+  --page-width: 90%;
+  --page-margin-top: var(--spacing-xl);
+  --page-margin-bottom: var(--spacing-md);
+  --page-padding: 0;
+
+  width: min(var(--page-width), var(--page-max));
+  margin: var(--page-margin-top) auto var(--page-margin-bottom);
+  padding: var(--page-padding);
+}
+
+.page--wide {
+  --page-max: 1400px;
+  --page-width: 95%;
+}
+
+.page--medium {
+  --page-max: 1000px;
+}
+
+.page--narrow {
+  --page-max: 800px;
+}
+
+.page--auth {
+  --page-max: 580px;
+  --page-width: 95%;
+}
+
+.page__title {
+  text-align: center;
+}
+
+.layout-split {
+  display: grid;
+  grid-template-columns: minmax(220px, 300px) 1fr;
+  gap: var(--spacing-lg);
+  align-items: start;
+}
+
+.layout-split--equal {
+  grid-template-columns: 1fr 1fr;
+}
+
+@media (max-width: 900px) {
+  .layout-split,
+  .layout-split--equal {
+    grid-template-columns: 1fr;
+  }
+}
