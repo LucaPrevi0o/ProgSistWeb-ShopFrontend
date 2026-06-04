@@ -1,12 +1,71 @@
 .price-range {
   width: 100%;
-  .track { position: relative; height: 36px; }
-  input[type="range"] { 
-    -webkit-appearance: none; appearance: none; 
-    position: absolute; left: 0; top: 8px; width: 100%; background: transparent; pointer-events: none;
+  position: relative;
+
+  .track {
+    position: relative;
+    height: 36px;
   }
-  input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; pointer-events: auto; width:16px; height:16px; border-radius:50%; background:#333; }
-  input[type="range"]::-moz-range-thumb { pointer-events: auto; width:16px; height:16px; border-radius:50%; background:#333; }
-  .fill { position: absolute; top: 14px; height: 6px; background: #cbd5e1; border-radius: 3px; }
-  .labels { display:flex; justify-content:space-between; margin-top:8px; font-size:0.9rem; }
+
+  .track-base,
+  .fill {
+    position: absolute;
+    top: 14px;
+    height: 6px;
+    border-radius: 999px;
+  }
+
+  .track-base {
+    left: 0;
+    right: 0;
+    background: var(--color-border);
+  }
+
+  .fill {
+    background: var(--color-accent);
+  }
+
+  .range-input {
+    -webkit-appearance: none;
+    appearance: none;
+    position: absolute;
+    left: 0;
+    top: 8px;
+    width: 100%;
+    background: transparent;
+    pointer-events: none;
+    margin: 0;
+  }
+
+  .range-input::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    pointer-events: auto;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: var(--color-accent);
+    border: 2px solid white;
+    box-shadow: var(--shadow-sm);
+    cursor: pointer;
+  }
+
+  .range-input::-moz-range-thumb {
+    pointer-events: auto;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: var(--color-accent);
+    border: 2px solid white;
+    box-shadow: var(--shadow-sm);
+    cursor: pointer;
+  }
+
+  .labels {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 8px;
+    font-size: 0.9rem;
+    color: var(--color-text-light);
+    font-weight: 600;
+  }
 }
