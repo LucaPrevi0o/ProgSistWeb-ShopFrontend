@@ -3,8 +3,12 @@
   display: flex;
   flex-direction: column;
   gap: var(--spacing-md);
+  width: min(95%, 1400px);
+  margin: 0 auto;
   padding: var(--spacing-md);
 }
+
+h1 { text-align: center; }
 
 .pagination {
   display: flex;
@@ -22,12 +26,12 @@
 
 .items {
   display: grid;
-  grid-template-columns: 220px 1fr;
+  grid-template-columns: 220px 1fr; /* fixed sidebar, flexible content */
   gap: var(--spacing-lg);
   align-items: start;
 
   @media (max-width: 900px) {
-    grid-template-columns: 1fr;
+    grid-template-columns: 1fr; /* stack on mobile */
   }
 }
 
@@ -35,9 +39,14 @@
   display: flex;
   flex-direction: column;
   gap: var(--spacing-sm);
+  background: var(--color-card);
+  border-radius: var(--radius);
   padding: var(--spacing-md);
+  box-shadow: var(--shadow-sm);
+  border: 1px solid var(--color-border);
+
   position: sticky;
-  top: 80px;
+  top: 80px; /* below the header */
 
   label {
     display: flex;
@@ -48,12 +57,27 @@
     color: var(--color-text-light);
   }
 
+  input, select {
+    padding: 8px 10px;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius);
+    font-size: 14px;
+    transition: border-color var(--transition);
+
+    &:focus {
+      outline: none;
+      border-color: var(--color-accent);
+    }
+  }
+
   button {
     width: 100%;
     margin: 2px 0;
   }
 
   @media (max-width: 900px) {
+    /* Collapsible filters on mobile would need TS logic,
+       but at minimum make them horizontal */
     flex-direction: row;
     flex-wrap: wrap;
     position: static;
@@ -64,26 +88,31 @@
 
 .product-list {
   display: grid;
+  /* Responsive grid: fills space, minimum 220px cards */
   grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
   gap: var(--spacing-md);
 }
 
 .product-item {
+  background: var(--color-card);
+  border-radius: var(--radius);
   padding: var(--spacing-md);
   display: flex;
   flex-direction: column;
   gap: var(--spacing-sm);
+  box-shadow: var(--shadow-sm);
+  border: 1px solid var(--color-border);
   transition: box-shadow var(--transition), transform var(--transition);
 
   &:hover {
     box-shadow: var(--shadow-md);
-    transform: translateY(-3px);
+    transform: translateY(-3px); /* lift effect on hover */
   }
 
   img {
     width: 100%;
     height: 140px;
-    object-fit: cover;
+    object-fit: cover; /* ensures image fills without stretching */
     border-radius: calc(var(--radius) - 2px);
   }
 
@@ -108,7 +137,7 @@
     background: rgba(23, 148, 165, 0.1);
     border: 1px solid var(--color-accent);
     padding: 3px 7px;
-    border-radius: 20px;
+    border-radius: 20px; /* pill shape */
     white-space: nowrap;
     align-self: flex-start;
   }
@@ -117,11 +146,12 @@
     color: var(--color-text-light);
     font-size: 13px;
     line-height: 1.4;
+    /* Clamp to 3 lines to keep cards uniform height */
     display: -webkit-box;
     -webkit-line-clamp: 3;
     -webkit-box-orient: vertical;
     overflow: hidden;
-    flex: 1;
+    flex: 1; /* push price/button to bottom */
   }
 
   .price {
@@ -139,8 +169,27 @@
   }
 }
 
-.product-list-actions {
-  justify-content: center;
+
+/* Error / empty state styling to match other auth/cart views */
+.error-message {
+  text-align: center;
+  padding: var(--spacing-xl);
+  color: var(--color-text-light);
+  background: var(--color-card);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-sm);
+  border: 1px solid var(--color-border);
+  border-left: 4px solid var(--color-danger);
+}
+
+.form-actions { margin-top: var(--spacing-md); display:flex; justify-content:center; gap:var(--spacing-sm); }
+
+.primary {
+  background: var(--color-primary);
+  color: white;
+  border: none;
+  padding: 8px 12px;
+  border-radius: 6px;
 }
 
 /* Hide native number input spinners for the page-jump input */

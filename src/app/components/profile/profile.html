@@ -1,176 +1,157 @@
 @if (state$ | async; as state) {
 
-    <div class="profile-page page page--narrow">
-        <h1 class="page__title">Il tuo Profilo</h1>
+    <h1>Il tuo Profilo</h1>
+    @if (state.status === 'loading') { <p>Caricamento in corso...</p> }
+    @else if (state.status === 'error') { 
+        
+        @if (state.code === 401) { <app-login-redirector></app-login-redirector> } @else { 
+            
+            <div class="error-message">
+                <h2>Si è verificato un errore.</h2>
+                <p>Codice errore: <strong>{{ state.code }}</strong></p>
+            </div>
+        }
+    } @else if (state.status === 'empty') { <p>Profilo non trovato.</p> }
+    @else {
 
-        @if (state.status === 'loading') {
-            <p class="state-message">Caricamento in corso...</p>
-        } @else if (state.status === 'error') {
-            @if (state.code === 401) {
-                <app-login-redirector></app-login-redirector>
+        <div class="profile-container">
+
+            <div class="profile-header">
+                <div>Email: <strong>{{ state.data.email }}</strong></div>
+            </div>
+
+            @if (state.data.info && !editMode) {
+                <div class="profile-info">
+                    <h3>Informazioni Profilo</h3>
+                    <p>Nome: {{ state.data.info.data.firstName }} {{ state.data.info.data.lastName }}</p>
+                    <p>Telefono: {{ state.data.info.data.phone }}</p>
+                    @if (state.data.info.data.address) {
+                        <div class="address-block">
+                            <h4>Indirizzo di spedizione</h4>
+                            <p>{{ state.data.info.data.address.street }}</p>
+                            <p>{{ state.data.info.data.address.city }} - {{ state.data.info.data.address.postalCode }}</p>
+                            <p>{{ state.data.info.data.address.country }}</p>
+                        </div>
+                    }
+                    @if (state.data.info.paymentMethods && state.data.info.paymentMethods.length) {
+                        <div class="payment-block">
+                            <h4>Metodi di pagamento salvati</h4>
+                            @for (pm of state.data.info.paymentMethods; track pm.id) {
+                                @if (asCreditCard(pm)) {
+                                    <p>Carta: **** **** **** {{ last4Digits(asCreditCard(pm)!.cardNumber) }} - {{ asCreditCard(pm)!.cardholderName }}</p>
+                                } @else if (asPayPal(pm)) {
+                                    <p>PayPal: {{ asPayPal(pm)!.email }}</p>
+                                }
+                            }
+                        </div>
+                    }
+                    <div class="actions">
+                        <button (click)="startEdit(state.data)">Modifica</button>
+                        <button (click)="logout()">Logout</button>
+                    </div>
+                </div>
             } @else {
-                <div class="error-message">
-                    <h2>Si è verificato un errore.</h2>
-                    <p>Codice errore: <strong>{{ state.code }}</strong></p>
-                </div>
-            }
-        } @else if (state.status === 'empty') {
-            <p class="state-message state-message--empty">Profilo non trovato.</p>
-        } @else {
-            <div class="profile-container">
-                <div class="profile-header surface-card">
-                    <div>Email: <strong>{{ state.data.email }}</strong></div>
-                </div>
+                <div class="profile-form">
+                    <h3>{{ editMode ? 'Modifica le tue informazioni' : 'Registra le tue informazioni' }}</h3>
+                    <form [formGroup]="profileForm" (ngSubmit)="saveInfo()">
+                        <label for="firstName">Nome:</label>
+                        <input id="firstName" formControlName="firstName" />
 
-                @if (state.data.info && !editMode) {
-                    <div class="profile-info surface-card">
-                        <h3>Informazioni Profilo</h3>
-                        <p>Nome: {{ state.data.info.data.firstName }} {{ state.data.info.data.lastName }}</p>
-                        <p>Telefono: {{ state.data.info.data.phone }}</p>
+                        <label for="lastName">Cognome:</label>
+                        <input id="lastName" formControlName="lastName" />
 
-                        @if (state.data.info.data.address) {
-                            <div class="address-block">
-                                <h4>Indirizzo di spedizione</h4>
-                                <p>{{ state.data.info.data.address.street }}</p>
-                                <p>{{ state.data.info.data.address.city }} - {{ state.data.info.data.address.postalCode }}</p>
-                                <p>{{ state.data.info.data.address.country }}</p>
-                            </div>
-                        }
+                        <label for="phone">Telefono:</label>
+                        <input id="phone" formControlName="phone" />
 
-                        @if (state.data.info.paymentMethods && state.data.info.paymentMethods.length) {
-                            <div class="payment-block">
-                                <h4>Metodi di pagamento salvati</h4>
-                                @for (pm of state.data.info.paymentMethods; track pm.id) {
+                        <h4>Indirizzo di spedizione</h4>
+
+                        <label for="street">Via / Piazza:</label>
+                        <input id="street" formControlName="street" />
+
+                        <label for="city">Città:</label>
+                        <input id="city" formControlName="city" />
+
+                        <label for="postalCode">CAP:</label>
+                        <input id="postalCode" formControlName="postalCode" />
+
+                        <label for="country">Nazione:</label>
+                        <input id="country" formControlName="country" />
+
+                        <h4>Metodo di pagamento</h4>
+
+                        @if (savedPaymentMethods && savedPaymentMethods.length) {
+                            <div class="saved-methods">
+                                <h4>Metodi salvati</h4>
+                                @for (pm of savedPaymentMethods; track pm.id) {
                                     @if (asCreditCard(pm)) {
-                                        <p>Carta: **** **** **** {{ last4Digits(asCreditCard(pm)!.cardNumber) }} - {{ asCreditCard(pm)!.cardholderName }}</p>
+                                        <div class="saved-item">Carta: **** **** **** {{ last4Digits(asCreditCard(pm)!.cardNumber) }} - {{ asCreditCard(pm)!.cardholderName }} <button type="button" (click)="removeSavedMethod(pm.id)">Rimuovi</button></div>
                                     } @else if (asPayPal(pm)) {
-                                        <p>PayPal: {{ asPayPal(pm)!.email }}</p>
+                                        <div class="saved-item">PayPal: {{ asPayPal(pm)!.email }} <button type="button" (click)="removeSavedMethod(pm.id)">Rimuovi</button></div>
                                     }
                                 }
                             </div>
                         }
 
-                        <div class="actions form-actions">
-                            <button class="primary" (click)="startEdit(state.data)">Modifica</button>
-                            <button class="primary" (click)="logout()">Logout</button>
-                        </div>
-                    </div>
-                } @else {
-                    <div class="profile-form form-shell">
-                        <h3>{{ editMode ? 'Modifica le tue informazioni' : 'Registra le tue informazioni' }}</h3>
-                        <form [formGroup]="profileForm" (ngSubmit)="saveInfo()" class="form">
-                            <div class="form-group">
-                                <label for="firstName">Nome:</label>
-                                <input id="firstName" formControlName="firstName" />
-                            </div>
+                        <label for="payment_method">Seleziona:</label>
+                        <select id="payment_method" formControlName="selectedPaymentMethod" (change)="onPaymentMethodChange($any($event.target).value)">
+                            <option value="">Nessuno</option>
+                            <option value="creditCard">Carta di credito</option>
+                            <option value="payPal">PayPal</option>
+                        </select>
 
-                            <div class="form-group">
-                                <label for="lastName">Cognome:</label>
-                                <input id="lastName" formControlName="lastName" />
-                            </div>
+                        <div formGroupName="payment" class="payment-section">
 
-                            <div class="form-group">
-                                <label for="phone">Telefono:</label>
-                                <input id="phone" formControlName="phone" />
-                            </div>
+                            @if (profileForm.get('selectedPaymentMethod')?.value === 'creditCard') {
 
-                            <h4>Indirizzo di spedizione</h4>
+                                <div formGroupName="creditCard">
+                                    <div class="form-group">
+                                        <label for="cardNumber">Numero carta</label>
+                                        <input id="cardNumber" formControlName="cardNumber" />
+                                    </div>
 
-                            <div class="form-group">
-                                <label for="street">Via / Piazza:</label>
-                                <input id="street" formControlName="street" />
-                            </div>
+                                    <div class="form-row">
+                                        <div class="form-group">
+                                            <label for="expiryMonth">Mese</label>
+                                            <input id="expiryMonth" type="number" formControlName="expiryMonth" />
+                                        </div>
 
-                            <div class="form-group">
-                                <label for="city">Città:</label>
-                                <input id="city" formControlName="city" />
-                            </div>
+                                        <div class="form-group">
+                                            <label for="expiryYear">Anno</label>
+                                            <input id="expiryYear" type="number" formControlName="expiryYear" />
+                                        </div>
 
-                            <div class="form-group">
-                                <label for="postalCode">CAP:</label>
-                                <input id="postalCode" formControlName="postalCode" />
-                            </div>
+                                        <div class="form-group">
+                                            <label for="cvv">CVV</label>
+                                            <input id="cvv" formControlName="cvv" />
+                                        </div>
+                                    </div>
 
-                            <div class="form-group">
-                                <label for="country">Nazione:</label>
-                                <input id="country" formControlName="country" />
-                            </div>
-
-                            <h4>Metodo di pagamento</h4>
-
-                            @if (savedPaymentMethods && savedPaymentMethods.length) {
-                                <div class="saved-methods">
-                                    <h4>Metodi salvati</h4>
-                                    @for (pm of savedPaymentMethods; track pm.id) {
-                                        @if (asCreditCard(pm)) {
-                                            <div class="saved-item">Carta: **** **** **** {{ last4Digits(asCreditCard(pm)!.cardNumber) }} - {{ asCreditCard(pm)!.cardholderName }} <button type="button" (click)="removeSavedMethod(pm.id)">Rimuovi</button></div>
-                                        } @else if (asPayPal(pm)) {
-                                            <div class="saved-item">PayPal: {{ asPayPal(pm)!.email }} <button type="button" (click)="removeSavedMethod(pm.id)">Rimuovi</button></div>
-                                        }
-                                    }
+                                    <div class="form-group">
+                                        <label for="cardholderName">Intestatario</label>
+                                        <input id="cardholderName" formControlName="cardholderName" />
+                                    </div>
                                 </div>
                             }
 
-                            <div class="form-group">
-                                <label for="payment_method">Seleziona:</label>
-                                <select id="payment_method" formControlName="selectedPaymentMethod" (change)="onPaymentMethodChange($any($event.target).value)">
-                                    <option value="">Nessuno</option>
-                                    <option value="creditCard">Carta di credito</option>
-                                    <option value="payPal">PayPal</option>
-                                </select>
-                            </div>
+                            @if (profileForm.get('selectedPaymentMethod')?.value === 'payPal') {
 
-                            <div formGroupName="payment" class="payment-section">
-                                @if (profileForm.get('selectedPaymentMethod')?.value === 'creditCard') {
-                                    <div formGroupName="creditCard">
-                                        <div class="form-group">
-                                            <label for="cardNumber">Numero carta</label>
-                                            <input id="cardNumber" formControlName="cardNumber" />
-                                        </div>
-
-                                        <div class="form-row">
-                                            <div class="form-group">
-                                                <label for="expiryMonth">Mese</label>
-                                                <input id="expiryMonth" type="number" formControlName="expiryMonth" />
-                                            </div>
-
-                                            <div class="form-group">
-                                                <label for="expiryYear">Anno</label>
-                                                <input id="expiryYear" type="number" formControlName="expiryYear" />
-                                            </div>
-
-                                            <div class="form-group">
-                                                <label for="cvv">CVV</label>
-                                                <input id="cvv" formControlName="cvv" />
-                                            </div>
-                                        </div>
-
-                                        <div class="form-group">
-                                            <label for="cardholderName">Intestatario</label>
-                                            <input id="cardholderName" formControlName="cardholderName" />
-                                        </div>
+                                <div formGroupName="payPal">
+                                    <div class="form-group">
+                                        <label for="paypalEmail">Email PayPal</label>
+                                        <input id="paypalEmail" formControlName="email" />
                                     </div>
-                                }
+                                </div>
+                            }
+                        </div>
 
-                                @if (profileForm.get('selectedPaymentMethod')?.value === 'payPal') {
-                                    <div formGroupName="payPal">
-                                        <div class="form-group">
-                                            <label for="paypalEmail">Email PayPal</label>
-                                            <input id="paypalEmail" formControlName="email" />
-                                        </div>
-                                    </div>
-                                }
-                            </div>
-
-                            <div class="form-actions">
-                                <button class="primary" type="submit" [disabled]="profileForm.invalid">{{ editMode ? 'Aggiorna' : 'Salva informazioni' }}</button>
-                                @if (editMode) { <button type="button" (click)="cancelEdit()">Annulla</button> }
-                            </div>
-                        </form>
-                        <button class="primary logout-button" (click)="logout()">Logout</button>
-                    </div>
-                }
-            </div>
-        }
-    </div>
+                        <div class="form-actions">
+                            <button type="submit" [disabled]="profileForm.invalid">{{ editMode ? 'Aggiorna' : 'Salva informazioni' }}</button>
+                            @if (editMode) { <button type="button" (click)="cancelEdit()">Annulla</button> }
+                        </div>
+                    </form>
+                    <button (click)="logout()">Logout</button>
+                </div>
+            }
+        </div>
+    }
 }

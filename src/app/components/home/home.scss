@@ -1,9 +1,7 @@
 /* home.scss */
 .home-container {
-  --page-width: 95%;
-  --page-max: 1100px;
-  --page-margin-top: 0;
-  --page-margin-bottom: 0;
+  width: min(95%, 1100px);
+  margin: 0 auto;
   padding: var(--spacing-lg) 0;
 }
 

@@ -1,9 +1,8 @@
 @if (state$ | async; as state) {
 
-    <div class="orders-page page page--narrow">
-    <h1 class="page__title">I tuoi ordini</h1>
+    <h1>I tuoi ordini</h1>
 
-    @if (state.status === 'loading') { <p class="state-message">Caricamento in corso...</p> }
+    @if (state.status === 'loading') { <p>Caricamento in corso...</p> }
     @else if (state.status === 'error') {
         @if (state.code === 401) { 
             <div class="error-message">
@@ -16,10 +15,8 @@
             </div>
         }
     } @else if (state.status === 'empty') {
-        <div class="state-message state-message--empty">
-            <h2>Nessun ordine trovato</h2>
-            <p>Nessun ordine presente.</p>
-        </div>
+        <h2>Nessun ordine trovato</h2>
+        <p>Nessun ordine presente.</p>
     }
     @else {
 
@@ -74,5 +71,4 @@
             }
         </div>
     }
-    </div>
 }

@@ -1,13 +1,21 @@
 /* product-details.scss */
+.detail-wrapper {
+  width: min(90%, 900px);
+  margin: var(--spacing-xl) auto var(--spacing-md);
+}
+
 .product-card {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: var(--spacing-xl);
+  background: var(--color-card);
+  border-radius: var(--radius);
   padding: var(--spacing-xl);
   box-shadow: var(--shadow-md);
+  border: 1px solid var(--color-border);
 
   @media (max-width: 700px) {
-    grid-template-columns: 1fr;
+    grid-template-columns: 1fr; /* stack vertically on mobile */
   }
 }
 
@@ -35,13 +43,7 @@
   border-radius: var(--radius);
   border: 1px solid var(--color-border);
 
-  p {
-    margin: 0;
-    font-size: 16px;
-    font-weight: 600;
-    min-width: 24px;
-    text-align: center;
-  }
+  p { margin: 0; font-size: 16px; font-weight: 600; min-width: 24px; text-align: center; }
 
   button {
     padding: 6px 14px;
@@ -57,11 +59,7 @@
   flex-direction: column;
   gap: var(--spacing-md);
 
-  .product-name {
-    color: var(--color-heading-secondary);
-    font-size: 28px;
-    margin: 0;
-  }
+  .product-name { color: var(--color-heading-secondary); font-size: 28px; margin: 0; }
 
   .category-badge {
     display: inline-block;
@@ -80,10 +78,7 @@
     margin: 0;
   }
 
-  .description {
-    color: var(--color-text-light);
-    line-height: 1.6;
-  }
+  .description { color: var(--color-text-light); line-height: 1.6; }
 
   .price-tag {
     font-size: 26px;
@@ -102,6 +97,43 @@
   }
 }
 
-.product-detail-actions {
-  justify-content: center;
+.back-button { margin-top: var(--spacing-md); }
+
+/* Error container used by product-details template */
+.error-container {
+  text-align: center;
+  padding: var(--spacing-md);
+  background: var(--color-card);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  color: var(--color-danger);
+  box-shadow: var(--shadow-sm);
+  margin-top: var(--spacing-md);
+  margin-left: var(--spacing-xl);
+  margin-right: var(--spacing-xl);
+}
+
+/* Align with other components error look */
+.error-message {
+  text-align: center;
+  padding: var(--spacing-md);
+  background: var(--color-card);
+  border: 1px solid var(--color-border);
+  border-left: 4px solid var(--color-danger);
+  border-radius: var(--radius);
+  color: var(--color-text-light);
+  box-shadow: var(--shadow-sm);
+  margin-top: var(--spacing-md);
+  margin-left: var(--spacing-xl);
+  margin-right: var(--spacing-xl);
+}
+
+.form-actions { margin-top: var(--spacing-md); display:flex; justify-content:center; gap:var(--spacing-sm); }
+
+.primary {
+  background: var(--color-primary);
+  color: white;
+  border: none;
+  padding: 8px 12px;
+  border-radius: 6px;
 }
