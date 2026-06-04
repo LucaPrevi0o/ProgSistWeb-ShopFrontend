@@ -22,12 +22,12 @@
 
 .items {
   display: grid;
-  grid-template-columns: 220px 1fr; /* fixed sidebar, flexible content */
+  grid-template-columns: 220px 1fr;
   gap: var(--spacing-lg);
   align-items: start;
 
   @media (max-width: 900px) {
-    grid-template-columns: 1fr; /* stack on mobile */
+    grid-template-columns: 1fr;
   }
 }
 
@@ -35,14 +35,9 @@
   display: flex;
   flex-direction: column;
   gap: var(--spacing-sm);
-  background: var(--color-card);
-  border-radius: var(--radius);
   padding: var(--spacing-md);
-  box-shadow: var(--shadow-sm);
-  border: 1px solid var(--color-border);
-
   position: sticky;
-  top: 80px; /* below the header */
+  top: 80px;
 
   label {
     display: flex;
@@ -59,8 +54,6 @@
   }
 
   @media (max-width: 900px) {
-    /* Collapsible filters on mobile would need TS logic,
-       but at minimum make them horizontal */
     flex-direction: row;
     flex-wrap: wrap;
     position: static;
@@ -71,31 +64,26 @@
 
 .product-list {
   display: grid;
-  /* Responsive grid: fills space, minimum 220px cards */
   grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
   gap: var(--spacing-md);
 }
 
 .product-item {
-  background: var(--color-card);
-  border-radius: var(--radius);
   padding: var(--spacing-md);
   display: flex;
   flex-direction: column;
   gap: var(--spacing-sm);
-  box-shadow: var(--shadow-sm);
-  border: 1px solid var(--color-border);
   transition: box-shadow var(--transition), transform var(--transition);
 
   &:hover {
     box-shadow: var(--shadow-md);
-    transform: translateY(-3px); /* lift effect on hover */
+    transform: translateY(-3px);
   }
 
   img {
     width: 100%;
     height: 140px;
-    object-fit: cover; /* ensures image fills without stretching */
+    object-fit: cover;
     border-radius: calc(var(--radius) - 2px);
   }
 
@@ -120,7 +108,7 @@
     background: rgba(23, 148, 165, 0.1);
     border: 1px solid var(--color-accent);
     padding: 3px 7px;
-    border-radius: 20px; /* pill shape */
+    border-radius: 20px;
     white-space: nowrap;
     align-self: flex-start;
   }
@@ -129,12 +117,11 @@
     color: var(--color-text-light);
     font-size: 13px;
     line-height: 1.4;
-    /* Clamp to 3 lines to keep cards uniform height */
     display: -webkit-box;
     -webkit-line-clamp: 3;
     -webkit-box-orient: vertical;
     overflow: hidden;
-    flex: 1; /* push price/button to bottom */
+    flex: 1;
   }
 
   .price {
@@ -152,8 +139,9 @@
   }
 }
 
-
-.form-actions { margin-top: var(--spacing-md); display:flex; justify-content:center; gap:var(--spacing-sm); }
+.product-list-actions {
+  justify-content: center;
+}
 
 /* Hide native number input spinners for the page-jump input */
 .page-jump {
