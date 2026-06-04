@@ -1,7 +1,7 @@
 import { HttpClient } from "@angular/common/http";
 import { inject, Injectable } from "@angular/core";
 import { API_BASE_URL } from "../app.config";
-import { User, UserInfo } from "../models/user";
+import { User, UserInfo, UserRole } from "../models/user";
 import { Observable } from "rxjs";
 import { tap } from 'rxjs/operators';
 
@@ -14,10 +14,7 @@ export class UserService {
 
         return this.http.post<User>(API_BASE_URL +'/login', { email: user.email, password: user.password })
             .pipe(
-                tap(res => {
-                    if (res?.token) localStorage.setItem('jwtToken', res.token);
-                    if (res?.id) localStorage.setItem('userId', String(res.id));
-                })
+                tap(res => this.storeAuthSession(res))
             );
     }
 
@@ -25,26 +22,24 @@ export class UserService {
 
         return this.http.post<User>(API_BASE_URL + '/users', { email: user.email, password: user.password })
             .pipe(
-                tap(res => {
-                    if (res?.token) localStorage.setItem('jwtToken', res.token);
-                    if (res?.id) localStorage.setItem('userId', String(res.id));
-                })
+                tap(res => this.storeAuthSession(res))
             );
     }
 
     getToken() : string | null { return localStorage.getItem('jwtToken'); }
-    getUserId() : string | null { return localStorage.getItem('userId'); }    
+    getUserId() : string | null { return localStorage.getItem('userId'); }
+    getRole() : UserRole | null { return localStorage.getItem('userRole') as UserRole | null; }
 
     isLoggedIn() : boolean { return !!localStorage.getItem('jwtToken'); }
+    isAdmin() : boolean { return this.getRole() === 'ADMIN'; }
 
     logout() : void {
-        
         localStorage.removeItem('jwtToken');
         localStorage.removeItem('userId');
+        localStorage.removeItem('userRole');
     }
 
     getUser() : Observable<User> {
-        
         const userId = localStorage.getItem('userId');
         if (!userId) throw new Error('User ID not found in local storage');
         return this.http.get<User>(API_BASE_URL + `/users/${userId}`);
@@ -52,5 +47,11 @@ export class UserService {
 
     updateUserInfo(userId: number, info: Partial<UserInfo>) : Observable<User> {
         return this.http.patch<User>(API_BASE_URL + `/users/${userId}/info`, { info });
+    }
+
+    private storeAuthSession(res: User): void {
+        if (res?.token) localStorage.setItem('jwtToken', res.token);
+        if (res?.id) localStorage.setItem('userId', String(res.id));
+        if (res?.role) localStorage.setItem('userRole', res.role);
     }
 }
