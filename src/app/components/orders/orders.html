@@ -4,13 +4,20 @@
 
     @if (state.status === 'loading') { <p>Caricamento in corso...</p> }
     @else if (state.status === 'error') {
-        @if (state.code === 401) { <app-login-redirector></app-login-redirector> } @else {
+        @if (state.code === 401) { 
+            <div class="error-message">
+                <app-login-redirector></app-login-redirector>
+            </div>
+        } @else {
             <div class="error-message">
                 <h2>Errore nel caricamento degli ordini</h2>
                 <p>Codice errore: <strong>{{ state.code }}</strong></p>
             </div>
         }
-    } @else if (state.status === 'empty') { <p>Nessun ordine presente.</p> }
+    } @else if (state.status === 'empty') {
+        <h2>Nessun ordine trovato</h2>
+        <p>Nessun ordine presente.</p>
+    }
     @else {
 
         <div class="orders-list">

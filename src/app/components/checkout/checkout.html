@@ -4,13 +4,21 @@
     @if (userState$ | async; as userState) {
 
         @if (userState.status === 'loading') { <p>Caricamento dati utente...</p> }
-        @else if (userState.status === 'error') { <p>Errore nel caricamento dati utente: {{ userState.code }}</p> }
-        @else if (userState.status === 'empty') { <p>Nessun dato utente disponibile.</p> }
+        @else if (userState.status === 'error') {
+            <div class="error-message">
+                <h2>Errore nel caricamento dati utente</h2>
+                <p>Codice errore: <strong>{{ userState.code }}</strong></p>
+            </div>
+        } @else if (userState.status === 'empty') { <p>Nessun dato utente disponibile.</p> }
     }
 
     @if (state.status === 'loading') { <p>Caricamento carrello...</p> }
-    @else if (state.status === 'error') { <p>Errore: {{ state.code }}</p> }
-    @else if (state.status === 'empty') { <p>Il carrello è vuoto.</p> }
+    @else if (state.status === 'error') {
+        <div class="error-message">
+            <h2>Errore nel caricamento del carrello</h2>
+            <p>Codice errore: <strong>{{ state.code }}</strong></p>
+        </div>
+    } @else if (state.status === 'empty') { <p>Il carrello è vuoto.</p> }
     @else {
 
         <div class="checkout-root">

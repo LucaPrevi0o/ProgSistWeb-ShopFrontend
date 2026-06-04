@@ -6,8 +6,10 @@
         
         @if (state.code === 401) { <app-login-redirector></app-login-redirector> } @else { 
             
-            <h2>Si è verificato un errore.</h2>
-            <p>Codice errore: <strong>{{ state.code }}</strong></p>
+            <div class="error-message">
+                <h2>Si è verificato un errore.</h2>
+                <p>Codice errore: <strong>{{ state.code }}</strong></p>
+            </div>
         }
     } @else if (state.status === 'empty') { <p>Profilo non trovato.</p> }
     @else {
