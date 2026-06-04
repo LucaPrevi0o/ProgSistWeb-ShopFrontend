@@ -1,7 +1,7 @@
 @if (state$ | async; as state) {
 
-    <div>
-        @if (state.status === 'loading') { <p>Caricamento in corso...</p> }
+    <div class="product-detail-page page page--medium">
+        @if (state.status === 'loading') { <p class="state-message">Caricamento in corso...</p> }
         @else if (state.status === 'error') {
 
             @if (state.code === 422) {
@@ -21,7 +21,7 @@
                     <p>Si è verificato un errore: <strong>{{ state.code }}</strong></p>
                 </div>
             }
-        } @else if (state.status === 'empty') { <p>Nessun prodotto disponibile.</p> }
+        } @else if (state.status === 'empty') { <p class="state-message state-message--empty">Nessun prodotto disponibile.</p> }
         @else {
 
             <div class="detail-wrapper">

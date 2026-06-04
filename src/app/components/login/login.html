@@ -1,6 +1,7 @@
 @if (state$ | async; as state) {
 
-    <div class="auth-root">
+    <div class="page page--auth">
+        <div class="auth-root">
 
         @if (state.status === 'error') {
             <div class="auth-card error-card">
@@ -48,6 +49,7 @@
                 <div class="aux">
                     <button (click)="this.router.navigate(['/register'])">Crea account</button>
                     <button (click)="this.router.navigate(['/forgot-password'])">Password dimenticata?</button>
+                </div>
                 </div>
             </div>
         }

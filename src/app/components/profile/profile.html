@@ -1,7 +1,8 @@
 @if (state$ | async; as state) {
 
-    <h1>Il tuo Profilo</h1>
-    @if (state.status === 'loading') { <p>Caricamento in corso...</p> }
+    <div class="profile-page page page--narrow">
+    <h1 class="page__title">Il tuo Profilo</h1>
+    @if (state.status === 'loading') { <p class="state-message">Caricamento in corso...</p> }
     @else if (state.status === 'error') { 
         
         @if (state.code === 401) { <app-login-redirector></app-login-redirector> } @else { 
@@ -11,7 +12,7 @@
                 <p>Codice errore: <strong>{{ state.code }}</strong></p>
             </div>
         }
-    } @else if (state.status === 'empty') { <p>Profilo non trovato.</p> }
+    } @else if (state.status === 'empty') { <p class="state-message state-message--empty">Profilo non trovato.</p> }
     @else {
 
         <div class="profile-container">
@@ -154,4 +155,5 @@
             }
         </div>
     }
+    </div>
 }

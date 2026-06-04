@@ -1,26 +1,6 @@
-.auth-root {
-    display: flex;
-    justify-content: center;
-}
-
-.auth-card {
-    max-width: 580px;
-    width: 100%;
-    background: var(--color-card);
-    padding: var(--spacing-md);
-    border-radius: var(--radius);
-    border: 1px solid var(--color-border);
-}
-
 .auth-card h1,
 .auth-card h2 {
     margin: 0 0 var(--spacing-sm) 0;
-}
-
-.form {
-    display: flex;
-    flex-direction: column;
-    gap: var(--spacing-sm);
 }
 
 .form-group {
@@ -60,15 +40,4 @@
 .form-actions {
     display: flex;
     gap: var(--spacing-sm);
-}
-
-.primary {
-    background: var(--color-primary);
-    color: white;
-    padding: 8px 12px;
-    border-radius: 6px;
-}
-
-.error-card {
-    border-color: var(--color-danger);
 }

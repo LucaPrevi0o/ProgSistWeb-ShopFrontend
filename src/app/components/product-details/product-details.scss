@@ -1,7 +1,6 @@
 /* product-details.scss */
 .detail-wrapper {
-  width: min(90%, 900px);
-  margin: var(--spacing-xl) auto var(--spacing-md);
+  margin: 0;
 }
 
 .product-card {
@@ -113,27 +112,11 @@
   margin-right: var(--spacing-xl);
 }
 
-/* Align with other components error look */
 .error-message {
-  text-align: center;
   padding: var(--spacing-md);
-  background: var(--color-card);
-  border: 1px solid var(--color-border);
-  border-left: 4px solid var(--color-danger);
-  border-radius: var(--radius);
-  color: var(--color-text-light);
-  box-shadow: var(--shadow-sm);
   margin-top: var(--spacing-md);
   margin-left: var(--spacing-xl);
   margin-right: var(--spacing-xl);
 }
 
 .form-actions { margin-top: var(--spacing-md); display:flex; justify-content:center; gap:var(--spacing-sm); }
-
-.primary {
-  background: var(--color-primary);
-  color: white;
-  border: none;
-  padding: 8px 12px;
-  border-radius: 6px;
-}

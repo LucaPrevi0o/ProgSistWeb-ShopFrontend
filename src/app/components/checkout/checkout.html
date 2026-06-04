@@ -1,9 +1,10 @@
 @if (state$ | async; as state) {
 
-    <h1>Checkout</h1>
+    <div class="checkout-page page page--medium">
+    <h1 class="page__title">Checkout</h1>
     @if (userState$ | async; as userState) {
 
-        @if (userState.status === 'loading') { <p>Caricamento dati utente...</p> }
+        @if (userState.status === 'loading') { <p class="state-message">Caricamento dati utente...</p> }
         @else if (userState.status === 'error') {
             <div class="error-message">
                 <h2>Errore nel caricamento dati utente</h2>
@@ -12,19 +13,19 @@
         } @else if (userState.status === 'empty') { <p>Nessun dato utente disponibile.</p> }
     }
 
-    @if (state.status === 'loading') { <p>Caricamento carrello...</p> }
+    @if (state.status === 'loading') { <p class="state-message">Caricamento carrello...</p> }
     @else if (state.status === 'error') {
         <div class="error-message">
             <h2>Errore nel caricamento del carrello</h2>
             <p>Codice errore: <strong>{{ state.code }}</strong></p>
         </div>
-    } @else if (state.status === 'empty') { <p>Il carrello è vuoto.</p> }
+    } @else if (state.status === 'empty') { <p class="state-message state-message--empty">Il carrello è vuoto.</p> }
     @else {
 
         <div class="checkout-root">
-            <div class="checkout-container">
+            <div class="checkout-container layout-split layout-split--equal">
 
-                <section class="items" aria-labelledby="order-summary-title">
+                <section class="items surface-card" aria-labelledby="order-summary-title">
                     <h3 id="order-summary-title">Riepilogo ordine</h3>
 
                     @for (it of state.data.items; track it.product.id) {
@@ -40,7 +41,7 @@
                     <div class="total">Totale: € {{ getSubtotal(state.data) }}</div>
                 </section>
 
-                <aside class="form" aria-labelledby="shipping-title">
+                <aside class="form form-shell" aria-labelledby="shipping-title">
                     <h3 id="shipping-title">Dati di spedizione</h3>
 
                     <form [formGroup]="checkoutForm" (ngSubmit)="submit(state.data)" novalidate>
@@ -179,4 +180,5 @@
             </div>
         </div>
     }
+    </div>
 }

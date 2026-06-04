@@ -1,9 +1,9 @@
 @if (state$ | async; as state) {
 
-    <div class="cart-container">
-        <h2>Il tuo carrello</h2>
+    <div class="cart-container page page--narrow">
+        <h2 class="page__title">Il tuo carrello</h2>
 
-        @if (state.status === 'loading') { <p>Caricamento in corso...</p> }
+        @if (state.status === 'loading') { <p class="state-message">Caricamento in corso...</p> }
 
         @else if (state.status === 'error') {
 
@@ -21,7 +21,7 @@
             }
 
         } @else if (state.status === 'empty') {
-            <div class="empty-cart"><p>Il carrello è vuoto.</p></div>
+            <div class="state-message state-message--empty"><p>Il carrello è vuoto.</p></div>
 
         } @else {
 

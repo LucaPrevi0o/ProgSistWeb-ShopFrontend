@@ -1,7 +1,7 @@
 @if (state$ | async; as state) {
 
-    <h1>Lista dei Prodotti</h1>
-    <div class="product-list-container">
+    <div class="product-list-container page page--wide">
+    <h1 class="page__title">Lista dei Prodotti</h1>
 
         <div class="pagination">
             <button (click)="prevPage()" [disabled]="currentPage === 1">Precedente</button>
@@ -29,7 +29,7 @@
                 <button (click)="applyFilters()">Applica filtri</button>
                 <button (click)="resetFilters()">Reset</button>
             </div>
-            @if (state.status === 'loading') { <p>Caricamento in corso...</p> }
+            @if (state.status === 'loading') { <p class="state-message">Caricamento in corso...</p> }
             @else if (state.status === 'error') {
 
                 <div class="error-message">
@@ -40,7 +40,7 @@
                         <button (click)="resetFilters()">Reset filtri</button>
                     </div>
                 </div>
-            } @else if (state.status === 'empty') { <p>Nessun prodotto disponibile.</p> }
+            } @else if (state.status === 'empty') { <p class="state-message state-message--empty">Nessun prodotto disponibile.</p> }
             @else {
 
                 <div class="product-list">
