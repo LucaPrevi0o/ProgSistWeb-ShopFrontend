@@ -1,0 +1,67 @@
+@if (state$ | async; as state) {
+
+    <h1>I tuoi ordini</h1>
+
+    @if (state.status === 'loading') { <p>Caricamento in corso...</p> }
+    @else if (state.status === 'error') {
+        @if (state.code === 401) { <app-login-redirector></app-login-redirector> } @else {
+            <div class="error-message">
+                <h2>Errore nel caricamento degli ordini</h2>
+                <p>Codice errore: <strong>{{ state.code }}</strong></p>
+            </div>
+        }
+    } @else if (state.status === 'empty') { <p>Nessun ordine presente.</p> }
+    @else {
+
+        <div class="orders-list">
+            @for (order of state.data; track order) {
+                <div class="order-card">
+                    <div class="order-header">
+                        <!--div class="order-summary">
+                            <div class="order-id">Ordine #{{ order.id }}</div>
+                            <div class="order-date">{{ order.createdAt | date:'medium' }}</div>
+                        </div-->
+
+                        <div class="order-meta">
+                            <!--div class="order-status {{ statusClass(order.status) }}">{{ order.status }}</div-->
+
+                            <div class="payment-info">
+                                @if (asPayPal(order.paymentMethod)) {
+                                    <div class="payment-line">PayPal: <strong>{{ asPayPal(order.paymentMethod)?.email }}</strong></div>
+                                } @else if (asCreditCard(order.paymentMethod)) {
+                                    <div class="payment-line">Carta: <strong>**** **** **** {{ last4Digits(asCreditCard(order.paymentMethod)?.cardNumber || '') }}</strong></div>
+                                    <div class="payment-line">Intestatario: <strong>{{ asCreditCard(order.paymentMethod)?.cardholderName }}</strong></div>
+                                } @else {
+                                    <div class="payment-line">Metodo pagamento sconosciuto</div>
+                                }
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="order-body">
+                        <div class="order-summary-row">
+                            <p class="order-total">Totale: <strong>{{ total(order) }} €</strong></p>
+                            <p class="order-count">Articoli: {{ order.items.length }}</p>
+                        </div>
+
+                        <div class="items">
+                            @for (it of order.items; track it.product.id) {
+                                <div class="item">
+                                    <div class="item-left">
+                                        <span class="item-name">{{ it.product.name }}</span>
+                                        @if (it.product.description) { <div class="item-desc">{{ it.product.description }}</div> }
+                                    </div>
+                                    <div class="item-right">
+                                        <span class="item-qty">x {{ it.quantity }}</span>
+                                        <span class="item-price">{{ it.product.price }} €</span>
+                                        <span class="item-subtotal">({{ itemTotal(it) }} €)</span>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+}
