@@ -1,33 +1,33 @@
 <div class="admin-products page page--wide">
     <div class="admin-products__header">
         <div>
-            <h1 class="page__title">Products</h1>
-            <p class="admin-products__subtitle">Manage catalog items, pricing and stock.</p>
+            <h1 class="page__title">Prodotti</h1>
+            <p class="admin-products__subtitle">Gestisci gli articoli del catalogo, i prezzi e lo stock.</p>
         </div>
 
-        <button class="primary" type="button" disabled>New Product</button>
+        <button class="primary" type="button" disabled>Nuovo Prodotto</button>
     </div>
 
     @if (productsState$ | async; as state) {
         @if (state.status === 'loading') {
-            <p class="state-message">Loading products...</p>
+            <p class="state-message">Caricamento in corso...</p>
         } @else if (state.status === 'error') {
             <div class="error-message">
-                <h2>Failed to load products</h2>
-                <p>Error code: <strong>{{ state.code }}</strong></p>
+                <h2>Si è verificato un errore</h2>
+                <p>Codice errore: <strong>{{ state.code }}</strong></p>
             </div>
         } @else if (state.status === 'empty') {
-            <p class="state-message state-message--empty">No products found.</p>
+            <p class="state-message state-message--empty">Nessun prodotto trovato.</p>
         } @else {
             <div class="surface-card admin-products__table-card">
                 <table class="admin-table">
                     <thead>
                         <tr>
                             <th>ID</th>
-                            <th>Name</th>
-                            <th>Category</th>
-                            <th>Price</th>
-                            <th>Stock</th>
+                            <th>Nome</th>
+                            <th>Categoria</th>
+                            <th>Prezzo</th>
+                            <th>Quantità</th>
                         </tr>
                     </thead>
 

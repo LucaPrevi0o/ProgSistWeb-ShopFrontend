@@ -28,5 +28,10 @@ export const routes: Routes = [
         canActivate: [AdminGuard],
         loadComponent: () => import('./admin/dashboard/admin-dashboard').then(m => m.AdminDashboardComponent)
     },
+    {
+        path: 'admin/products',
+        canActivate: [AdminGuard],
+        loadComponent: () => import('./admin/products/admin-products').then(m => m.AdminProductsComponent)
+    },
     { path: 'login-redirect', component: LoginRedirectorComponent }
 ];
