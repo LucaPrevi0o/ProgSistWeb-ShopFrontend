@@ -24,6 +24,10 @@ export class AdminService {
         return this.http.get<Product>(`${API_BASE_URL}/admin/products/${id}`);
     }
 
+    getCategories(): Observable<string[]> {
+        return this.http.get<string[]>(`${API_BASE_URL}/categories`);
+    }
+
     createProduct(product: ProductPayload): Observable<Product> {
         return this.http.post<Product>(`${API_BASE_URL}/admin/products`, { product });
     }
