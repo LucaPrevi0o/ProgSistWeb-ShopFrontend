@@ -27,7 +27,24 @@
 
                 <div class="form-group">
                     <label for="category">Categoria</label>
-                    <input id="category" type="text" formControlName="category" />
+
+                    <select
+                        id="category"
+                        formControlName="category">
+
+                        @for (category of categories; track category) {
+                            <option [value]="category">
+                                {{ category }}
+                            </option>
+                        }
+
+                    </select>
+
+                    @if (categoriesError) {
+                        <small class="error-message">
+                            {{ categoriesError }}
+                        </small>
+                    }
                 </div>
 
                 <div class="form-row">
