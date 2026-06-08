@@ -22,7 +22,9 @@ export class AdminProductsComponent implements OnInit {
     categories: string[] = [];
     showCreateForm = false;
     saving = false;
+    deletingId: number | null = null;
     saveError: string | null = null;
+    deleteError: string | null = null;
     categoriesError: string | null = null;
 
     productForm = this.fb.nonNullable.group({
@@ -77,6 +79,27 @@ export class AdminProductsComponent implements OnInit {
             error: err => {
                 this.saveError = err?.error?.details?.join(', ') || err?.error?.error || 'Failed to create product';
                 this.saving = false;
+            }
+        });
+    }
+
+    deleteProduct(product: Product): void {
+        if (this.deletingId !== null) return;
+
+        const confirmed = window.confirm(`Eliminare il prodotto "${product.name}"?`);
+        if (!confirmed) return;
+
+        this.deletingId = product.id;
+        this.deleteError = null;
+
+        this.adminService.deleteProduct(product.id).subscribe({
+            next: () => {
+                this.productsState$ = this.loadProducts();
+                this.deletingId = null;
+            },
+            error: err => {
+                this.deleteError = err?.error?.error || 'Impossibile eliminare il prodotto';
+                this.deletingId = null;
             }
         });
     }
