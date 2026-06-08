@@ -9,6 +9,7 @@ import { HomeComponent } from './components/home/home';
 import { ProfileComponent } from './components/profile/profile';
 import { LoginRedirectorComponent } from './components/login-redirector/login-redirector';
 import { OrdersComponent } from './components/orders/orders';
+import { AdminGuard } from './admin/admin-guard';
 
 export const routes: Routes = [
     
@@ -22,5 +23,10 @@ export const routes: Routes = [
     { path: 'checkout', component: CheckoutComponent },
     { path: 'orders', component: OrdersComponent },
     { path: 'users/:id', component: ProfileComponent },
+    {
+        path: 'admin',
+        canActivate: [AdminGuard],
+        loadComponent: () => import('./admin/dashboard/admin-dashboard').then(m => m.AdminDashboardComponent)
+    },
     { path: 'login-redirect', component: LoginRedirectorComponent }
 ];
