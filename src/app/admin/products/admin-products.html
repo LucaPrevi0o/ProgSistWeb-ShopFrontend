@@ -5,8 +5,57 @@
             <p class="admin-products__subtitle">Gestisci gli articoli del catalogo, i prezzi e lo stock.</p>
         </div>
 
-        <button class="primary" type="button" disabled>Nuovo Prodotto</button>
+        <button class="primary" type="button" (click)="toggleCreateForm()">
+            {{ showCreateForm ? 'Annulla' : 'Nuovo Prodotto' }}
+        </button>
     </div>
+
+    @if (showCreateForm) {
+        <div class="form-shell admin-products__create">
+            <h2>Crea prodotto</h2>
+
+            <form [formGroup]="productForm" (ngSubmit)="createProduct()" class="form">
+                <div class="form-group">
+                    <label for="name">Nome</label>
+                    <input id="name" type="text" formControlName="name" />
+                </div>
+
+                <div class="form-group">
+                    <label for="description">Descrizione</label>
+                    <textarea id="description" formControlName="description"></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="category">Categoria</label>
+                    <input id="category" type="text" formControlName="category" />
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="price">Prezzo</label>
+                        <input id="price" type="number" min="0" step="0.01" formControlName="price" />
+                    </div>
+
+                    <div class="form-group">
+                        <label for="stock">Quantità</label>
+                        <input id="stock" type="number" min="0" step="1" formControlName="stock" />
+                    </div>
+                </div>
+
+                @if (saveError) {
+                    <div class="error-message">
+                        {{ saveError }}
+                    </div>
+                }
+
+                <div class="form-actions">
+                    <button class="primary" type="submit" [disabled]="productForm.invalid || saving">
+                        {{ saving ? 'Salvataggio...' : 'Crea prodotto' }}
+                    </button>
+                </div>
+            </form>
+        </div>
+    }
 
     @if (productsState$ | async; as state) {
         @if (state.status === 'loading') {
