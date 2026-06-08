@@ -1,4 +1,6 @@
 <div class="admin-products page page--wide">
+    @if (actions$ | async) {}
+
     <div class="admin-products__header">
         <div>
             <h1 class="page__title">Prodotti</h1>
@@ -28,22 +30,29 @@
                 <div class="form-group">
                     <label for="category">Categoria</label>
 
-                    <select
-                        id="category"
-                        formControlName="category">
-
-                        @for (category of categories; track category) {
-                            <option [value]="category">
-                                {{ category }}
-                            </option>
+                    @if (categoriesState$ | async; as categoriesState) {
+                        @if (categoriesState.status === 'loading') {
+                            <select id="category" formControlName="category" disabled>
+                                <option>Caricamento categorie...</option>
+                            </select>
+                        } @else if (categoriesState.status === 'error') {
+                            <select id="category" formControlName="category" disabled>
+                                <option>Errore caricamento categorie</option>
+                            </select>
+                            <small class="error-message">Codice errore: {{ categoriesState.code }}</small>
+                        } @else if (categoriesState.status === 'empty') {
+                            <select id="category" formControlName="category" disabled>
+                                <option>Nessuna categoria disponibile</option>
+                            </select>
+                        } @else {
+                            <select id="category" formControlName="category">
+                                @for (category of categoriesState.data; track category) {
+                                    <option [value]="category">
+                                        {{ category }}
+                                    </option>
+                                }
+                            </select>
                         }
-
-                    </select>
-
-                    @if (categoriesError) {
-                        <small class="error-message">
-                            {{ categoriesError }}
-                        </small>
                     }
                 </div>
 
