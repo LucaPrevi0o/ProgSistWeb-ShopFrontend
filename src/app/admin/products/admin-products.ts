@@ -1,7 +1,7 @@
 import { AsyncPipe } from '@angular/common';
 import { Component, inject } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { BehaviorSubject, catchError, EMPTY, finalize, map, Observable, Subject, switchMap, tap } from 'rxjs';
+import { BehaviorSubject, catchError, EMPTY, finalize, merge, Observable, Subject, switchMap, tap } from 'rxjs';
 import { toHttpState, HttpState } from '../../app.config';
 import { Product } from '../../models/product';
 import { AdminService } from '../admin-service';
@@ -21,19 +21,38 @@ export class AdminProductsComponent {
     private createProduct$ = new Subject<void>();
     private deleteProduct$ = new Subject<Product>();
 
+    showCreateForm = false;
+    saving = false;
+    deletingId: number | null = null;
+    saveError: string | null = null;
+    deleteError: string | null = null;
+    lastKnownCategories: string[] = [];
+
+    productForm = this.fb.nonNullable.group({
+        name: ['', Validators.required],
+        description: ['', Validators.required],
+        category: ['', Validators.required],
+        price: [0, [Validators.required, Validators.min(0)]],
+        stock: [0, [Validators.required, Validators.min(0)]]
+    });
+
     productsState$: Observable<HttpState<Product[]>> = this.refreshProducts$.pipe(
         switchMap(() => toHttpState(this.adminService.getProducts()))
     );
 
     categoriesState$: Observable<HttpState<string[]>> = toHttpState(this.adminService.getCategories()).pipe(
         tap(state => {
-            if (state.status === 'success' && state.data.length > 0 && !this.productForm.controls.category.value) {
+            if (state.status !== 'success') return;
+
+            this.lastKnownCategories = state.data;
+
+            if (state.data.length > 0 && !this.productForm.controls.category.value) {
                 this.productForm.patchValue({ category: state.data[0] });
             }
         })
     );
 
-    createAction$ = this.createProduct$.pipe(
+    private createAction$ = this.createProduct$.pipe(
         switchMap(() => {
             if (this.productForm.invalid || this.saving) return EMPTY;
 
@@ -61,7 +80,7 @@ export class AdminProductsComponent {
         })
     );
 
-    deleteAction$ = this.deleteProduct$.pipe(
+    private deleteAction$ = this.deleteProduct$.pipe(
         switchMap(product => {
             if (this.deletingId !== null) return EMPTY;
 
@@ -82,31 +101,7 @@ export class AdminProductsComponent {
         })
     );
 
-    actions$ = new BehaviorSubject<null>(null).pipe(
-        switchMap(() => this.createAction$.pipe(catchError(() => EMPTY)))
-    );
-
-    showCreateForm = false;
-    saving = false;
-    deletingId: number | null = null;
-    saveError: string | null = null;
-    deleteError: string | null = null;
-    lastKnownCategories: string[] = [];
-
-    categoriesForTemplate$ = this.categoriesState$.pipe(
-        tap(state => {
-            if (state.status === 'success') this.lastKnownCategories = state.data;
-        }),
-        map(state => state)
-    );
-
-    productForm = this.fb.nonNullable.group({
-        name: ['', Validators.required],
-        description: ['', Validators.required],
-        category: ['', Validators.required],
-        price: [0, [Validators.required, Validators.min(0)]],
-        stock: [0, [Validators.required, Validators.min(0)]]
-    });
+    actions$ = merge(this.createAction$, this.deleteAction$);
 
     toggleCreateForm(): void {
         this.showCreateForm = !this.showCreateForm;
