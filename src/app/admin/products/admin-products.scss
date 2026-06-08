@@ -34,3 +34,8 @@
 .admin-table th {
     color: var(--color-heading-secondary);
 }
+
+.admin-table__actions {
+    width: 1%;
+    white-space: nowrap;
+}
