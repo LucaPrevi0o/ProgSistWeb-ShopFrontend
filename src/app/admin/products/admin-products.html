@@ -85,6 +85,12 @@
         } @else if (state.status === 'empty') {
             <p class="state-message state-message--empty">Nessun prodotto trovato.</p>
         } @else {
+            @if (deleteError) {
+                <div class="error-message">
+                    {{ deleteError }}
+                </div>
+            }
+
             <div class="surface-card admin-products__table-card">
                 <table class="admin-table">
                     <thead>
@@ -94,6 +100,7 @@
                             <th>Categoria</th>
                             <th>Prezzo</th>
                             <th>Quantità</th>
+                            <th>Azioni</th>
                         </tr>
                     </thead>
 
@@ -105,6 +112,15 @@
                                 <td>{{ product.category }}</td>
                                 <td>€ {{ product.price }}</td>
                                 <td>{{ product.stock }}</td>
+                                <td class="admin-table__actions">
+                                    <button
+                                        type="button"
+                                        class="danger"
+                                        [disabled]="deletingId === product.id"
+                                        (click)="deleteProduct(product)">
+                                        {{ deletingId === product.id ? 'Eliminazione...' : 'Elimina' }}
+                                    </button>
+                                </td>
                             </tr>
                         }
                     </tbody>
