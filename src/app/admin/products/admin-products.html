@@ -32,16 +32,16 @@
 
                     @if (categoriesState$ | async; as categoriesState) {
                         @if (categoriesState.status === 'loading') {
-                            <select id="category" formControlName="category" disabled>
+                            <select id="category" formControlName="category">
                                 <option>Caricamento categorie...</option>
                             </select>
                         } @else if (categoriesState.status === 'error') {
-                            <select id="category" formControlName="category" disabled>
+                            <select id="category" formControlName="category">
                                 <option>Errore caricamento categorie</option>
                             </select>
                             <small class="error-message">Codice errore: {{ categoriesState.code }}</small>
                         } @else if (categoriesState.status === 'empty') {
-                            <select id="category" formControlName="category" disabled>
+                            <select id="category" formControlName="category">
                                 <option>Nessuna categoria disponibile</option>
                             </select>
                         } @else {
