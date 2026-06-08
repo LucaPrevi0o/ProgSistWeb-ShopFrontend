@@ -1,0 +1,20 @@
+.admin-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: var(--spacing-lg);
+}
+
+.admin-card {
+    text-decoration: none;
+    color: inherit;
+    padding: var(--spacing-lg);
+    transition: transform var(--transition);
+
+    &:hover {
+        transform: translateY(-2px);
+    }
+}
+
+.admin-card--disabled {
+    opacity: 0.7;
+}
