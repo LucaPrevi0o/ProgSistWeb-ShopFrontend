@@ -19,11 +19,13 @@ export class AdminProductsComponent {
     private fb = inject(FormBuilder);
     private refreshProducts$ = new BehaviorSubject<void>(undefined);
     private createProduct$ = new Subject<void>();
+    private updateProduct$ = new Subject<void>();
     private deleteProduct$ = new Subject<Product>();
 
     showCreateForm = false;
     saving = false;
     deletingId: number | null = null;
+    editingProduct: Product | null = null;
     saveError: string | null = null;
     deleteError: string | null = null;
     lastKnownCategories: string[] = [];
@@ -61,18 +63,33 @@ export class AdminProductsComponent {
 
             return this.adminService.createProduct(this.productForm.getRawValue()).pipe(
                 tap(() => {
-                    this.productForm.reset({
-                        name: '',
-                        description: '',
-                        category: this.lastKnownCategories[0] ?? '',
-                        price: 0,
-                        stock: 0
-                    });
+                    this.resetForm();
                     this.showCreateForm = false;
                     this.refreshProducts$.next();
                 }),
                 catchError(err => {
                     this.saveError = err?.error?.details?.join(', ') || err?.error?.error || 'Failed to create product';
+                    return EMPTY;
+                }),
+                finalize(() => this.saving = false)
+            );
+        })
+    );
+
+    private updateAction$ = this.updateProduct$.pipe(
+        switchMap(() => {
+            if (!this.editingProduct || this.productForm.invalid || this.saving) return EMPTY;
+
+            this.saving = true;
+            this.saveError = null;
+
+            return this.adminService.updateProduct(this.editingProduct.id, this.productForm.getRawValue()).pipe(
+                tap(() => {
+                    this.cancelEdit();
+                    this.refreshProducts$.next();
+                }),
+                catchError(err => {
+                    this.saveError = err?.error?.details?.join(', ') || err?.error?.error || 'Failed to update product';
                     return EMPTY;
                 }),
                 finalize(() => this.saving = false)
@@ -91,7 +108,10 @@ export class AdminProductsComponent {
             this.deleteError = null;
 
             return this.adminService.deleteProduct(product.id).pipe(
-                tap(() => this.refreshProducts$.next()),
+                tap(() => {
+                    if (this.editingProduct?.id === product.id) this.cancelEdit();
+                    this.refreshProducts$.next();
+                }),
                 catchError(err => {
                     this.deleteError = err?.error?.error || 'Impossibile eliminare il prodotto';
                     return EMPTY;
@@ -101,18 +121,56 @@ export class AdminProductsComponent {
         })
     );
 
-    actions$ = merge(this.createAction$, this.deleteAction$);
+    actions$ = merge(this.createAction$, this.updateAction$, this.deleteAction$);
 
     toggleCreateForm(): void {
         this.showCreateForm = !this.showCreateForm;
+        this.editingProduct = null;
         this.saveError = null;
+
+        if (this.showCreateForm) this.resetForm();
     }
 
-    createProduct(): void {
-        this.createProduct$.next();
+    startEdit(product: Product): void {
+        this.editingProduct = product;
+        this.showCreateForm = true;
+        this.saveError = null;
+
+        this.productForm.setValue({
+            name: product.name,
+            description: product.description,
+            category: product.category,
+            price: Number(product.price),
+            stock: Number(product.stock)
+        });
+    }
+
+    cancelEdit(): void {
+        this.editingProduct = null;
+        this.showCreateForm = false;
+        this.saveError = null;
+        this.resetForm();
+    }
+
+    submitProductForm(): void {
+        if (this.editingProduct) {
+            this.updateProduct$.next();
+        } else {
+            this.createProduct$.next();
+        }
     }
 
     deleteProduct(product: Product): void {
         this.deleteProduct$.next(product);
+    }
+
+    private resetForm(): void {
+        this.productForm.reset({
+            name: '',
+            description: '',
+            category: this.lastKnownCategories[0] ?? '',
+            price: 0,
+            stock: 0
+        });
     }
 }
