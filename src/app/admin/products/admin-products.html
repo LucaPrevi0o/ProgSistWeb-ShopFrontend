@@ -14,9 +14,9 @@
 
     @if (showCreateForm) {
         <div class="form-shell admin-products__create">
-            <h2>Crea prodotto</h2>
+            <h2>{{ editingProduct ? 'Modifica prodotto' : 'Crea prodotto' }}</h2>
 
-            <form [formGroup]="productForm" (ngSubmit)="createProduct()" class="form">
+            <form [formGroup]="productForm" (ngSubmit)="submitProductForm()" class="form">
                 <div class="form-group">
                     <label for="name">Nome</label>
                     <input id="name" type="text" formControlName="name" />
@@ -75,8 +75,14 @@
                 }
 
                 <div class="form-actions">
+                    @if (editingProduct) {
+                        <button type="button" (click)="cancelEdit()">
+                            Annulla
+                        </button>
+                    }
+
                     <button class="primary" type="submit" [disabled]="productForm.invalid || saving">
-                        {{ saving ? 'Salvataggio...' : 'Crea prodotto' }}
+                        {{ saving ? 'Salvataggio...' : (editingProduct ? 'Salva modifiche' : 'Crea prodotto') }}
                     </button>
                 </div>
             </form>
@@ -122,6 +128,12 @@
                                 <td>€ {{ product.price }}</td>
                                 <td>{{ product.stock }}</td>
                                 <td class="admin-table__actions">
+                                    <button
+                                        type="button"
+                                        (click)="startEdit(product)">
+                                        Modifica
+                                    </button>
+
                                     <button
                                         type="button"
                                         class="danger"
