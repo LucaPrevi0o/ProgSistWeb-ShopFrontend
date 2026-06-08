@@ -1,5 +1,5 @@
 import { AsyncPipe } from '@angular/common';
-import { Component, inject } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Observable } from 'rxjs';
 import { toHttpState, HttpState } from '../../app.config';
@@ -13,23 +13,42 @@ import { AdminService } from '../admin-service';
     templateUrl: './admin-products.html',
     styleUrls: ['./admin-products.scss']
 })
-export class AdminProductsComponent {
+export class AdminProductsComponent implements OnInit {
 
     private adminService = inject(AdminService);
     private fb = inject(FormBuilder);
 
     productsState$: Observable<HttpState<Product[]>> = this.loadProducts();
+    categories: string[] = [];
     showCreateForm = false;
     saving = false;
     saveError: string | null = null;
+    categoriesError: string | null = null;
 
     productForm = this.fb.nonNullable.group({
         name: ['', Validators.required],
         description: ['', Validators.required],
-        category: ['Elettronica', Validators.required],
+        category: ['', Validators.required],
         price: [0, [Validators.required, Validators.min(0)]],
         stock: [0, [Validators.required, Validators.min(0)]]
     });
+
+    ngOnInit(): void {
+        this.adminService.getCategories().subscribe({
+            next: categories => {
+                this.categories = categories;
+                this.categoriesError = null;
+
+                if (categories.length > 0 && !this.productForm.controls.category.value) {
+                    this.productForm.patchValue({ category: categories[0] });
+                }
+            },
+            error: () => {
+                this.categories = [];
+                this.categoriesError = 'Impossibile caricare le categorie.';
+            }
+        });
+    }
 
     toggleCreateForm(): void {
         this.showCreateForm = !this.showCreateForm;
@@ -47,7 +66,7 @@ export class AdminProductsComponent {
                 this.productForm.reset({
                     name: '',
                     description: '',
-                    category: 'Elettronica',
+                    category: this.categories[0] ?? '',
                     price: 0,
                     stock: 0
                 });
