@@ -1,7 +1,7 @@
 import { AsyncPipe } from '@angular/common';
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { Observable } from 'rxjs';
+import { BehaviorSubject, catchError, EMPTY, finalize, map, Observable, Subject, switchMap, tap } from 'rxjs';
 import { toHttpState, HttpState } from '../../app.config';
 import { Product } from '../../models/product';
 import { AdminService } from '../admin-service';
@@ -13,19 +13,92 @@ import { AdminService } from '../admin-service';
     templateUrl: './admin-products.html',
     styleUrls: ['./admin-products.scss']
 })
-export class AdminProductsComponent implements OnInit {
+export class AdminProductsComponent {
 
     private adminService = inject(AdminService);
     private fb = inject(FormBuilder);
+    private refreshProducts$ = new BehaviorSubject<void>(undefined);
+    private createProduct$ = new Subject<void>();
+    private deleteProduct$ = new Subject<Product>();
 
-    productsState$: Observable<HttpState<Product[]>> = this.loadProducts();
-    categories: string[] = [];
+    productsState$: Observable<HttpState<Product[]>> = this.refreshProducts$.pipe(
+        switchMap(() => toHttpState(this.adminService.getProducts()))
+    );
+
+    categoriesState$: Observable<HttpState<string[]>> = toHttpState(this.adminService.getCategories()).pipe(
+        tap(state => {
+            if (state.status === 'success' && state.data.length > 0 && !this.productForm.controls.category.value) {
+                this.productForm.patchValue({ category: state.data[0] });
+            }
+        })
+    );
+
+    createAction$ = this.createProduct$.pipe(
+        switchMap(() => {
+            if (this.productForm.invalid || this.saving) return EMPTY;
+
+            this.saving = true;
+            this.saveError = null;
+
+            return this.adminService.createProduct(this.productForm.getRawValue()).pipe(
+                tap(() => {
+                    this.productForm.reset({
+                        name: '',
+                        description: '',
+                        category: this.lastKnownCategories[0] ?? '',
+                        price: 0,
+                        stock: 0
+                    });
+                    this.showCreateForm = false;
+                    this.refreshProducts$.next();
+                }),
+                catchError(err => {
+                    this.saveError = err?.error?.details?.join(', ') || err?.error?.error || 'Failed to create product';
+                    return EMPTY;
+                }),
+                finalize(() => this.saving = false)
+            );
+        })
+    );
+
+    deleteAction$ = this.deleteProduct$.pipe(
+        switchMap(product => {
+            if (this.deletingId !== null) return EMPTY;
+
+            const confirmed = window.confirm(`Eliminare il prodotto "${product.name}"?`);
+            if (!confirmed) return EMPTY;
+
+            this.deletingId = product.id;
+            this.deleteError = null;
+
+            return this.adminService.deleteProduct(product.id).pipe(
+                tap(() => this.refreshProducts$.next()),
+                catchError(err => {
+                    this.deleteError = err?.error?.error || 'Impossibile eliminare il prodotto';
+                    return EMPTY;
+                }),
+                finalize(() => this.deletingId = null)
+            );
+        })
+    );
+
+    actions$ = new BehaviorSubject<null>(null).pipe(
+        switchMap(() => this.createAction$.pipe(catchError(() => EMPTY)))
+    );
+
     showCreateForm = false;
     saving = false;
     deletingId: number | null = null;
     saveError: string | null = null;
     deleteError: string | null = null;
-    categoriesError: string | null = null;
+    lastKnownCategories: string[] = [];
+
+    categoriesForTemplate$ = this.categoriesState$.pipe(
+        tap(state => {
+            if (state.status === 'success') this.lastKnownCategories = state.data;
+        }),
+        map(state => state)
+    );
 
     productForm = this.fb.nonNullable.group({
         name: ['', Validators.required],
@@ -35,76 +108,16 @@ export class AdminProductsComponent implements OnInit {
         stock: [0, [Validators.required, Validators.min(0)]]
     });
 
-    ngOnInit(): void {
-        this.adminService.getCategories().subscribe({
-            next: categories => {
-                this.categories = categories;
-                this.categoriesError = null;
-
-                if (categories.length > 0 && !this.productForm.controls.category.value) {
-                    this.productForm.patchValue({ category: categories[0] });
-                }
-            },
-            error: () => {
-                this.categories = [];
-                this.categoriesError = 'Impossibile caricare le categorie.';
-            }
-        });
-    }
-
     toggleCreateForm(): void {
         this.showCreateForm = !this.showCreateForm;
         this.saveError = null;
     }
 
     createProduct(): void {
-        if (this.productForm.invalid || this.saving) return;
-
-        this.saving = true;
-        this.saveError = null;
-
-        this.adminService.createProduct(this.productForm.getRawValue()).subscribe({
-            next: () => {
-                this.productForm.reset({
-                    name: '',
-                    description: '',
-                    category: this.categories[0] ?? '',
-                    price: 0,
-                    stock: 0
-                });
-                this.showCreateForm = false;
-                this.productsState$ = this.loadProducts();
-                this.saving = false;
-            },
-            error: err => {
-                this.saveError = err?.error?.details?.join(', ') || err?.error?.error || 'Failed to create product';
-                this.saving = false;
-            }
-        });
+        this.createProduct$.next();
     }
 
     deleteProduct(product: Product): void {
-        if (this.deletingId !== null) return;
-
-        const confirmed = window.confirm(`Eliminare il prodotto "${product.name}"?`);
-        if (!confirmed) return;
-
-        this.deletingId = product.id;
-        this.deleteError = null;
-
-        this.adminService.deleteProduct(product.id).subscribe({
-            next: () => {
-                this.productsState$ = this.loadProducts();
-                this.deletingId = null;
-            },
-            error: err => {
-                this.deleteError = err?.error?.error || 'Impossibile eliminare il prodotto';
-                this.deletingId = null;
-            }
-        });
-    }
-
-    private loadProducts(): Observable<HttpState<Product[]>> {
-        return toHttpState(this.adminService.getProducts());
+        this.deleteProduct$.next(product);
     }
 }
