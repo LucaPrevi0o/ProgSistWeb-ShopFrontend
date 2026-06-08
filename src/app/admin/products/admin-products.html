@@ -1,0 +1,49 @@
+<div class="admin-products page page--wide">
+    <div class="admin-products__header">
+        <div>
+            <h1 class="page__title">Products</h1>
+            <p class="admin-products__subtitle">Manage catalog items, pricing and stock.</p>
+        </div>
+
+        <button class="primary" type="button" disabled>New Product</button>
+    </div>
+
+    @if (productsState$ | async; as state) {
+        @if (state.status === 'loading') {
+            <p class="state-message">Loading products...</p>
+        } @else if (state.status === 'error') {
+            <div class="error-message">
+                <h2>Failed to load products</h2>
+                <p>Error code: <strong>{{ state.code }}</strong></p>
+            </div>
+        } @else if (state.status === 'empty') {
+            <p class="state-message state-message--empty">No products found.</p>
+        } @else {
+            <div class="surface-card admin-products__table-card">
+                <table class="admin-table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Name</th>
+                            <th>Category</th>
+                            <th>Price</th>
+                            <th>Stock</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        @for (product of state.data; track product.id) {
+                            <tr>
+                                <td>{{ product.id }}</td>
+                                <td>{{ product.name }}</td>
+                                <td>{{ product.category }}</td>
+                                <td>€ {{ product.price }}</td>
+                                <td>{{ product.stock }}</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+    }
+</div>
