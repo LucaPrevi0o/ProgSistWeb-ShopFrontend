@@ -45,12 +45,7 @@ export class AdminProductsComponent {
     categoriesState$: Observable<HttpState<string[]>> = toHttpState(this.adminService.getCategories()).pipe(
         tap(state => {
             if (state.status !== 'success') return;
-
-            this.lastKnownCategories = state.data;
-
-            if (state.data.length > 0 && !this.productForm.controls.category.value) {
-                this.productForm.patchValue({ category: state.data[0] });
-            }
+            this.setCategories(state.data);
         })
     );
 
@@ -58,19 +53,11 @@ export class AdminProductsComponent {
         switchMap(() => {
             if (this.productForm.invalid || this.saving) return EMPTY;
 
-            this.saving = true;
-            this.saveError = null;
+            this.beginSave();
 
             return this.adminService.createProduct(this.productForm.getRawValue()).pipe(
-                tap(() => {
-                    this.resetForm();
-                    this.showCreateForm = false;
-                    this.refreshProducts$.next();
-                }),
-                catchError(err => {
-                    this.saveError = err?.error?.details?.join(', ') || err?.error?.error || 'Failed to create product';
-                    return EMPTY;
-                }),
+                tap(() => this.afterSuccessfulSave()),
+                catchError(err => this.handleSaveError(err, 'Failed to create product')),
                 finalize(() => this.saving = false)
             );
         })
@@ -80,18 +67,11 @@ export class AdminProductsComponent {
         switchMap(() => {
             if (!this.editingProduct || this.productForm.invalid || this.saving) return EMPTY;
 
-            this.saving = true;
-            this.saveError = null;
+            this.beginSave();
 
             return this.adminService.updateProduct(this.editingProduct.id, this.productForm.getRawValue()).pipe(
-                tap(() => {
-                    this.cancelEdit();
-                    this.refreshProducts$.next();
-                }),
-                catchError(err => {
-                    this.saveError = err?.error?.details?.join(', ') || err?.error?.error || 'Failed to update product';
-                    return EMPTY;
-                }),
+                tap(() => this.afterSuccessfulSave()),
+                catchError(err => this.handleSaveError(err, 'Failed to update product')),
                 finalize(() => this.saving = false)
             );
         })
@@ -108,10 +88,7 @@ export class AdminProductsComponent {
             this.deleteError = null;
 
             return this.adminService.deleteProduct(product.id).pipe(
-                tap(() => {
-                    if (this.editingProduct?.id === product.id) this.cancelEdit();
-                    this.refreshProducts$.next();
-                }),
+                tap(() => this.afterSuccessfulDelete(product)),
                 catchError(err => {
                     this.deleteError = err?.error?.error || 'Impossibile eliminare il prodotto';
                     return EMPTY;
@@ -162,6 +139,36 @@ export class AdminProductsComponent {
 
     deleteProduct(product: Product): void {
         this.deleteProduct$.next(product);
+    }
+
+    private setCategories(categories: string[]): void {
+        this.lastKnownCategories = categories;
+
+        if (categories.length > 0 && !this.productForm.controls.category.value) {
+            this.productForm.patchValue({ category: categories[0] });
+        }
+    }
+
+    private beginSave(): void {
+        this.saving = true;
+        this.saveError = null;
+    }
+
+    private afterSuccessfulSave(): void {
+        this.editingProduct = null;
+        this.showCreateForm = false;
+        this.resetForm();
+        this.refreshProducts$.next();
+    }
+
+    private afterSuccessfulDelete(product: Product): void {
+        if (this.editingProduct?.id === product.id) this.cancelEdit();
+        this.refreshProducts$.next();
+    }
+
+    private handleSaveError(err: any, fallback: string): Observable<never> {
+        this.saveError = err?.error?.details?.join(', ') || err?.error?.error || fallback;
+        return EMPTY;
     }
 
     private resetForm(): void {
