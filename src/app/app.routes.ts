@@ -9,6 +9,7 @@ import { HomeComponent } from './components/home/home';
 import { ProfileComponent } from './components/profile/profile';
 import { LoginRedirectorComponent } from './components/login-redirector/login-redirector';
 import { OrdersComponent } from './components/orders/orders';
+import { OrderDetailsComponent } from './components/order-details/order-details';
 import { AdminGuard } from './admin/admin-guard';
 
 export const routes: Routes = [
@@ -22,6 +23,7 @@ export const routes: Routes = [
     { path: 'cart', component: CartComponent },
     { path: 'checkout', component: CheckoutComponent },
     { path: 'orders', component: OrdersComponent },
+    { path: 'orders/:id', component: OrderDetailsComponent },
     { path: 'users/:id', component: ProfileComponent },
     {
         path: 'admin',

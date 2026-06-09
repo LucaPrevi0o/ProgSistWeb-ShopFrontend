@@ -9,32 +9,33 @@ import { LoginRedirectorComponent } from "../login-redirector/login-redirector";
 import { Router } from "@angular/router";
 
 @Component({
-    selector: 'app-orders',
+    selector: 'app-order-details',
     standalone: true,
     imports: [AsyncPipe, LoginRedirectorComponent],
-    templateUrl: './orders.html',
-    styleUrls: ['./orders.scss']
+    templateUrl: './order-details.html',
+    styleUrls: ['./order-details.scss']
 })
-export class OrdersComponent implements OnInit {
+export class OrderDetailsComponent implements OnInit {
 
-    state$!: Observable<HttpState<Order[]>>;
+    state$!: Observable<HttpState<Order>>;
     router = inject(Router);
     ordersService = inject(OrdersService);
 
     ngOnInit(): void {
-        this.state$ = toHttpState(this.ordersService.getOrders());
+        const orderId = this.router.url.split('/').pop();
+        if (orderId) {
+            this.state$ = toHttpState(this.ordersService.getOrderById(orderId));
+        } else {
+            // Handle error: no order ID in URL
+        }
     }
 
     total(order: Order): number {
         return order.items.reduce((sum, it) => sum + it.product.price * it.quantity, 0);
     }
 
-    asPayPal(paymentMethod: PaymentMethod): PayPal | null {
-        return (paymentMethod.type === 'payPal' || String(paymentMethod.type).toLowerCase() === 'paypal') ? paymentMethod.details as PayPal : null;
-    }
-
-    viewOrderDetails(order: Order): void {
-        this.router.navigate(['/orders', order.id]);
+    goBack(): void {
+        this.router.navigate(['/orders']);
     }
 
     asCreditCard(paymentMethod: PaymentMethod): CreditCard | null {
@@ -45,7 +46,7 @@ export class OrdersComponent implements OnInit {
         return cardNumber.slice(-4);
     }
 
-    itemTotal(item: any): number {
-        return (item.product?.price || 0) * (item.quantity || 0);
+    asPayPal(paymentMethod: PaymentMethod): PayPal | null {
+        return (paymentMethod.type === 'payPal' || String(paymentMethod.type).toLowerCase() === 'paypal') ? paymentMethod.details as PayPal : null;
     }
 }
