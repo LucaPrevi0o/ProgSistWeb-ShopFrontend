@@ -1,8 +1,13 @@
 <nav class="app-nav page page--wide">
-    <button (click)="this.router.navigate(['/'])">Home</button>
-    <button (click)="this.router.navigate(['/products'])">Prodotti</button>
-    <button (click)="this.router.navigate(['/cart'])">Carrello</button>
-    <button (click)="this.router.navigate(['/orders'])">Ordini</button>
+    @if (isAdmin()) {
+        <button (click)="this.router.navigate(['/admin'])">Dashboard</button>
+        <button (click)="this.router.navigate(['/admin/products'])">Prodotti</button>
+    } @else {
+        <button (click)="this.router.navigate(['/'])">Home</button>
+        <button (click)="this.router.navigate(['/products'])">Prodotti</button>
+        <button (click)="this.router.navigate(['/cart'])">Carrello</button>
+        <button (click)="this.router.navigate(['/orders'])">Ordini</button>
+    }
     <span class="spacer"></span>
     @if (isLoggedIn()) { <button class="profileButton" (click)="this.router.navigate(['/users', this.getUserId()])">Profilo</button> }
     @else { <button class="loginButton" (click)="this.router.navigate(['/login'])">Login</button> }

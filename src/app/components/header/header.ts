@@ -17,6 +17,8 @@ export class HeaderComponent {
 
     isLoggedIn() { return this.userService.isLoggedIn(); }
 
+    isAdmin() { return this.userService.isAdmin(); }
+
     logout() { 
         
         this.userService.logout();
