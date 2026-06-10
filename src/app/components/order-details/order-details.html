@@ -18,11 +18,9 @@
             <div class="order-detail-wrapper">
                 <div class="order-detail-header">
                     <div>
-                        <h1 class="page__title">Dettagli ordine #{{ state.data.id }}</h1>
+                        <h1 class="page__title">Dettagli ordine</h1>
                         <p class="order-detail-subtitle">Riepilogo degli articoli, spedizione e pagamento.</p>
                     </div>
-
-                    <button (click)="goBack()">Torna agli ordini</button>
                 </div>
 
                 <section class="surface-card order-summary-card">
@@ -95,7 +93,8 @@
 
                         <p class="info-row">
                             <span>Indirizzo</span>
-                            <strong>{{ state.data.personalData.address.street }}, {{ state.data.personalData.address.city }}, {{ state.data.personalData.address.postalCode }}</strong>
+                            <strong>{{ state.data.personalData.address.street }}</strong><br>
+                            <strong>{{ state.data.personalData.address.city }}, {{ state.data.personalData.address.postalCode }} - {{ state.data.personalData.address.country }}</strong>
                         </p>
 
                         <p class="info-row">
