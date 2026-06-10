@@ -2,7 +2,7 @@ import { Component, inject, OnInit } from "@angular/core";
 import { AsyncPipe } from "@angular/common";
 import { Observable } from "rxjs";
 import { HttpState, toHttpState } from "../../app.config";
-import { OrdersService } from "../../services/orders-service";
+import { OrderService } from "../../services/order-service";
 import { Order } from "../../models/order";
 import { PaymentMethod, CreditCard, PayPal } from "../../models/payment";
 import { LoginRedirectorComponent } from "../login-redirector/login-redirector";
@@ -19,12 +19,12 @@ export class OrderDetailsComponent implements OnInit {
 
     state$!: Observable<HttpState<Order>>;
     router = inject(Router);
-    ordersService = inject(OrdersService);
+    orderService = inject(OrderService);
 
     ngOnInit(): void {
         const orderId = this.router.url.split('/').pop();
         if (orderId) {
-            this.state$ = toHttpState(this.ordersService.getOrderById(orderId));
+            this.state$ = toHttpState(this.orderService.getOrderById(orderId));
         } else {
             // Handle error: no order ID in URL
         }

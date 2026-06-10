@@ -9,6 +9,13 @@
         <button (click)="this.router.navigate(['/orders'])">Ordini</button>
     }
     <span class="spacer"></span>
-    @if (isLoggedIn()) { <button class="profileButton" (click)="this.router.navigate(['/users', this.getUserId()])">Profilo</button> }
-    @else { <button class="loginButton" (click)="this.router.navigate(['/login'])">Login</button> }
+    @if (isLoggedIn()) {
+        @if (!isAdmin()) {
+            <button class="profileButton" (click)="router.navigate(['/users', getUserId()])">Profilo</button>
+        } @else {
+            <button class="loginButton" (click)="logout()">Logout</button>
+        }
+    } @else {
+        <button class="loginButton" (click)="router.navigate(['/login'])">Login</button>
+    }
 </nav>

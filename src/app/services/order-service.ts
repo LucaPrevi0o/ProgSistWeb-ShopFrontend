@@ -5,7 +5,7 @@ import { API_BASE_URL } from "../app.config";
 import { Order } from "../models/order";
 
 @Injectable({ providedIn: 'root' })
-export class OrdersService {
+export class OrderService {
 
     http = inject(HttpClient);
 
@@ -15,5 +15,15 @@ export class OrdersService {
 
     getOrderById(id: string): Observable<Order> {
         return this.http.get<Order>(API_BASE_URL + '/orders/' + id);
+    }
+    
+    getAllOrders(): Observable<Order[]> {
+        return this.http.get<Order[]>(API_BASE_URL + '/admin/orders');
+    }
+
+    getAdminOrderById(id: string): Observable<Order> {
+        return this.http.get<Order>(
+            API_BASE_URL + '/admin/orders/' + id
+        );
     }
 }
