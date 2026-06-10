@@ -4,68 +4,8 @@
         @if (state.status === 'loading') {
             <p class="state-message">Caricamento in corso...</p>
         } @else if (state.status === 'error') {
-            @if (state.code === 422) {
-                <div class="error-message">
-                    <h2>Si è verificato un errore</h2>
-                </div>
+            @if (state.code === 401) {
+                <app-login-redirector></app-login-redirector>
             } @else {
                 <div class="error-message">
-                    <p>Si è verificato un errore: <strong>{{ state.code }}</strong></p>
-                </div>
-            }
-        } @else if (state.status === 'empty') {
-            <p class="state-message state-message--empty">Nessun ordine trovato.</p>
-        } @else {
-
-            <div class="order-detail-wrapper">
-                <!--h1 class="order-detail-title">Dettagli ordine #{{ state.data.id }}</h1-->
-
-                <div class="order-info">
-                    <!--p><strong>Data ordine:</strong> {{ state.data.createdAt | date:'medium' }}</p-->
-                    <!--p><strong>Stato ordine:</strong> {{ state.data.status }}</p-->
-
-                    <div class="payment-info">
-                        @if (asPayPal(state.data.paymentMethod)) {
-                            <p><strong>Metodo di pagamento:</strong> PayPal ({{ asPayPal(state.data.paymentMethod)?.email }})</p>
-                        } @else if (asCreditCard(state.data.paymentMethod)) {
-                            <p><strong>Metodo di pagamento:</strong> Carta di credito (**** **** **** {{ last4Digits(asCreditCard(state.data.paymentMethod)?.cardNumber || '') }})</p>
-                            <p><strong>Intestatario carta:</strong> {{ asCreditCard(state.data.paymentMethod)?.cardholderName }}</p>
-                        } @else {
-                            <p><strong>Metodo di pagamento:</strong> Sconosciuto</p>
-                        }
-                    </div>
-                </div>
-
-                <h2 class="items-title">Articoli ordinati</h2>
-
-                <div class="items-list">
-                    @for (item of state.data.items; track item.product.id) {
-                        <div class="item-card">
-                            <div class="item-info">
-                                <p><strong>Prodotto:</strong> {{ item.product.name }}</p>
-                                <p><strong>Categoria:</strong> {{ item.product.category }}</p>
-                                <p><strong>Prezzo unitario:</strong> {{ item.product.price }} €</p>
-                                <p><strong>Quantità:</strong> {{ item.quantity }}</p>
-                                <p><strong>Totale:</strong> {{ item.product.price * item.quantity }} €</p>
-                            </div>
-                        </div>
-                    }
-                </div>
-
-                <div class="order-total">
-                    <h2>Totale ordine: {{ total(state.data) }} €</h2>
-                </div>
-
-                <div>
-                    <h2>Dettagli spedizione</h2>
-                    <p><strong>Nome e cognome:</strong> {{ state.data.personalData.lastName }} {{ state.data.personalData.firstName }}</p>
-                    <p><strong>Indirizzo:</strong> {{ state.data.personalData.address.street }}, {{ state.data.personalData.address.city }}, {{ state.data.personalData.address.postalCode }}</p>
-                    <p><strong>Telefono:</strong> {{ state.data.personalData.phone }}</p>
-                </div>
-
-                <button (click)="goBack()" class="primary">Torna agli ordini</button>
-
-            </div>
-        }
-    </div>
-}
+                    <h2>Si è verificato un errore</h2
