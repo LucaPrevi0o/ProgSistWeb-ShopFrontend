@@ -20,4 +20,13 @@ export class AdminOrdersComponent {
     ordersState$: Observable<HttpState<Order[]>> = toHttpState(this.orderService.getAllOrders());
 
     total(order: Order): number {
-        if (order
+
+        if (order.total !== undefined)
+            return order.total;
+
+        return order.items.reduce(
+            (sum, item) => sum + item.product.price * item.quantity,
+            0
+        );
+    }
+}

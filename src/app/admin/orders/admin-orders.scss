@@ -1,0 +1,30 @@
+.admin-orders__grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: var(--spacing-lg);
+}
+
+.order-card {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-sm);
+    padding: var(--spacing-lg);
+}
+
+.order-card__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.order-card__header h2 {
+    margin: 0;
+}
+
+.order-card__total {
+    font-weight: 700;
+}
+
+.order-card__link {
+    margin-top: auto;
+}

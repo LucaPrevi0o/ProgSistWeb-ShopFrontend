@@ -35,5 +35,10 @@ export const routes: Routes = [
         canActivate: [AdminGuard],
         loadComponent: () => import('./admin/products/admin-products').then(m => m.AdminProductsComponent)
     },
+    {
+        path: 'admin/orders',
+        canActivate: [AdminGuard],
+        loadComponent: () => import('./admin/orders/admin-orders').then(m => m.AdminOrdersComponent)
+    },
     { path: 'login-redirect', component: LoginRedirectorComponent }
 ];
