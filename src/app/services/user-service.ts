@@ -1,7 +1,7 @@
 import { HttpClient } from "@angular/common/http";
 import { inject, Injectable } from "@angular/core";
 import { API_BASE_URL } from "../app.config";
-import { User, UserInfo, UserRole } from "../models/user";
+import { User, AdminUser, UserInfo, UserRole } from "../models/user";
 import { Observable } from "rxjs";
 import { tap } from 'rxjs/operators';
 
@@ -43,6 +43,14 @@ export class UserService {
         const userId = localStorage.getItem('userId');
         if (!userId) throw new Error('User ID not found in local storage');
         return this.http.get<User>(API_BASE_URL + `/users/${userId}`);
+    }
+    
+    getAllUsers(): Observable<AdminUser[]> {
+        return this.http.get<AdminUser[]>(API_BASE_URL + '/admin/users');
+    }
+
+    getAdminUser(id: number): Observable<AdminUser> {
+        return this.http.get<AdminUser>(API_BASE_URL + '/admin/users/' + id);
     }
 
     updateUserInfo(userId: number, info: Partial<UserInfo>) : Observable<User> {

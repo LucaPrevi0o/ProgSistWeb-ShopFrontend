@@ -2,6 +2,21 @@ import { PaymentMethod } from './payment';
 
 export type UserRole = 'USER' | 'ADMIN';
 
+export interface AdminUser {
+
+    id: number;
+    email: string;
+    role: string;
+
+    createdAt?: string;
+
+    info?: {
+        firstName?: string;
+        lastName?: string;
+        phone?: string;
+    };
+}
+
 export interface User {
 
     id: number;
