@@ -36,13 +36,19 @@ export class LoginComponent implements OnInit {
     submit() : void {
 
         if (this.loginForm.invalid) return;
-        var login = this.userService.login(this.loginForm.value as User);
+
+        const login = this.userService.login(this.loginForm.value as User);
+
         this.state$ = toHttpState(login).pipe(
-            tap(state => { if (state.status === 'success') {
-                
-                localStorage.setItem('jwtToken', state.data.token);
-                this.router.navigate(['/products']);
-            }})
+            tap(state => {
+                if (state.status === 'success') {
+                    const destination = state.data.role === 'ADMIN'
+                        ? '/admin'
+                        : '/products';
+
+                    this.router.navigate([destination]);
+                }
+            })
         );
     }
 
