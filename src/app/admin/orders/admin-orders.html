@@ -2,83 +2,35 @@
 
     <div class="admin-orders__header">
         <h1 class="page__title">Ordini</h1>
-        <p>
-            Elenco di tutti gli ordini effettuati dagli utenti.
-        </p>
+        <p>Elenco di tutti gli ordini effettuati dagli utenti.</p>
     </div>
 
     @if (ordersState$ | async; as state) {
 
         @if (state.status === 'loading') {
-
-            <p class="state-message">
-                Caricamento in corso...
-            </p>
-
+            <p class="state-message">Caricamento in corso...</p>
         } @else if (state.status === 'error') {
-
-            <div class="error-message">
-                Codice errore: {{ state.code }}
-            </div>
-
+            <div class="error-message">Codice errore: {{ state.code }}</div>
         } @else if (state.status === 'empty') {
-
-            <p class="state-message state-message--empty">
-                Nessun ordine presente.
-            </p>
-
+            <p class="state-message state-message--empty">Nessun ordine presente.</p>
         } @else {
-
             <div class="admin-orders__grid">
-
                 @for (order of state.data; track order.id) {
 
                     <article class="surface-card order-card">
-
                         <div class="order-card__header">
                             <h2>Ordine #{{ order.id }}</h2>
-
-                            <span class="order-card__total">
-                                {{ total(order) }} €
-                            </span>
+                            <span class="order-card__total">{{ total(order) }} €</span>
                         </div>
+                        <p><strong>Utente:</strong> {{ order.user?.email }}</p>
+                        <p><strong>Destinatario:</strong> {{ order.personalData.firstName }} {{ order.personalData.lastName }}</p>
+                        <p><strong>Indirizzo:</strong> {{ order.personalData.address.street }}</p>
+                        <p><strong>Articoli:</strong> {{ order.items.length }}</p>
 
-                        <p>
-                            <strong>Utente:</strong>
-                            {{ order.user?.email }}
-                        </p>
-
-                        <p>
-                            <strong>Destinatario:</strong>
-                            {{ order.personalData.firstName }}
-                            {{ order.personalData.lastName }}
-                        </p>
-
-                        <p>
-                            <strong>Indirizzo:</strong>
-                            {{ order.personalData.address.street }}
-                        </p>
-
-                        <p>
-                            <strong>Articoli:</strong>
-                            {{ order.items.length }}
-                        </p>
-
-                        <a
-                            [routerLink]="['/admin/orders', order.id]"
-                            class="order-card__link">
-
-                            Visualizza dettagli
-                        </a>
-
+                        <a [routerLink]="['/admin/orders', order.id]" class="order-card__link">Visualizza dettagli</a>
                     </article>
-
                 }
-
             </div>
-
         }
-
     }
-
 </div>
