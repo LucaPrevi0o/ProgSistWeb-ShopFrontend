@@ -11,6 +11,10 @@ import { LoginRedirectorComponent } from './components/login-redirector/login-re
 import { OrdersComponent } from './components/orders/orders';
 import { OrderDetailsComponent } from './components/order-details/order-details';
 import { AdminGuard } from './admin/admin-guard';
+import { AdminDashboardComponent } from './admin/dashboard/admin-dashboard';
+import { AdminProductsComponent } from './admin/products/admin-products';
+import { AdminOrdersComponent } from './admin/orders/admin-orders';
+import { AdminOrderDetailsComponent } from './admin/order-details/admin-order-details';
 
 export const routes: Routes = [
     
@@ -28,17 +32,22 @@ export const routes: Routes = [
     {
         path: 'admin',
         canActivate: [AdminGuard],
-        loadComponent: () => import('./admin/dashboard/admin-dashboard').then(m => m.AdminDashboardComponent)
+        component: AdminDashboardComponent
     },
     {
         path: 'admin/products',
         canActivate: [AdminGuard],
-        loadComponent: () => import('./admin/products/admin-products').then(m => m.AdminProductsComponent)
+        component: AdminProductsComponent
     },
     {
         path: 'admin/orders',
         canActivate: [AdminGuard],
-        loadComponent: () => import('./admin/orders/admin-orders').then(m => m.AdminOrdersComponent)
+        component: AdminOrdersComponent
+    },
+    {
+        path: 'admin/orders/:id',
+        canActivate: [AdminGuard],
+        component: AdminOrderDetailsComponent
     },
     { path: 'login-redirect', component: LoginRedirectorComponent }
 ];

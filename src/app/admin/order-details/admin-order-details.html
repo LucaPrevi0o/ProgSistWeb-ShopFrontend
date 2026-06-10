@@ -1,0 +1,113 @@
+@if (state$ | async; as state) {
+
+    <div class="order-detail-page page page--medium">
+        @if (state.status === 'loading') {
+            <p class="state-message">Caricamento in corso...</p>
+        } @else if (state.status === 'error') {
+            @if (state.code === 401) {
+                <app-login-redirector></app-login-redirector>
+            } @else {
+                <div class="error-message">
+                    <h2>Si è verificato un errore</h2>
+                    <p>Codice errore: <strong>{{ state.code }}</strong></p>
+                </div>
+            }
+        } @else if (state.status === 'empty') {
+            <p class="state-message state-message--empty">Nessun ordine trovato.</p>
+        } @else {
+            <div class="order-detail-wrapper">
+                <div class="order-detail-header">
+                    <div>
+                        <h1 class="page__title">Dettagli ordine</h1>
+                        <p class="order-detail-subtitle">Riepilogo degli articoli, spedizione e pagamento.</p>
+                    </div>
+                </div>
+
+                <section class="surface-card order-summary-card">
+                    <div>
+                        <span class="summary-label">Totale ordine</span>
+                        <strong class="summary-total">{{ total(state.data) }} €</strong>
+                    </div>
+
+                    <div>
+                        <span class="summary-label">Articoli</span>
+                        <strong>{{ state.data.items.length }}</strong>
+                    </div>
+                </section>
+
+                <section class="surface-card order-section">
+                    <h2>Articoli ordinati</h2>
+
+                    <div class="items-list">
+                        @for (item of state.data.items; track item.product.id) {
+                            <article class="item-card">
+                                <div class="item-main">
+                                    <h3>{{ item.product.name }}</h3>
+                                    <span class="category-badge">{{ item.product.category }}</span>
+                                </div>
+
+                                <div class="item-meta">
+                                    <div>
+                                        <span>Prezzo unitario</span>
+                                        <strong>{{ item.product.price }} €</strong>
+                                    </div>
+
+                                    <div>
+                                        <span>Quantità</span>
+                                        <strong>{{ item.quantity }}</strong>
+                                    </div>
+
+                                    <div>
+                                        <span>Totale</span>
+                                        <strong>{{ item.product.price * item.quantity }} €</strong>
+                                    </div>
+                                </div>
+                            </article>
+                        }
+                    </div>
+                </section>
+
+                <div class="order-detail-grid">
+                    <section class="surface-card order-section">
+                        <h2>Pagamento</h2>
+
+                        @if (asPayPal(state.data.paymentMethod)) {
+                            <p class="info-row"><span>Metodo</span><strong>PayPal</strong></p>
+                            <p class="info-row"><span>Email</span><strong>{{ asPayPal(state.data.paymentMethod)?.email }}</strong></p>
+                        } @else if (asCreditCard(state.data.paymentMethod)) {
+                            <p class="info-row"><span>Metodo</span><strong>Carta di credito</strong></p>
+                            <p class="info-row"><span>Carta</span><strong>**** **** **** {{ last4Digits(asCreditCard(state.data.paymentMethod)?.cardNumber || '') }}</strong></p>
+                            <p class="info-row"><span>Intestatario</span><strong>{{ asCreditCard(state.data.paymentMethod)?.cardholderName }}</strong></p>
+                        } @else {
+                            <p class="info-row"><span>Metodo</span><strong>Sconosciuto</strong></p>
+                        }
+                    </section>
+
+                    <section class="surface-card order-section">
+                        <h2>Spedizione</h2>
+
+                        <p class="info-row">
+                            <span>Nome e cognome</span>
+                            <strong>{{ state.data.personalData.lastName }} {{ state.data.personalData.firstName }}</strong>
+                        </p>
+
+                        <p class="info-row">
+                            <span>Indirizzo</span>
+                            <strong>{{ state.data.personalData.address.street }}</strong><br>
+                            <strong>{{ state.data.personalData.address.city }}, {{ state.data.personalData.address.postalCode }} - {{ state.data.personalData.address.country }}</strong>
+                        </p>
+
+                        <p class="info-row">
+                            <span>Telefono</span>
+                            <strong>{{ state.data.personalData.phone }}</strong>
+                        </p>
+                    </section>
+                </div>
+
+                <div class="order-detail-actions">
+                    <button (click)="goBack()" class="primary">Torna agli ordini</button>
+                </div>
+            </div>
+        }
+    </div>
+}
