@@ -3,7 +3,7 @@ import { inject, Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { API_BASE_URL } from '../app.config';
 import { Product } from '../models/product';
-import { User } from '../models/user';
+import { AdminUser, User } from '../models/user';
 
 export type ProductPayload = Pick<Product, 'name' | 'description' | 'category' | 'price' | 'stock'>;
 
@@ -38,5 +38,13 @@ export class AdminService {
 
     deleteProduct(id: number): Observable<void> {
         return this.http.delete<void>(`${API_BASE_URL}/admin/products/${id}`);
+    }
+    
+    getUsers(): Observable<AdminUser[]> {
+        return this.http.get<AdminUser[]>(`${API_BASE_URL}/admin/users`);
+    }
+
+    getUser(id: number): Observable<AdminUser> {
+        return this.http.get<AdminUser>(`${API_BASE_URL}/admin/users/${id}`);
     }
 }

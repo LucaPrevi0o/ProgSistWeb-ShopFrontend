@@ -1,0 +1,57 @@
+<!-- src/app/admin/users/admin-users.html -->
+
+<div class="admin-users page page--wide">
+    <div class="admin-users__header">
+        <div>
+            <h1 class="page__title">Utenti registrati</h1>
+            <p class="admin-users__subtitle">Consulta gli account presenti nel sistema.</p>
+        </div>
+    </div>
+
+    @if (usersState$ | async; as state) {
+        @if (state.status === 'loading') {
+            <p class="state-message">Caricamento in corso...</p>
+        } @else if (state.status === 'error') {
+            <div class="error-message">
+                <h2>Si è verificato un errore</h2>
+                <p>Codice errore: <strong>{{ state.code }}</strong></p>
+            </div>
+        } @else if (state.status === 'empty') {
+            <p class="state-message state-message--empty">
+                Nessun utente registrato.
+            </p>
+        } @else {
+            <div class="admin-users__grid">
+                @for (user of state.data; track user.id) {
+                    <article class="surface-card user-card">
+                        <div class="user-card__header">
+                            <div>
+                                <h2>{{ user.email }}</h2>
+                                <p>ID utente: {{ user.id }}</p>
+                            </div>
+
+                            <span class="role-badge" [class.role-badge--admin]="user.role === 'ADMIN'">{{ user.role }}</span>
+                        </div>
+
+                        <div class="user-card__details">
+                            <p>
+                                <span>Nome</span>
+                                <strong>{{ fullName(user) }}</strong>
+                            </p>
+
+                            <p>
+                                <span>Telefono</span>
+                                <strong>{{ user.info?.phone || '—' }}</strong>
+                            </p>
+
+                            <p>
+                                <span>Registrato il</span>
+                                <strong>{{ user.createdAt || '—' }}</strong>
+                            </p>
+                        </div>
+                    </article>
+                }
+            </div>
+        }
+    }
+</div>

@@ -15,6 +15,7 @@ import { AdminDashboardComponent } from './admin/dashboard/admin-dashboard';
 import { AdminProductsComponent } from './admin/products/admin-products';
 import { AdminOrdersComponent } from './admin/orders/admin-orders';
 import { AdminOrderDetailsComponent } from './admin/order-details/admin-order-details';
+import { AdminUsersComponent } from './admin/users/admin-users';
 
 export const routes: Routes = [
     
@@ -48,6 +49,11 @@ export const routes: Routes = [
         path: 'admin/orders/:id',
         canActivate: [AdminGuard],
         component: AdminOrderDetailsComponent
+    },
+    {
+        path: 'admin/users',
+        canActivate: [AdminGuard],
+        component: AdminUsersComponent
     },
     { path: 'login-redirect', component: LoginRedirectorComponent }
 ];
