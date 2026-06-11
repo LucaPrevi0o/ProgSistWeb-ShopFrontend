@@ -248,35 +248,6 @@ export class CheckoutComponent implements OnInit {
         });
     }
 
-    private applySavedPaymentMethod(pm: PaymentMethod): void {
-
-        if (!pm) return;
-
-        const method = pm.methodType;
-        this.checkoutForm.patchValue({ selectedPaymentMethod: method });
-
-        if (method === 'creditCard') {
-            const cc = pm.details as CreditCard;
-            this.paymentMethodForm.get('creditCard')?.patchValue({
-                cardNumber: cc.cardNumber ?? '',
-                expiryMonth: cc.expiryMonth ?? '',
-                expiryYear: cc.expiryYear ?? '',
-                cvv: cc.cvv ?? '',
-                cardHolderName: cc.cardHolderName ?? ''
-            });
-
-            if (cc.cardNumber && cc.cardNumber.toString().trim().length) this.autofilled['payment.creditCard.cardNumber'] = true;
-            if (cc.cardHolderName && cc.cardHolderName.toString().trim().length) this.autofilled['payment.creditCard.cardHolderName'] = true;
-
-        } else if (method === 'payPal') {
-            const pp = pm.details as PayPal;
-            this.paymentMethodForm.get('payPal')?.patchValue({ email: pp.email ?? '' });
-            if (pp.email && pp.email.toString().trim().length) this.autofilled['payment.payPal.email'] = true;
-        }
-
-        this.setPaymentValidators(method);
-    }
-
     asPayPal(paymentMethod: PaymentMethod): PayPal | null {
         return (paymentMethod.methodType === 'payPal' || String(paymentMethod.methodType).toLowerCase() === 'paypal') ? paymentMethod.details as PayPal : null;
     }

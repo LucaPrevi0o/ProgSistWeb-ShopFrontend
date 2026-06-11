@@ -21,10 +21,6 @@ export class AdminService {
         return this.http.get<Product[]>(`${API_BASE_URL}/admin/products`);
     }
 
-    getProduct(id: number): Observable<Product> {
-        return this.http.get<Product>(`${API_BASE_URL}/admin/products/${id}`);
-    }
-
     getCategories(): Observable<string[]> {
         return this.http.get<string[]>(`${API_BASE_URL}/categories`);
     }
@@ -43,10 +39,6 @@ export class AdminService {
     
     getUsers(): Observable<AdminUser[]> {
         return this.http.get<AdminUser[]>(`${API_BASE_URL}/admin/users`);
-    }
-
-    getUser(id: number): Observable<AdminUser> {
-        return this.http.get<AdminUser>(`${API_BASE_URL}/admin/users/${id}`);
     }
 
     updateOrderStatus(id: number, status: string): Observable<Order> {

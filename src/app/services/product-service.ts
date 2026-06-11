@@ -9,8 +9,6 @@ export class ProductService {
     
     http = inject(HttpClient);
 
-    getAllProducts() : Observable<Product[]> { return this.http.get<Product[]>(API_BASE_URL + '/products'); }
-
     getProducts(page: number = 1, filters?: { name?: string; category?: string; minPrice?: string | number; maxPrice?: string | number }) : Observable<{ items: Product[]; totalPages: number }> {
 
         const params: any = { page: page.toString() };

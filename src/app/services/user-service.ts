@@ -1,7 +1,7 @@
 import { HttpClient } from "@angular/common/http";
 import { inject, Injectable } from "@angular/core";
 import { API_BASE_URL } from "../app.config";
-import { User, AdminUser, UserInfo, UserRole } from "../models/user";
+import { User, UserInfo, UserRole } from "../models/user";
 import { Observable } from "rxjs";
 import { tap } from 'rxjs/operators';
 
@@ -45,14 +45,6 @@ export class UserService {
         return this.http.get<User>(API_BASE_URL + `/users/${userId}`);
     }
     
-    getAllUsers(): Observable<AdminUser[]> {
-        return this.http.get<AdminUser[]>(API_BASE_URL + '/admin/users');
-    }
-
-    getAdminUser(id: number): Observable<AdminUser> {
-        return this.http.get<AdminUser>(API_BASE_URL + '/admin/users/' + id);
-    }
-
     getCurrentUser(): Observable<User> {
         return this.http.get<User>(API_BASE_URL + '/auth/me');
     }
