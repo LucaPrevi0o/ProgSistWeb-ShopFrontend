@@ -33,6 +33,16 @@
                         <span class="summary-label">Articoli</span>
                         <strong>{{ state.data.items.length }}</strong>
                     </div>
+
+                    <div>
+                        <span class="summary-label">Data ordine</span>
+                        <strong>{{ state.data.createdAt | date:'dd/MM/yyyy HH:mm' }}</strong>
+                    </div>
+
+                    <div>
+                        <span class="summary-label">Stato</span>
+                        <strong class="order-status {{ statusClass(state.data.status) }}">{{ state.data.status || 'unknown' }}</strong>
+                    </div>
                 </section>
 
                 <section class="surface-card order-section">

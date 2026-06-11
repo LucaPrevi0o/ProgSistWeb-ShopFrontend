@@ -1,5 +1,5 @@
 import { Component, inject, OnInit } from "@angular/core";
-import { AsyncPipe } from "@angular/common";
+import { AsyncPipe, DatePipe } from "@angular/common";
 import { Observable } from "rxjs";
 import { HttpState, toHttpState } from "../../app.config";
 import { OrderService } from "../../services/order-service";
@@ -11,7 +11,7 @@ import { Router } from "@angular/router";
 @Component({
     selector: 'app-order-details',
     standalone: true,
-    imports: [AsyncPipe, LoginRedirectorComponent],
+    imports: [AsyncPipe, DatePipe, LoginRedirectorComponent],
     templateUrl: './order-details.html',
     styleUrls: ['./order-details.scss']
 })
@@ -48,5 +48,10 @@ export class OrderDetailsComponent implements OnInit {
 
     asPayPal(paymentMethod: PaymentMethod): PayPal | null {
         return (paymentMethod.methodType === 'payPal' || String(paymentMethod.methodType).toLowerCase() === 'paypal') ? paymentMethod.details as PayPal : null;
+    }
+
+    statusClass(status?: string): string {
+        if (!status) return 'status-unknown';
+        return `status-${status.toLowerCase()}`;
     }
 }
