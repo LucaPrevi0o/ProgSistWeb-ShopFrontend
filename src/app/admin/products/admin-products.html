@@ -106,11 +106,40 @@
                 </div>
             }
 
+            <section class="surface-card admin-products__filters" aria-label="Filtri prodotti">
+                <label>
+                    Nome
+                    <input type="text" [value]="filterName" (input)="filterName = $any($event.target).value" placeholder="Cerca prodotto" />
+                </label>
+
+                <label>
+                    Categoria
+                    <select [value]="filterCategory" (change)="filterCategory = $any($event.target).value">
+                        <option value="">Tutte</option>
+                        @for (category of lastKnownCategories; track category) {
+                            <option [value]="category">{{ category }}</option>
+                        }
+                    </select>
+                </label>
+
+                <label>
+                    Disponibilità
+                    <select [value]="filterStock" (change)="filterStock = $any($event.target).value">
+                        <option value="">Tutti</option>
+                        <option value="available">Disponibili</option>
+                        <option value="out">Esauriti</option>
+                    </select>
+                </label>
+
+                <div class="admin-products__filter-actions">
+                    <button type="button" (click)="resetFilters()">Reset</button>
+                </div>
+            </section>
+
             <div class="surface-card admin-products__table-card">
                 <table class="admin-table">
                     <thead>
                         <tr>
-                            <th>ID</th>
                             <th>Nome</th>
                             <th>Categoria</th>
                             <th>Prezzo</th>
@@ -120,9 +149,8 @@
                     </thead>
 
                     <tbody>
-                        @for (product of state.data; track product.id) {
+                        @for (product of filteredProducts(state.data); track product.id) {
                             <tr>
-                                <td>{{ product.id }}</td>
                                 <td>{{ product.name }}</td>
                                 <td>{{ product.category }}</td>
                                 <td>€ {{ product.price }}</td>

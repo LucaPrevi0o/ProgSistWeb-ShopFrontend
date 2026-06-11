@@ -28,6 +28,9 @@ export class AdminProductsComponent {
     editingProduct: Product | null = null;
     saveError: string | null = null;
     deleteError: string | null = null;
+    filterName = '';
+    filterCategory = '';
+    filterStock = '';
     lastKnownCategories: string[] = [];
 
     productForm = this.fb.nonNullable.group({
@@ -120,6 +123,14 @@ export class AdminProductsComponent {
             price: Number(product.price),
             stock: Number(product.stock)
         });
+
+        setTimeout(() => {
+            document.querySelector('.admin-products__create')?.scrollIntoView({
+                behavior: 'smooth',
+                block: 'start'
+            });
+            (document.getElementById('name') as HTMLInputElement | null)?.focus();
+        });
     }
 
     cancelEdit(): void {
@@ -139,6 +150,26 @@ export class AdminProductsComponent {
 
     deleteProduct(product: Product): void {
         this.deleteProduct$.next(product);
+    }
+
+    filteredProducts(products: Product[]): Product[] {
+        const name = this.filterName.trim().toLowerCase();
+
+        return products.filter(product => {
+            const matchesName = !name || product.name.toLowerCase().includes(name);
+            const matchesCategory = !this.filterCategory || product.category === this.filterCategory;
+            const matchesStock = !this.filterStock
+                || (this.filterStock === 'available' && product.stock > 0)
+                || (this.filterStock === 'out' && product.stock === 0);
+
+            return matchesName && matchesCategory && matchesStock;
+        });
+    }
+
+    resetFilters(): void {
+        this.filterName = '';
+        this.filterCategory = '';
+        this.filterStock = '';
     }
 
     private setCategories(categories: string[]): void {
