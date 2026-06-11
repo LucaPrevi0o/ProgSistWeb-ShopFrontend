@@ -19,3 +19,7 @@ export interface Order {
     total?: number;        // already useful elsewhere
     createdAt?: string;    // future sorting/filtering
 }
+
+export interface CheckoutResponse {
+    orderId: number;
+}

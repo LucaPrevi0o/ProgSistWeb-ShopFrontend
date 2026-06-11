@@ -1,7 +1,7 @@
 export interface PaymentMethod<T = CreditCard | PayPal> {
 
     id?: number;
-    type: string;
+    methodType: string;
     details: T;
 }
 
@@ -11,7 +11,7 @@ export interface CreditCard {
     expiryMonth: number;
     expiryYear: number;
     cvv: string;
-    cardholderName: string;
+    cardHolderName: string;
 }
 
 export interface PayPal { email: string; }

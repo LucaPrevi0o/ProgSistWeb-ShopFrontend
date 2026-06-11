@@ -17,20 +17,19 @@ export class CartService {
 
     addToCart(product: Product, quantity: number = 1) : Observable<Cart> {
         
-        const body = { cart_item: { product_id: product.id, quantity } };
-        return this.http.post<Cart>(API_BASE_URL + '/cart/new', body);
+        const body = { cartItem: { productId: product.id, quantity } };
+        return this.http.post<Cart>(API_BASE_URL + '/cart/items', body);
     }
 
     updateCartItem(product: Product, quantity: number) : Observable<Cart> {
 
-        const body = { cart_item: { product_id: product.id, quantity } };
-        return this.http.patch<Cart>(API_BASE_URL + '/cart/item', body);
+        const body = { cartItem: { quantity } };
+        return this.http.patch<Cart>(API_BASE_URL + `/cart/items/${product.id}`, body);
     }
 
     removeCartItem(product: Product) : Observable<Cart> {
 
-        const params = { product_id: product.id.toString() };
-        return this.http.delete<Cart>(API_BASE_URL + '/cart/item', { params });
+        return this.http.delete<Cart>(API_BASE_URL + `/cart/items/${product.id}`);
     }
 
     clearCart() : Observable<Cart> {

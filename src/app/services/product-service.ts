@@ -11,15 +11,15 @@ export class ProductService {
 
     getAllProducts() : Observable<Product[]> { return this.http.get<Product[]>(API_BASE_URL + '/products'); }
 
-    getProducts(page: number = 1, filters?: { name?: string; category?: string; min_price?: string | number; max_price?: string | number }) : Observable<{ items: Product[]; totalPages: number }> {
+    getProducts(page: number = 1, filters?: { name?: string; category?: string; minPrice?: string | number; maxPrice?: string | number }) : Observable<{ items: Product[]; totalPages: number }> {
 
         const params: any = { page: page.toString() };
         if (filters) {
             
             if (filters.name) params.name = filters.name;
             if (filters.category) params.category = filters.category;
-            if (filters.min_price !== undefined && filters.min_price !== null) params.min_price = filters.min_price.toString();
-            if (filters.max_price !== undefined && filters.max_price !== null) params.max_price = filters.max_price.toString();
+            if (filters.minPrice !== undefined && filters.minPrice !== null) params.minPrice = filters.minPrice.toString();
+            if (filters.maxPrice !== undefined && filters.maxPrice !== null) params.maxPrice = filters.maxPrice.toString();
         }
 
         return this.http.get<Product[]>(API_BASE_URL + '/products', { params, observe: 'response' }).pipe(

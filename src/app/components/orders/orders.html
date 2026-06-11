@@ -40,7 +40,7 @@
                                     <div class="payment-line">PayPal: <strong>{{ asPayPal(order.paymentMethod)?.email }}</strong></div>
                                 } @else if (asCreditCard(order.paymentMethod)) {
                                     <div class="payment-line">Carta: <strong>**** **** **** {{ last4Digits(asCreditCard(order.paymentMethod)?.cardNumber || '') }}</strong></div>
-                                    <div class="payment-line">Intestatario: <strong>{{ asCreditCard(order.paymentMethod)?.cardholderName }}</strong></div>
+                                    <div class="payment-line">Intestatario: <strong>{{ asCreditCard(order.paymentMethod)?.cardHolderName }}</strong></div>
                                 } @else {
                                     <div class="payment-line">Metodo pagamento sconosciuto</div>
                                 }

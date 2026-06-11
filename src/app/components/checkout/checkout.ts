@@ -52,7 +52,7 @@ export class CheckoutComponent implements OnInit {
                 expiryMonth: ['', Validators.required],
                 expiryYear: ['', Validators.required],
                 cvv: ['', Validators.required],
-                cardholderName: ['', Validators.required]
+                cardHolderName: ['', Validators.required]
             }),
             payPal: this.fb.group({
                 email: ['', Validators.required]
@@ -69,10 +69,10 @@ export class CheckoutComponent implements OnInit {
 
                 if (state.status === 'success') {
 
-                    const personalData = (state.data as User)?.info?.data;
+                    const personalData = (state.data as User)?.userInfo?.data;
                     if (personalData) this.applyPersonalData(personalData);
                     // store saved payment methods for the checkout UI
-                    const paymentMethods = (state.data as User)?.info?.paymentMethods;
+                    const paymentMethods = (state.data as User)?.userInfo?.paymentMethods;
                     this.savedPaymentMethods = paymentMethods ? (paymentMethods as PaymentMethod[]).slice() : [];
                 }
             })
@@ -130,26 +130,26 @@ export class CheckoutComponent implements OnInit {
         } else if (method === 'creditCard') {
             const cc = paymentValues.creditCard ?? this.paymentMethodForm.get('creditCard')!.value;
             selectedPaymentMethod = {
-                type: 'creditCard',
+                methodType: 'creditCard',
                 details: {
                     cardNumber: cc.cardNumber,
                     expiryMonth: Number(cc.expiryMonth),
                     expiryYear: Number(cc.expiryYear),
                     cvv: cc.cvv,
-                    cardholderName: cc.cardholderName
+                    cardHolderName: cc.cardHolderName
                 } as CreditCard
             };
         } else if (method === 'payPal') {
             const pp = paymentValues.payPal ?? this.paymentMethodForm.get('payPal')!.value;
             selectedPaymentMethod = {
-                type: 'payPal',
+                methodType: 'payPal',
                 details: {
                     email: pp.email
                 } as PayPal
             };
         } else {
             selectedPaymentMethod = {
-                type: method ?? '',
+                methodType: method ?? '',
                 details: {} as any
             };
         }
@@ -159,9 +159,6 @@ export class CheckoutComponent implements OnInit {
             items: cart.items,
             paymentMethod: selectedPaymentMethod
         };
-
-        const uid = this.userService.getUserId();
-        if (uid) order.userId = Number(uid);
 
         this.state$ = toHttpState(this.checkoutService.placeOrder(order).pipe(
             switchMap(() => this.cartService.clearCart()),
@@ -255,7 +252,7 @@ export class CheckoutComponent implements OnInit {
 
         if (!pm) return;
 
-        const method = pm.type;
+        const method = pm.methodType;
         this.checkoutForm.patchValue({ selectedPaymentMethod: method });
 
         if (method === 'creditCard') {
@@ -265,11 +262,11 @@ export class CheckoutComponent implements OnInit {
                 expiryMonth: cc.expiryMonth ?? '',
                 expiryYear: cc.expiryYear ?? '',
                 cvv: cc.cvv ?? '',
-                cardholderName: cc.cardholderName ?? ''
+                cardHolderName: cc.cardHolderName ?? ''
             });
 
             if (cc.cardNumber && cc.cardNumber.toString().trim().length) this.autofilled['payment.creditCard.cardNumber'] = true;
-            if (cc.cardholderName && cc.cardholderName.toString().trim().length) this.autofilled['payment.creditCard.cardholderName'] = true;
+            if (cc.cardHolderName && cc.cardHolderName.toString().trim().length) this.autofilled['payment.creditCard.cardHolderName'] = true;
 
         } else if (method === 'payPal') {
             const pp = pm.details as PayPal;
@@ -281,11 +278,11 @@ export class CheckoutComponent implements OnInit {
     }
 
     asPayPal(paymentMethod: PaymentMethod): PayPal | null {
-        return (paymentMethod.type === 'payPal' || String(paymentMethod.type).toLowerCase() === 'paypal') ? paymentMethod.details as PayPal : null;
+        return (paymentMethod.methodType === 'payPal' || String(paymentMethod.methodType).toLowerCase() === 'paypal') ? paymentMethod.details as PayPal : null;
     }
 
     asCreditCard(paymentMethod: PaymentMethod): CreditCard | null {
-        return (paymentMethod.type === 'creditCard' || String(paymentMethod.type).toLowerCase().includes('credit')) ? paymentMethod.details as CreditCard : null;
+        return (paymentMethod.methodType === 'creditCard' || String(paymentMethod.methodType).toLowerCase().includes('credit')) ? paymentMethod.details as CreditCard : null;
     }
 
     last4Digits(cardNumber: string): string {

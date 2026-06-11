@@ -39,7 +39,7 @@ export class AdminOrderDetailsComponent implements OnInit {
     }
 
     asCreditCard(paymentMethod: PaymentMethod): CreditCard | null {
-        return (paymentMethod.type === 'creditCard' || String(paymentMethod.type).toLowerCase().includes('credit')) ? paymentMethod.details as CreditCard : null;
+        return (paymentMethod.methodType === 'creditCard' || String(paymentMethod.methodType).toLowerCase().includes('credit')) ? paymentMethod.details as CreditCard : null;
     }
 
     last4Digits(cardNumber: string): string {
@@ -47,6 +47,6 @@ export class AdminOrderDetailsComponent implements OnInit {
     }
 
     asPayPal(paymentMethod: PaymentMethod): PayPal | null {
-        return (paymentMethod.type === 'payPal' || String(paymentMethod.type).toLowerCase() === 'paypal') ? paymentMethod.details as PayPal : null;
+        return (paymentMethod.methodType === 'payPal' || String(paymentMethod.methodType).toLowerCase() === 'paypal') ? paymentMethod.details as PayPal : null;
     }
 }

@@ -22,12 +22,10 @@ export class AdminUsersComponent {
         toHttpState(this.adminService.getUsers());
 
     fullName(user: AdminUser): string {
-        if (!user.info) return '—';
+        if (!user.userInfo) return '—';
 
-        const name = [
-            user.info.firstName,
-            user.info.lastName
-        ].filter(Boolean).join(' ');
+        const data = user.userInfo.data;
+        const name = [data?.firstName, data?.lastName].filter(Boolean).join(' ');
 
         return name || '—';
     }

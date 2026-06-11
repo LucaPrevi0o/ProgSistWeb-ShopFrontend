@@ -22,27 +22,27 @@
                     <div>Email: <strong>{{ state.data.email }}</strong></div>
                 </div>
 
-                @if (state.data.info && !editMode) {
+                @if (state.data.userInfo && !editMode) {
                     <div class="profile-info surface-card">
                         <h3>Informazioni Profilo</h3>
-                        <p>Nome: {{ state.data.info.data.firstName }} {{ state.data.info.data.lastName }}</p>
-                        <p>Telefono: {{ state.data.info.data.phone }}</p>
+                        <p>Nome: {{ state.data.userInfo.data.firstName }} {{ state.data.userInfo.data.lastName }}</p>
+                        <p>Telefono: {{ state.data.userInfo.data.phone }}</p>
 
-                        @if (state.data.info.data.address) {
+                        @if (state.data.userInfo.data.address) {
                             <div class="address-block">
                                 <h4>Indirizzo di spedizione</h4>
-                                <p>{{ state.data.info.data.address.street }}</p>
-                                <p>{{ state.data.info.data.address.city }} - {{ state.data.info.data.address.postalCode }}</p>
-                                <p>{{ state.data.info.data.address.country }}</p>
+                                <p>{{ state.data.userInfo.data.address.street }}</p>
+                                <p>{{ state.data.userInfo.data.address.city }} - {{ state.data.userInfo.data.address.postalCode }}</p>
+                                <p>{{ state.data.userInfo.data.address.country }}</p>
                             </div>
                         }
 
-                        @if (state.data.info.paymentMethods && state.data.info.paymentMethods.length) {
+                        @if (state.data.userInfo.paymentMethods && state.data.userInfo.paymentMethods.length) {
                             <div class="payment-block">
                                 <h4>Metodi di pagamento salvati</h4>
-                                @for (pm of state.data.info.paymentMethods; track pm.id) {
+                                @for (pm of state.data.userInfo.paymentMethods; track pm.id) {
                                     @if (asCreditCard(pm)) {
-                                        <p>Carta: **** **** **** {{ last4Digits(asCreditCard(pm)!.cardNumber) }} - {{ asCreditCard(pm)!.cardholderName }}</p>
+                                        <p>Carta: **** **** **** {{ last4Digits(asCreditCard(pm)!.cardNumber) }} - {{ asCreditCard(pm)!.cardHolderName }}</p>
                                     } @else if (asPayPal(pm)) {
                                         <p>PayPal: {{ asPayPal(pm)!.email }}</p>
                                     }
@@ -103,7 +103,7 @@
                                     <h4>Metodi salvati</h4>
                                     @for (pm of savedPaymentMethods; track pm.id) {
                                         @if (asCreditCard(pm)) {
-                                            <div class="saved-item">Carta: **** **** **** {{ last4Digits(asCreditCard(pm)!.cardNumber) }} - {{ asCreditCard(pm)!.cardholderName }} <button type="button" (click)="removeSavedMethod(pm.id)">Rimuovi</button></div>
+                                            <div class="saved-item">Carta: **** **** **** {{ last4Digits(asCreditCard(pm)!.cardNumber) }} - {{ asCreditCard(pm)!.cardHolderName }} <button type="button" (click)="removeSavedMethod(pm.id)">Rimuovi</button></div>
                                         } @else if (asPayPal(pm)) {
                                             <div class="saved-item">PayPal: {{ asPayPal(pm)!.email }} <button type="button" (click)="removeSavedMethod(pm.id)">Rimuovi</button></div>
                                         }
@@ -146,8 +146,8 @@
                                         </div>
 
                                         <div class="form-group">
-                                            <label for="cardholderName">Intestatario</label>
-                                            <input id="cardholderName" formControlName="cardholderName" />
+                                            <label for="cardHolderName">Intestatario</label>
+                                            <input id="cardHolderName" formControlName="cardHolderName" />
                                         </div>
                                     </div>
                                 }

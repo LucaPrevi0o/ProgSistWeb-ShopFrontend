@@ -110,12 +110,12 @@
                                 <select id="saved_methods" formControlName="selectedSavedPaymentId">
                                     <option value="" disabled selected>Seleziona...</option>
                                     @for (pm of savedPaymentMethods; track pm.id) {
-                                        @if (pm && pm.type === 'creditCard') {
-                                            <option value="{{ pm.id }}">Carta ****{{ last4Digits(asCreditCard(pm)!.cardNumber) }} - {{ asCreditCard(pm)!.cardholderName }}</option>
-                                        } @else if (pm && pm.type === 'payPal') {
+                                        @if (pm && pm.methodType === 'creditCard') {
+                                            <option value="{{ pm.id }}">Carta ****{{ last4Digits(asCreditCard(pm)!.cardNumber) }} - {{ asCreditCard(pm)!.cardHolderName }}</option>
+                                        } @else if (pm && pm.methodType === 'payPal') {
                                             <option value="{{ pm.id }}">PayPal - {{ asPayPal(pm)!.email }}</option>
                                         } @else {
-                                            <option value="{{ pm.id }}">{{ pm.type }}</option>
+                                            <option value="{{ pm.id }}">{{ pm.methodType }}</option>
                                         }
                                     }
                                 </select>
@@ -158,8 +158,8 @@
                                         </div>
 
                                         <div class="form-group">
-                                            <label for="cardholderName">Intestatario</label>
-                                            <input id="cardholderName" type="text" formControlName="cardholderName" required />
+                                            <label for="cardHolderName">Intestatario</label>
+                                            <input id="cardHolderName" type="text" formControlName="cardHolderName" required />
                                         </div>
                                     </div>
                                 }

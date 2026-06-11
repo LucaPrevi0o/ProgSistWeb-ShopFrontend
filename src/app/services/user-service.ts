@@ -54,7 +54,7 @@ export class UserService {
     }
 
     updateUserInfo(userId: number, info: Partial<UserInfo>) : Observable<User> {
-        return this.http.patch<User>(API_BASE_URL + `/users/${userId}/info`, { info });
+        return this.http.patch<User>(API_BASE_URL + `/users/${userId}/user-info`, { userInfo: info });
     }
 
     private storeAuthSession(res: User): void {

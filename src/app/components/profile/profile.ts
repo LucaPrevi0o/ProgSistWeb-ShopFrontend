@@ -42,7 +42,7 @@ export class ProfileComponent implements OnInit {
                     expiryMonth: [''],
                     expiryYear: [''],
                     cvv: [''],
-                    cardholderName: ['']
+                    cardHolderName: ['']
                 }),
                 payPal: this.fb.group({
                     email: ['']
@@ -65,7 +65,7 @@ export class ProfileComponent implements OnInit {
 
         this.editMode = true;
 
-        const personalData = user?.info?.data;
+        const personalData = user?.userInfo?.data;
         const addr = personalData?.address;
 
         this.profileForm.patchValue({
@@ -79,22 +79,22 @@ export class ProfileComponent implements OnInit {
         });
 
         // Load saved payment methods for editing (keep a local copy)
-        this.savedPaymentMethods = user?.info?.paymentMethods ? (user!.info!.paymentMethods as PaymentMethod[]).slice() : [];
+        this.savedPaymentMethods = user?.userInfo?.paymentMethods ? (user!.userInfo!.paymentMethods as PaymentMethod[]).slice() : [];
 
         // If the user has at least one saved payment method, prefill the add-new form with the first one
         const pm = this.savedPaymentMethods?.[0];
         if (pm) {
-            this.profileForm.patchValue({ selectedPaymentMethod: pm.type });
-            if (pm.type === 'creditCard') {
+            this.profileForm.patchValue({ selectedPaymentMethod: pm.methodType });
+            if (pm.methodType === 'creditCard') {
                 const cc = pm.details as CreditCard;
                 this.profileForm.get('payment.creditCard')?.patchValue({
                     cardNumber: cc.cardNumber ?? '',
                     expiryMonth: cc.expiryMonth ?? '',
                     expiryYear: cc.expiryYear ?? '',
                     cvv: cc.cvv ?? '',
-                    cardholderName: cc.cardholderName ?? ''
+                    cardHolderName: cc.cardHolderName ?? ''
                 });
-            } else if (pm.type === 'payPal') {
+            } else if (pm.methodType === 'payPal') {
                 const pp = pm.details as PayPal;
                 this.profileForm.get('payment.payPal')?.patchValue({ email: pp.email ?? '' });
             }
@@ -139,13 +139,13 @@ export class ProfileComponent implements OnInit {
             }
 
             const pm: PaymentMethod = {
-                type: 'creditCard',
+                methodType: 'creditCard',
                 details: {
                     cardNumber: cc.cardNumber,
                     expiryMonth: Number(cc.expiryMonth),
                     expiryYear: Number(cc.expiryYear),
                     cvv: cc.cvv,
-                    cardholderName: cc.cardholderName
+                    cardHolderName: cc.cardHolderName
                 } as CreditCard
             };
 
@@ -158,7 +158,7 @@ export class ProfileComponent implements OnInit {
                 return;
             }
 
-            const pm: PaymentMethod = { type: 'payPal', details: { email: pp.email } as PayPal };
+            const pm: PaymentMethod = { methodType: 'payPal', details: { email: pp.email } as PayPal };
             finalPaymentMethods.push(pm);
         }
 
@@ -172,7 +172,7 @@ export class ProfileComponent implements OnInit {
                     this.profileForm.markAsPristine();
                     this.profileForm.markAsUntouched();
                     // update local cache of saved payment methods
-                    this.savedPaymentMethods = (user.info?.paymentMethods as PaymentMethod[]) || [];
+                    this.savedPaymentMethods = (user.userInfo?.paymentMethods as PaymentMethod[]) || [];
                 })
             )
         );
@@ -196,7 +196,7 @@ export class ProfileComponent implements OnInit {
             this.userService.updateUserInfo(userId, { paymentMethods: remaining }).pipe(
                 switchMap(() => this.userService.getUser()),
                 tap((user: User) => {
-                    this.savedPaymentMethods = (user.info?.paymentMethods as PaymentMethod[]) || [];
+                    this.savedPaymentMethods = (user.userInfo?.paymentMethods as PaymentMethod[]) || [];
                 })
             )
         );
@@ -231,11 +231,11 @@ export class ProfileComponent implements OnInit {
     }
 
     asPayPal(paymentMethod: PaymentMethod): PayPal | null {
-        return (paymentMethod.type === 'payPal' || String(paymentMethod.type).toLowerCase() === 'paypal') ? paymentMethod.details as PayPal : null;
+        return (paymentMethod.methodType === 'payPal' || String(paymentMethod.methodType).toLowerCase() === 'paypal') ? paymentMethod.details as PayPal : null;
     }
 
     asCreditCard(paymentMethod: PaymentMethod): CreditCard | null {
-        return (paymentMethod.type === 'creditCard' || String(paymentMethod.type).toLowerCase().includes('credit')) ? paymentMethod.details as CreditCard : null;
+        return (paymentMethod.methodType === 'creditCard' || String(paymentMethod.methodType).toLowerCase().includes('credit')) ? paymentMethod.details as CreditCard : null;
     }
 
     last4Digits(cardNumber: string): string {

@@ -13,7 +13,7 @@ export interface AdminUser {
     email: string;
     role: UserRole;
     createdAt?: string;
-    info?: AdminUserInfo | null;
+    userInfo?: UserInfo | null;
 }
 
 export interface User {
@@ -23,7 +23,7 @@ export interface User {
     password: string;
     token: string;
     role?: UserRole;
-    info?: UserInfo
+    userInfo?: UserInfo
 }
 
 export interface UserInfo {

@@ -77,7 +77,7 @@
                         } @else if (asCreditCard(state.data.paymentMethod)) {
                             <p class="info-row"><span>Metodo</span><strong>Carta di credito</strong></p>
                             <p class="info-row"><span>Carta</span><strong>**** **** **** {{ last4Digits(asCreditCard(state.data.paymentMethod)?.cardNumber || '') }}</strong></p>
-                            <p class="info-row"><span>Intestatario</span><strong>{{ asCreditCard(state.data.paymentMethod)?.cardholderName }}</strong></p>
+                            <p class="info-row"><span>Intestatario</span><strong>{{ asCreditCard(state.data.paymentMethod)?.cardHolderName }}</strong></p>
                         } @else {
                             <p class="info-row"><span>Metodo</span><strong>Sconosciuto</strong></p>
                         }

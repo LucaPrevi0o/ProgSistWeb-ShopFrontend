@@ -101,8 +101,8 @@ export class ProductListComponent implements OnInit {
         const f: any = {};
         if (this.filterName && this.filterName.trim().length) f.name = this.filterName.trim();
         if (this.filterCategory && this.filterCategory.trim()) f.category = this.filterCategory.trim();
-        if (this.filterMinPrice) f.min_price = this.filterMinPrice;
-        if (this.filterMaxPrice) f.max_price = this.filterMaxPrice;
+        if (this.filterMinPrice) f.minPrice = this.filterMinPrice;
+        if (this.filterMaxPrice) f.maxPrice = this.filterMaxPrice;
         return f;
     }
 
