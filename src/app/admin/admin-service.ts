@@ -2,6 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { API_BASE_URL } from '../app.config';
+import { Order } from '../models/order';
 import { Product } from '../models/product';
 import { AdminUser, User } from '../models/user';
 
@@ -46,5 +47,9 @@ export class AdminService {
 
     getUser(id: number): Observable<AdminUser> {
         return this.http.get<AdminUser>(`${API_BASE_URL}/admin/users/${id}`);
+    }
+
+    updateOrderStatus(id: number, status: string): Observable<Order> {
+        return this.http.patch<Order>(`${API_BASE_URL}/admin/orders/${id}/status`, { status });
     }
 }

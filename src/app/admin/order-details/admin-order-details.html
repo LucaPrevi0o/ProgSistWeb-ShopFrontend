@@ -45,6 +45,31 @@
                     </div>
                 </section>
 
+                <section class="surface-card order-section status-editor">
+                    <div>
+                        <h2>Gestione stato</h2>
+                        <p class="status-editor__hint">Conferma o annulla l'ordine. La modifica sara visibile anche al cliente.</p>
+                    </div>
+
+                    <div class="status-editor__controls">
+                        <button
+                            type="button"
+                            class="primary"
+                            [disabled]="state.data.status !== 'pending'"
+                            (click)="updateStatus(state.data, 'completed')">
+                            {{ savingStatus ? 'Salvataggio...' : 'Conferma ordine' }}
+                        </button>
+
+                        <button
+                            type="button"
+                            class="danger"
+                            [disabled]="state.data.status !== 'pending'"
+                            (click)="updateStatus(state.data, 'cancelled')">
+                            {{ savingStatus ? 'Salvataggio...' : 'Annulla ordine' }}
+                        </button>
+                    </div>
+                </section>
+
                 <section class="surface-card order-section">
                     <h2>Articoli ordinati</h2>
 

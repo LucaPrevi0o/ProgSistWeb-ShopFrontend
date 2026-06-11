@@ -1,12 +1,13 @@
 import { Component, inject, OnInit } from "@angular/core";
 import { AsyncPipe, DatePipe } from "@angular/common";
-import { Observable } from "rxjs";
+import { finalize, Observable } from "rxjs";
 import { HttpState, toHttpState } from "../../app.config";
 import { OrderService } from "../../services/order-service";
 import { Order } from "../../models/order";
 import { PaymentMethod, CreditCard, PayPal } from "../../models/payment";
 import { LoginRedirectorComponent } from "../../components/login-redirector/login-redirector";
 import { Router } from "@angular/router";
+import { AdminService } from "../admin-service";
 
 @Component({
     selector: 'app-admin-order-details',
@@ -18,8 +19,10 @@ import { Router } from "@angular/router";
 export class AdminOrderDetailsComponent implements OnInit {
 
     state$!: Observable<HttpState<Order>>;
+    savingStatus = false;
     router = inject(Router);
     orderService = inject(OrderService);
+    adminService = inject(AdminService);
 
     ngOnInit(): void {
         const orderId = this.router.url.split('/').pop();
@@ -28,6 +31,17 @@ export class AdminOrderDetailsComponent implements OnInit {
         } else {
             // Handle error: no order ID in URL
         }
+    }
+
+    updateStatus(order: Order, status: 'completed' | 'cancelled'): void {
+        if (!order.id || status === order.status || this.savingStatus) return;
+
+        this.savingStatus = true;
+        this.state$ = toHttpState(
+            this.adminService.updateOrderStatus(order.id, status).pipe(
+                finalize(() => this.savingStatus = false)
+            )
+        );
     }
 
     total(order: Order): number {
@@ -54,4 +68,5 @@ export class AdminOrderDetailsComponent implements OnInit {
         if (!status) return 'status-unknown';
         return `status-${status.toLowerCase()}`;
     }
+
 }
