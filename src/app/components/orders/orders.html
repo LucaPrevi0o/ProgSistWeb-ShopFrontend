@@ -3,6 +3,35 @@
     <div class="orders-page page page--narrow">
     <h1 class="page__title">I tuoi ordini</h1>
 
+    <section class="orders-filter surface-card" aria-label="Filtri ordini">
+        <div class="orders-filter__fields">
+            <label>
+                Stato
+                <select [value]="filterStatus" (change)="filterStatus = $any($event.target).value">
+                    <option value="">Tutti</option>
+                    <option value="pending">In attesa</option>
+                    <option value="cancelled">Annullato</option>
+                    <option value="completed">Completato</option>
+                </select>
+            </label>
+
+            <label>
+                Dal
+                <input type="date" [value]="filterFromDate" (change)="filterFromDate = $any($event.target).value" />
+            </label>
+
+            <label>
+                Al
+                <input type="date" [value]="filterToDate" (change)="filterToDate = $any($event.target).value" />
+            </label>
+        </div>
+
+        <div class="orders-filter__actions">
+            <button type="button" class="primary" (click)="applyFilters()">Applica filtri</button>
+            <button type="button" (click)="resetFilters()">Reset</button>
+        </div>
+    </section>
+
     @if (state.status === 'loading') { <p class="state-message">Caricamento in corso...</p> }
     @else if (state.status === 'error') {
         @if (state.code === 401) { 
@@ -27,14 +56,17 @@
             @for (order of state.data; track order) {
                 <div class="order-card">
                     <div class="order-header">
-                        <!--div class="order-summary">
-                            <div class="order-id">Ordine #{{ order.id }}</div>
-                            <div class="order-date">{{ order.createdAt | date:'medium' }}</div>
-                        </div-->
+                        <div class="order-summary">
+                            <div>
+                                <div class="order-id">Ordine #{{ order.id }}</div>
+                                @if (order.createdAt) {
+                                    <div class="order-date">{{ order.createdAt | date:'dd/MM/yyyy HH:mm' }}</div>
+                                }
+                            </div>
+                            <div class="order-status {{ statusClass(order.status) }}">{{ order.status || 'unknown' }}</div>
+                        </div>
 
                         <div class="order-meta">
-                            <!--div class="order-status {{ statusClass(order.status) }}">{{ order.status }}</div-->
-
                             <div class="payment-info">
                                 @if (asPayPal(order.paymentMethod)) {
                                     <div class="payment-line">PayPal: <strong>{{ asPayPal(order.paymentMethod)?.email }}</strong></div>

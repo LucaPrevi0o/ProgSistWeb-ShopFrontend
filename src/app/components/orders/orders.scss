@@ -4,6 +4,47 @@
   gap: var(--spacing-md);
 }
 
+.orders-filter {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
+  padding: var(--spacing-md);
+  margin-bottom: var(--spacing-md);
+}
+
+.orders-filter__fields {
+  display: grid;
+  grid-template-columns: minmax(150px, 1fr) repeat(2, minmax(140px, 1fr));
+  gap: var(--spacing-md);
+  align-items: end;
+}
+
+.orders-filter__fields label {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 0;
+  font-weight: 600;
+  color: var(--color-text);
+}
+
+.orders-filter select,
+.orders-filter input {
+  width: 100%;
+  min-height: 40px;
+  box-sizing: border-box;
+}
+
+.orders-filter__actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--spacing-sm);
+}
+
+.orders-filter__actions button {
+  min-width: 120px;
+}
+
 .order-card {
   background: var(--color-card);
   padding: var(--spacing-md);
@@ -22,7 +63,13 @@
 
 .order-body p { margin: 6px 0; }
 
-.order-summary { display: flex; flex-direction: column; gap: 4px; }
+.order-summary {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  min-width: 0;
+}
+
 .order-id { font-weight: 700; font-size: 1rem; }
 .order-date { color: var(--color-text-muted); font-size: 0.9rem; }
 
@@ -49,8 +96,18 @@
 .item-subtotal { color: var(--color-text); font-weight: 600; }
 
 @media (max-width: 720px) {
+  .orders-filter__fields { grid-template-columns: 1fr; }
+  .orders-filter__actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .orders-filter__actions button { width: 100%; }
   .orders-list { width: 100%; }
   .order-header { flex-direction: column; align-items: flex-start; }
+  .order-summary {
+    width: 100%;
+    justify-content: space-between;
+  }
   .order-meta { align-items: flex-start; }
   .item { flex-direction: column; align-items: flex-start; }
 }

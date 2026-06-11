@@ -18,6 +18,7 @@ export interface Order {
     user?: OrderUser;      // admin-only
     total?: number;        // already useful elsewhere
     createdAt?: string;    // future sorting/filtering
+    status?: string;
 }
 
 export interface CheckoutResponse {

@@ -16,6 +16,7 @@ import { AdminProductsComponent } from './admin/products/admin-products';
 import { AdminOrdersComponent } from './admin/orders/admin-orders';
 import { AdminOrderDetailsComponent } from './admin/order-details/admin-order-details';
 import { AdminUsersComponent } from './admin/users/admin-users';
+import { AuthGuard } from './guards/auth-guard';
 
 export const routes: Routes = [
     
@@ -25,11 +26,11 @@ export const routes: Routes = [
     { path: 'register', component: RegisterComponent },
     { path: 'login', component: LoginComponent },
     { path: 'logout', component: LoginComponent },
-    { path: 'cart', component: CartComponent },
-    { path: 'checkout', component: CheckoutComponent },
-    { path: 'orders', component: OrdersComponent },
-    { path: 'orders/:id', component: OrderDetailsComponent },
-    { path: 'users/:id', component: ProfileComponent },
+    { path: 'cart', canActivate: [AuthGuard], component: CartComponent },
+    { path: 'checkout', canActivate: [AuthGuard], component: CheckoutComponent },
+    { path: 'orders', canActivate: [AuthGuard], component: OrdersComponent },
+    { path: 'orders/:id', canActivate: [AuthGuard], component: OrderDetailsComponent },
+    { path: 'users/:id', canActivate: [AuthGuard], component: ProfileComponent },
     {
         path: 'admin',
         canActivate: [AdminGuard],
