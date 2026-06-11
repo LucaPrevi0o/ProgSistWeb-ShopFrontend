@@ -12,7 +12,7 @@ export class UserService {
 
     login(user: User) : Observable<User> {
 
-        return this.http.post<User>(API_BASE_URL +'/login', { email: user.email, password: user.password })
+        return this.http.post<User>(API_BASE_URL + '/auth/login', { email: user.email, password: user.password })
             .pipe(
                 tap(res => this.storeAuthSession(res))
             );
@@ -51,6 +51,14 @@ export class UserService {
 
     getAdminUser(id: number): Observable<AdminUser> {
         return this.http.get<AdminUser>(API_BASE_URL + '/admin/users/' + id);
+    }
+
+    getCurrentUser(): Observable<User> {
+        return this.http.get<User>(API_BASE_URL + '/auth/me');
+    }
+
+    logoutRemote(): Observable<void> {
+        return this.http.post<void>(API_BASE_URL + '/auth/logout', {});
     }
 
     updateUserInfo(userId: number, info: Partial<UserInfo>) : Observable<User> {
