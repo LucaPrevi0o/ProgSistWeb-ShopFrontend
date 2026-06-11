@@ -1,6 +1,6 @@
 // src/app/admin/users/admin-users.ts
 
-import { AsyncPipe } from '@angular/common';
+import { AsyncPipe, DatePipe } from '@angular/common';
 import { Component, inject } from '@angular/core';
 import { HttpState, toHttpState } from '../../app.config';
 import { AdminUser } from '../../models/user';
@@ -10,7 +10,7 @@ import { Observable } from 'rxjs';
 @Component({
     selector: 'app-admin-users',
     standalone: true,
-    imports: [AsyncPipe],
+    imports: [AsyncPipe, DatePipe],
     templateUrl: './admin-users.html',
     styleUrls: ['./admin-users.scss']
 })

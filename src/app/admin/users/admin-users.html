@@ -46,7 +46,7 @@
 
                             <p>
                                 <span>Registrato il</span>
-                                <strong>{{ user.createdAt || '—' }}</strong>
+                                <strong>{{ user.createdAt ? (user.createdAt | date:'dd/MM/yyyy HH:mm') : '—' }}</strong>
                             </p>
                         </div>
                     </article>
