@@ -1,4 +1,4 @@
-import { AsyncPipe } from '@angular/common';
+import { AsyncPipe, DatePipe } from '@angular/common';
 import { Component, inject } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { Observable } from 'rxjs';
@@ -9,7 +9,7 @@ import { OrderService } from '../../services/order-service';
 @Component({
     selector: 'app-admin-orders',
     standalone: true,
-    imports: [AsyncPipe, RouterLink],
+    imports: [AsyncPipe, DatePipe, RouterLink],
     templateUrl: './admin-orders.html',
     styleUrls: ['./admin-orders.scss']
 })
@@ -28,5 +28,10 @@ export class AdminOrdersComponent {
             (sum, item) => sum + item.product.price * item.quantity,
             0
         );
+    }
+
+    statusClass(status?: string): string {
+        if (!status) return 'status-unknown';
+        return `status-${status.toLowerCase()}`;
     }
 }

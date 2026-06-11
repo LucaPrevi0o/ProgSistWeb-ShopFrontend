@@ -1,30 +1,90 @@
 .admin-orders__grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-    gap: var(--spacing-lg);
+    gap: var(--spacing-md);
 }
 
 .order-card {
     display: flex;
     flex-direction: column;
-    gap: var(--spacing-sm);
+    gap: var(--spacing-md);
     padding: var(--spacing-lg);
 }
 
 .order-card__header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto auto;
+    gap: var(--spacing-sm);
+    align-items: start;
 }
 
 .order-card__header h2 {
     margin: 0;
+    font-size: 1.1rem;
+}
+
+.order-card__date {
+    display: block;
+    margin-top: 4px;
+    color: var(--color-text-light);
+    font-size: 0.9rem;
+}
+
+.order-card__status {
+    display: inline-flex;
+    width: fit-content;
+    padding: 6px 10px;
+    border-radius: 999px;
+    font-size: 0.85rem;
+    font-weight: 700;
+    text-transform: capitalize;
+    margin-right: var(--spacing-md);
 }
 
 .order-card__total {
     font-weight: 700;
+    white-space: nowrap;
+}
+
+.status-pending { background: #fff7e6; color: #8a6d00; border: 1px solid #ffe8a6; }
+.status-completed { background: #e9f7ee; color: #1b6e3a; border: 1px solid #c7e8d0; }
+.status-cancelled { background: #fdecea; color: #7a1a1a; border: 1px solid #f5c2c2; }
+.status-unknown { background: var(--color-bg); color: var(--color-text); border: 1px solid var(--color-border); }
+
+.order-card__meta {
+    display: grid;
+    gap: 6px;
+}
+
+.order-card__meta p {
+    display: grid;
+    grid-template-columns: 92px minmax(0, 1fr);
+    gap: var(--spacing-sm);
+    margin: 0;
+    align-items: baseline;
+}
+
+.order-card__meta span {
+    color: var(--color-text-light);
+    font-size: 0.9rem;
+}
+
+.order-card__meta strong {
+    min-width: 0;
+    overflow-wrap: anywhere;
 }
 
 .order-card__link {
     margin-top: auto;
+}
+
+@media (max-width: 520px) {
+    .order-card__header {
+        grid-template-columns: 1fr;
+    }
+
+    .order-card__meta p {
+        grid-template-columns: 1fr;
+        gap: 2px;
+    }
 }
